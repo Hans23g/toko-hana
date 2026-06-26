@@ -5,26 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stok Toko Hana</title>
   <style>
-    /* CATATAN CSS: Ditambah tombol kecil biar muat di HP */
     body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 5px #ccc; }
     h1 { text-align: center; color: #333; }
     input, button { padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-    .form-row { display: flex; gap: 10px; } /* Biar input nama & stok sebelahan */
+    .form-row { display: flex; gap: 10px; }
     .form-row input { flex: 1; }
     .btn-simpan { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; width: 100%; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+    /* BARU v1.2: Style buat kotak search */
+    #searchBox { width: 100%; margin-bottom: 15px; } 
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     th { background: #f2f2f2; }
    .btn-aksi { padding: 5px 8px; width: auto; margin: 2px; border: none; color: white; cursor: pointer; border-radius: 5px; }
-   .btn-kurang { background: #ffc107; color: black; } /* Kuning */
-   .btn-tambah { background: #17a2b8; } /* Biru */
-   .btn-hapus { background: #dc3545; } /* Merah */
+   .btn-kurang { background: #ffc107; color: black; }
+   .btn-tambah { background: #17a2b8; }
+   .btn-hapus { background: #dc3545; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📦 Stok Toko Hana v1.1</h1>
+    <h1>📦 Stok Toko Hana v1.2</h1>
 
     <h3>Tambah Barang</h3>
     <div class="form-row">
@@ -34,6 +35,9 @@
     <button class="btn-simpan" onclick="tambahBarang()">Simpan Barang</button>
 
     <h3>Daftar Stok</h3>
+    <!-- BARU v1.2: Kotak Search nya ada di sini -->
+    <input type="text" id="searchBox" placeholder="🔍 Cari nama barang..." onkeyup="tampilkanTabel()">
+
     <table>
       <thead><tr><th>Nama</th><th>Stok</th><th>Aksi</th></tr></thead>
       <tbody id="tabelStok"></tbody>
@@ -42,6 +46,8 @@
 
   <script>
     let dataStok = [];
+    // BARU v1.2: Variabel buat nyimpen kata kunci search
+    let kataKunciCari = ''; 
 
     function muatData() {
       const dataLama = localStorage.getItem('stokTokoHana');
@@ -65,14 +71,13 @@
       document.getElementById('jumlahStok').value = '';
     }
 
-    // FUNGSI BARU 1: Tugasnya Ubah stok +1 atau -1
     function ubahStok(id, jumlah) {
-      const barang = dataStok.find(b => b.id === id); // Cari barang berdasarkan id
+      const barang = dataStok.find(b => b.id === id);
       if (barang) {
-        barang.stok += jumlah; // Tambah atau kurang
-        if (barang.stok < 0) { barang.stok = 0; alert('Stok nggak bisa minus kawan'); } // Biar nggak minus
+        barang.stok += jumlah;
+        if (barang.stok < 0) { barang.stok = 0; alert('Stok nggak bisa minus kawan'); }
         simpanData();
-        tampilkanTabel(); // Refresh tabel
+        tampilkanTabel();
       }
     }
 
@@ -84,16 +89,26 @@
       }
     }
 
-    // FUNGSI UPDATE: Tabel sekarang ada tombol -1 dan +1
+    // FUNGSI UPDATE v1.2: Sekarang ada filter search
     function tampilkanTabel() {
+      // Ambil kata kunci dari kotak search tiap kali dipanggil
+      kataKunciCari = document.getElementById('searchBox').value.toLowerCase(); 
+
       const tbody = document.getElementById('tabelStok');
       tbody.innerHTML = '';
-      if (dataStok.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3">Belum ada barang. Input dulu kawan.</td></tr>';
+      
+      // BARU v1.2: Filter dulu datanya sebelum ditampilin
+      const dataYangDitampilkan = dataStok.filter(barang => 
+        barang.nama.toLowerCase().includes(kataKunciCari) // Cek apa nama barang mengandung kata kunci
+      );
+
+      if (dataYangDitampilkan.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3">Barang nggak ketemu kawan.</td></tr>';
         return;
       }
 
-      dataStok.forEach(barang => {
+      // Loop nya sekarang pake dataYangDitampilkan, bukan dataStok semua
+      dataYangDitampilkan.forEach(barang => {
         const row = `<tr>
           <td style="text-align:left;">${barang.nama}</td>
           <td><b>${barang.stok}</b></td>

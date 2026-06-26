@@ -2,45 +2,46 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <!-- KUNCI 1: Cegah zoom manual -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Stok Toko Hana</title>
   <style>
     * { box-sizing: border-box; }
     body { font-family: system-ui, sans-serif; background: #f7f7f7; margin: 0; padding: 10px; }
-   .container { max-width: 600px; margin: auto; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 5px #ccc; }
+  .container { max-width: 600px; margin: auto; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 5px #ccc; }
     h1 { text-align: center; color: #333; font-size: 22px; margin: 0 0 12px 0; }
-    h3 { font-size: 15px; margin: 10px 0 6px 0; }
+    h3 { font-size: 15px; margin: 10px 0 6px 0; display: flex; justify-content: space-between; align-items: center; } /* KUNCI: H3 jadi flex */
 
-    /* KUNCI 2: SEMUA INPUT WAJIB 16PX BIAR NGGAK ZOOM DI IPHONE */
-    input, button, select { padding: 10px; margin: 4px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; } 
-    .form-row { display: flex; gap: 6px; } 
-    .form-row input { flex: 1; min-width: 0; }
+    input, button, select { padding: 10px; margin: 4px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; }
+   .form-row { display: flex; gap: 6px; }
+   .form-row input { flex: 1; min-width: 0; }
     #namaBarang { flex: 7; }
     #jumlahStok { flex: 3; text-align: center; }
 
-    .btn-simpan { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; width: 100%; }
+   .btn-simpan { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; width: 100%; }
     #searchBox { width: 100%; margin-bottom: 10px; }
 
-   .table-wrapper { width: 100%; overflow-x: auto; }
+    /* BARU v1.6: Tombol Export */
+  .btn-export { background: #6f42c1; color: white; border: none; cursor: pointer; padding: 6px 10px; font-size: 13px; font-weight: bold; }
+
+  .table-wrapper { width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; min-width: 340px; }
     th, td { border: 1px solid #ddd; padding: 6px 3px; text-align: center; }
     th { background: #f2f2f2; }
     td:nth-child(1) { text-align: left; padding-left: 6px; width: 40%; }
     td:nth-child(2) { width: 15%; }
-    td:nth-child(3) { width: 45%; } /* Aksi dikasih lebih lebar */
+    td:nth-child(3) { width: 45%; }
 
-    /* KUNCI 3: STYLE BARU BUAT AKSI + INPUT JUMLAH */
-   .aksi-group { display: flex; gap: 3px; justify-content: center; align-items: center; }
-   .input-jumlah { width: 40px; padding: 5px; text-align: center; font-size: 14px; height: 30px; } /* Kotak kecil buat angka */
-   .btn-aksi { padding: 5px 6px; width: auto; min-width: 30px; border: none; color: white; cursor: pointer; border-radius: 5px; font-weight: bold; font-size: 12px; height: 30px; line-height: 1; }
-   .btn-kurang { background: #ffc107; color: black; }
-   .btn-tambah { background: #17a2b8; }
-   .btn-hapus { background: #dc3545; }
+  .aksi-group { display: flex; gap: 3px; justify-content: center; align-items: center; }
+  .input-jumlah { width: 40px; padding: 5px; text-align: center; font-size: 14px; height: 30px; }
+  .btn-aksi { padding: 5px 6px; width: auto; min-width: 30px; border: none; color: white; cursor: pointer; border-radius: 5px; font-weight: bold; font-size: 12px; height: 30px; line-height: 1; }
+  .btn-kurang { background: #ffc107; color: black; }
+  .btn-tambah { background: #17a2b8; }
+  .btn-hapus { background: #dc3545; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📦 Stok Toko Hana v1.5</h1>
+    <h1>📦 Stok Toko Hana v1.6</h1>
 
     <h3>Tambah Barang</h3>
     <div class="form-row">
@@ -49,7 +50,11 @@
     </div>
     <button class="btn-simpan" onclick="tambahBarang()">Simpan Barang</button>
 
-    <h3>Daftar Stok</h3>
+    <h3>
+      <span>Daftar Stok</span>
+      <!-- BARU v1.6: Tombol Export ada di sini -->
+      <button class="btn-export" onclick="exportCSV()">📊 Export Excel</button>
+    </h3>
     <input type="text" id="searchBox" placeholder="🔍 Cari..." onkeyup="tampilkanTabel()">
 
     <div class="table-wrapper">
@@ -62,7 +67,7 @@
 
   <script>
     let dataStok = [];
-    let kataKunciCari = ''; 
+    let kataKunciCari = '';
 
     function muatData() {
       const dataLama = localStorage.getItem('stokTokoHana');
@@ -78,7 +83,7 @@
       const nama = document.getElementById('namaBarang').value.trim();
       const stok = document.getElementById('jumlahStok').value;
       if (nama === '' || stok === '' || stok < 0) { alert('Isi nama & stok'); return; }
-      
+
       dataStok.push({ id: Date.now(), nama: nama, stok: parseInt(stok) });
       simpanData();
       tampilkanTabel();
@@ -86,41 +91,55 @@
       document.getElementById('jumlahStok').value = '';
     }
 
-    // KUNCI 3: FUNGSI BARU, ADA PARAMETER JUMLAH
     function ubahStok(id, tipe) {
       const barang = dataStok.find(b => b.id === id);
       if (!barang) return;
-
-      // Ambil angka dari kotak input di baris itu
       const inputEl = document.getElementById(`jumlah-${id}`);
-      let jumlah = parseInt(inputEl.value) || 1; // Kalo kosong, default 1
-
-      if (tipe === 'kurang') {
-        barang.stok -= jumlah;
-      } else { // 'tambah'
-        barang.stok += jumlah;
-      }
-      
+      let jumlah = parseInt(inputEl.value) || 1;
+      if (tipe === 'kurang') { barang.stok -= jumlah; } else { barang.stok += jumlah; }
       if (barang.stok < 0) { barang.stok = 0; }
-      inputEl.value = 1; // Reset lagi ke 1 biar siap dipake
+      inputEl.value = 1;
       simpanData();
       tampilkanTabel();
     }
 
     function hapusBarang(id) {
       if (confirm('Hapus?')) {
-        dataStok = dataStok.filter(b => b.id !== id);
+        dataStok = dataStok.filter(b => b.id!== id);
         simpanData();
         tampilkanTabel();
       }
     }
 
+    // BARU v1.6: FUNGSI EXPORT KE CSV
+    function exportCSV() {
+      if (dataStok.length === 0) { alert('Data kosong, nggak ada yang di-export kawan'); return; }
+
+      let csvContent = "Nama Barang,Stok\n"; // Header Excel
+      dataStok.forEach(barang => {
+        // Kalo nama ada koma, dikasih tanda kutip biar nggak error di Excel
+        let namaAman = `"${barang.nama.replace(/"/g, '""')}"`;
+        csvContent += `${namaAman},${barang.stok}\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `Stok_Toko_Hana_${new Date().toISOString().slice(0,10)}.csv`); // Nama file ada tanggalnya
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      alert('File Excel udah ke-download kawan!');
+    }
+
     function tampilkanTabel() {
-      kataKunciCari = document.getElementById('searchBox').value.toLowerCase(); 
+      kataKunciCari = document.getElementById('searchBox').value.toLowerCase();
       const tbody = document.getElementById('tabelStok');
       tbody.innerHTML = '';
-      
-      const dataYangDitampilkan = dataStok.filter(barang => 
+
+      const dataYangDitampilkan = dataStok.filter(barang =>
         barang.nama.toLowerCase().includes(kataKunciCari)
       );
 
@@ -130,16 +149,15 @@
       }
 
       dataYangDitampilkan.forEach(barang => {
-        // KUNCI 3: ADA INPUT ANGKA DI TENGAH TOMBOL
         const row = `<tr>
           <td>${barang.nama}</td>
           <td><b>${barang.stok}</b></td>
           <td>
             <div class="aksi-group">
               <button class="btn-aksi btn-kurang" onclick="ubahStok(${barang.id}, 'kurang')">- </button>
-              <input type="number" class="input-jumlah" id="jumlah-${barang.id}" value="1" min="1" inputmode="numeric"> 
+              <input type="number" class="input-jumlah" id="jumlah-${barang.id}" value="1" min="1" inputmode="numeric">
               <button class="btn-aksi btn-tambah" onclick="ubahStok(${barang.id}, 'tambah')">+ </button>
-              <button class="btn-aksi btn-hapus" onclick="hapusBarang(${barang.id})">X</button> 
+              <button class="btn-aksi btn-hapus" onclick="hapusBarang(${barang.id})">X</button>
             </div>
           </td>
         </tr>`;

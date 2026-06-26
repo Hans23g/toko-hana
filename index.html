@@ -5,53 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stok Toko Hana</title>
   <style>
-    /* FIX v1.3: Ini kunci biar nggak meluber di HP kecil */
-    * { box-sizing: border-box; } 
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #f7f7f7; margin: 0; padding: 10px; } /* Padding makin tipis */
+   .container { max-width: 600px; margin: auto; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 5px #ccc; } /* Padding dikecilin lagi */
+    h1 { text-align: center; color: #333; font-size: 22px; margin: 0 0 12px 0; }
+    h3 { font-size: 15px; margin: 10px 0 6px 0; }
 
-    body { font-family: system-ui, sans-serif; background: #f7f7f7; margin: 0; padding: 12px; } /* Padding dikecilin biar lega */
-   .container { max-width: 600px; margin: auto; background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 5px #ccc; }
-    h1 { text-align: center; color: #333; font-size: 24px; margin: 0 0 16px 0; } /* Font dikecilin dikit */
-    h3 { font-size: 16px; margin: 12px 0 8px 0; }
-
-    input, button { padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; } /* Font 16px biar iPhone nggak nge-zoom */
-    .form-row { display: flex; gap: 8px; } /* Gap dikecilin */
-    .form-row input { flex: 1; min-width: 0; } /* KUNCI 1: min-width 0 biar flex mau nyusut */
+    input, button { padding: 10px; margin: 4px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; } /* Font turun dikit */
+    .form-row { display: flex; gap: 6px; } 
+    .form-row input { flex: 1; min-width: 0; }
+    #namaBarang { flex: 7; } /* KUNCI 1: Nama 70% */
+    #jumlahStok { flex: 3; text-align: center; } /* KUNCI 1: Stok 30% doang, rata tengah */
 
     .btn-simpan { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; width: 100%; }
     
-    #searchBox { width: 100%; margin-bottom: 12px; }
+    #searchBox { width: 100%; margin-bottom: 10px; }
 
-    /* FIX v1.3: Tabel jadi bisa di-scroll ke samping kalo kepanjangan */
-   .table-wrapper { width: 100%; overflow-x: auto; } 
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; min-width: 360px; } /* KUNCI 2: Kasih min-width biar nggak ketekuk */
-    th, td { border: 1px solid #ddd; padding: 8px 4px; text-align: center; } /* Padding kanan kiri dikecilin */
+   .table-wrapper { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; min-width: 320px; } /* Font tabel turun */
+    th, td { border: 1px solid #ddd; padding: 6px 3px; text-align: center; } /* Padding super tipis */
     th { background: #f2f2f2; }
-    td:nth-child(1) { text-align: left; padding-left: 8px; } /* Nama rata kiri biar gampang baca */
+    td:nth-child(1) { text-align: left; padding-left: 6px; width: 45%; } /* Nama dikasih porsi paling gede */
+    td:nth-child(2) { width: 15%; } /* Stok tipis aja */
+    td:nth-child(3) { width: 40%; } /* Aksi dikasih porsi lebih */
 
-    /* FIX v1.3: Tombol Aksi ditata ulang biar rapi di HP */
-   .aksi-group { display: flex; flex-direction: column; gap: 4px; align-items: center; }
-   .aksi-row { display: flex; gap: 4px; }
-   .btn-aksi { padding: 6px 10px; width: 38px; border: none; color: white; cursor: pointer; border-radius: 6px; font-weight: bold; }
+    /* KUNCI 2: Aksi jadi 1 baris semua, super compact */
+   .aksi-group { display: flex; gap: 3px; justify-content: center; align-items: center; }
+   .btn-aksi { padding: 5px 6px; width: auto; min-width: 30px; border: none; color: white; cursor: pointer; border-radius: 5px; font-weight: bold; font-size: 12px; line-height: 1; }
    .btn-kurang { background: #ffc107; color: black; }
    .btn-tambah { background: #17a2b8; }
-   .btn-hapus { background: #dc3545; width: 100%; } /* Hapus full 1 baris sendiri */
+   .btn-hapus { background: #dc3545; padding: 5px 8px; } /* X aja biar pendek */
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📦 Stok Toko Hana v1.3</h1>
+    <h1>📦 Stok Toko Hana v1.4</h1>
 
     <h3>Tambah Barang</h3>
     <div class="form-row">
       <input type="text" id="namaBarang" placeholder="Nama Barang">
-      <input type="number" id="jumlahStok" placeholder="Stok" inputmode="numeric"> <!-- Placeholder "Stok" aja biar pendek -->
+      <input type="number" id="jumlahStok" placeholder="0" inputmode="numeric"> <!-- Placeholder "0" aja biar pendek banget -->
     </div>
     <button class="btn-simpan" onclick="tambahBarang()">Simpan Barang</button>
 
     <h3>Daftar Stok</h3>
-    <input type="text" id="searchBox" placeholder="🔍 Cari nama barang..." onkeyup="tampilkanTabel()">
+    <input type="text" id="searchBox" placeholder="🔍 Cari..." onkeyup="tampilkanTabel()"> <!-- Placeholder pendekin -->
 
-    <!-- KUNCI 3: Bungkus tabel pake div ini biar bisa scroll samping -->
     <div class="table-wrapper">
       <table>
         <thead><tr><th>Nama</th><th>Stok</th><th>Aksi</th></tr></thead>
@@ -77,7 +76,7 @@
     function tambahBarang() {
       const nama = document.getElementById('namaBarang').value.trim();
       const stok = document.getElementById('jumlahStok').value;
-      if (nama === '' || stok === '' || stok < 0) { alert('Isi nama & stok dengan benar ya'); return; }
+      if (nama === '' || stok === '' || stok < 0) { alert('Isi nama & stok'); return; }
       
       dataStok.push({ id: Date.now(), nama: nama, stok: parseInt(stok) });
       simpanData();
@@ -97,7 +96,7 @@
     }
 
     function hapusBarang(id) {
-      if (confirm('Yakin mau hapus?')) {
+      if (confirm('Hapus?')) { // Teks confirm dipendekin juga
         dataStok = dataStok.filter(b => b.id !== id);
         simpanData();
         tampilkanTabel();
@@ -114,22 +113,20 @@
       );
 
       if (dataYangDitampilkan.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3">Barang nggak ketemu kawan.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3">Kosong</td></tr>'; // Teks dipendekin
         return;
       }
 
       dataYangDitampilkan.forEach(barang => {
-        // TOMBOL DIRAPIKAN: -1 +1 sejajar, Hapus di bawahnya
+        // KUNCI 2: Tombol jadi 1 baris. "Hapus" ganti jadi "X" biar pendek
         const row = `<tr>
           <td>${barang.nama}</td>
           <td><b>${barang.stok}</b></td>
           <td>
             <div class="aksi-group">
-              <div class="aksi-row">
-                <button class="btn-aksi btn-kurang" onclick="ubahStok(${barang.id}, -1)">-1</button>
-                <button class="btn-aksi btn-tambah" onclick="ubahStok(${barang.id}, 1)">+1</button>
-              </div>
-              <button class="btn-aksi btn-hapus" onclick="hapusBarang(${barang.id})">Hapus</button>
+              <button class="btn-aksi btn-kurang" onclick="ubahStok(${barang.id}, -1)">-1</button>
+              <button class="btn-aksi btn-tambah" onclick="ubahStok(${barang.id}, 1)">+1</button>
+              <button class="btn-aksi btn-hapus" onclick="hapusBarang(${barang.id})">X</button> 
             </div>
           </td>
         </tr>`;

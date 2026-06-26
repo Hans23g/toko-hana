@@ -5,107 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stok Toko Hana</title>
   <style>
-    /* CATATAN CSS: Bagian dandanin. Biar enak diliat di HP */
+    /* CATATAN CSS: Ditambah tombol kecil biar muat di HP */
     body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 5px #ccc; }
     h1 { text-align: center; color: #333; }
-    input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-    button { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
-    button:hover { background: #218838; } /* Warna agak gelap pas disentuh */
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    input, button { padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+    .form-row { display: flex; gap: 10px; } /* Biar input nama & stok sebelahan */
+    .form-row input { flex: 1; }
+    .btn-simpan { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; width: 100%; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     th { background: #f2f2f2; }
-   .btn-hapus { background: #dc3545; padding: 5px 10px; width: auto; } /* Tombol merah kecil buat hapus */
+   .btn-aksi { padding: 5px 8px; width: auto; margin: 2px; border: none; color: white; cursor: pointer; border-radius: 5px; }
+   .btn-kurang { background: #ffc107; color: black; } /* Kuning */
+   .btn-tambah { background: #17a2b8; } /* Biru */
+   .btn-hapus { background: #dc3545; } /* Merah */
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📦 Stok Toko Hana</h1> <!-- JUDUL APLIKASI -->
+    <h1>📦 Stok Toko Hana v1.1</h1>
 
-    <!-- FORM INPUT: Bagian buat nambah barang baru -->
     <h3>Tambah Barang</h3>
-    <input type="text" id="namaBarang" placeholder="Nama Barang, cth: Gula 1kg">
-    <input type="number" id="jumlahStok" placeholder="Jumlah Stok Awal, cth: 20">
-    <button onclick="tambahBarang()">Simpan Barang</button>
+    <div class="form-row">
+      <input type="text" id="namaBarang" placeholder="Nama Barang">
+      <input type="number" id="jumlahStok" placeholder="Stok Awal">
+    </div>
+    <button class="btn-simpan" onclick="tambahBarang()">Simpan Barang</button>
 
-    <!-- TABEL STOK: Bagian buat nampilin semua barang -->
     <h3>Daftar Stok</h3>
     <table>
-      <thead>
-        <tr><th>Nama Barang</th><th>Stok</th><th>Aksi</th></tr>
-      </thead>
-      <tbody id="tabelStok">
-        <!-- Baris tabel akan diisi otomatis pake JS -->
-      </tbody>
+      <thead><tr><th>Nama</th><th>Stok</th><th>Aksi</th></tr></thead>
+      <tbody id="tabelStok"></tbody>
     </table>
   </div>
 
   <script>
-    /* CATATAN JS: Ini bagian otaknya. Semua logika ada di sini */
+    let dataStok = [];
 
-    // VARIABEL GLOBAL: Tempat nyimpen data sementara
-    let dataStok = []; // Ini array. Isinya daftar semua barang. Kosong dulu.
-
-    // FUNGSI 1: Tugasnya Muat data dari memori HP pas aplikasi dibuka
     function muatData() {
-      const dataLama = localStorage.getItem('stokTokoHana'); // Ambil data dengan kunci 'stokTokoHana'
-      if (dataLama) {
-        dataStok = JSON.parse(dataLama); // Ubah teks jadi array lagi
-      }
-      tampilkanTabel(); // Abis muat, langsung tampilin ke tabel
+      const dataLama = localStorage.getItem('stokTokoHana');
+      if (dataLama) { dataStok = JSON.parse(dataLama); }
+      tampilkanTabel();
     }
 
-    // FUNGSI 2: Tugasnya Nyimpen data ke memori HP biar nggak hilang
     function simpanData() {
-      localStorage.setItem('stokTokoHana', JSON.stringify(dataStok)); // Ubah array jadi teks, lalu simpan
+      localStorage.setItem('stokTokoHana', JSON.stringify(dataStok));
     }
 
-    // FUNGSI 3: Tugasnya Nambahin barang baru dari form
     function tambahBarang() {
-      const nama = document.getElementById('namaBarang').value; // Ambil isi input nama
-      const stok = document.getElementById('jumlahStok').value; // Ambil isi input stok
-
-      if (nama === '' || stok === '') {
-        alert('Nama dan Stok jangan kosong ya kawan'); // Validasi biar nggak kosong
-        return;
-      }
-
-      // Bikin objek barang baru, lalu masukin ke array dataStok
-      dataStok.push({ id: Date.now(), nama: nama, stok: parseInt(stok) }); 
+      const nama = document.getElementById('namaBarang').value.trim();
+      const stok = document.getElementById('jumlahStok').value;
+      if (nama === '' || stok === '' || stok < 0) { alert('Isi nama & stok dengan benar ya'); return; }
       
-      simpanData(); // Simpan ke memori HP
-      tampilkanTabel(); // Refresh tabel biar muncul barang baru
-
-      // Kosongin form lagi biar gampang input berikutnya
+      dataStok.push({ id: Date.now(), nama: nama, stok: parseInt(stok) });
+      simpanData();
+      tampilkanTabel();
       document.getElementById('namaBarang').value = '';
       document.getElementById('jumlahStok').value = '';
     }
 
-    // FUNGSI 4: Tugasnya Nampilin semua isi array dataStok ke dalam <table>
-    function tampilkanTabel() {
-      const tbody = document.getElementById('tabelStok');
-      tbody.innerHTML = ''; // Kosongin tabel dulu biar nggak dobel
-
-      dataStok.forEach(barang => { // Loop semua barang satu-satu
-        const row = `<tr>
-          <td>${barang.nama}</td>
-          <td>${barang.stok}</td>
-          <td><button class="btn-hapus" onclick="hapusBarang(${barang.id})">Hapus</button></td>
-        </tr>`;
-        tbody.innerHTML += row; // Tempel baris baru ke tabel
-      });
+    // FUNGSI BARU 1: Tugasnya Ubah stok +1 atau -1
+    function ubahStok(id, jumlah) {
+      const barang = dataStok.find(b => b.id === id); // Cari barang berdasarkan id
+      if (barang) {
+        barang.stok += jumlah; // Tambah atau kurang
+        if (barang.stok < 0) { barang.stok = 0; alert('Stok nggak bisa minus kawan'); } // Biar nggak minus
+        simpanData();
+        tampilkanTabel(); // Refresh tabel
+      }
     }
 
-    // FUNGSI 5: Tugasnya Hapus barang dari daftar
     function hapusBarang(id) {
-      if (confirm('Yakin mau hapus barang ini?')) { // Biar nggak kehapus nggak sengaja
-        dataStok = dataStok.filter(barang => barang.id !== id); // Saring, ambil semua kecuali id yang diklik
+      if (confirm('Yakin mau hapus?')) {
+        dataStok = dataStok.filter(b => b.id !== id);
         simpanData();
         tampilkanTabel();
       }
     }
 
-    // PERINTAH PERTAMA: Pas halaman dibuka, langsung muat data
+    // FUNGSI UPDATE: Tabel sekarang ada tombol -1 dan +1
+    function tampilkanTabel() {
+      const tbody = document.getElementById('tabelStok');
+      tbody.innerHTML = '';
+      if (dataStok.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3">Belum ada barang. Input dulu kawan.</td></tr>';
+        return;
+      }
+
+      dataStok.forEach(barang => {
+        const row = `<tr>
+          <td style="text-align:left;">${barang.nama}</td>
+          <td><b>${barang.stok}</b></td>
+          <td>
+            <button class="btn-aksi btn-kurang" onclick="ubahStok(${barang.id}, -1)">-1</button>
+            <button class="btn-aksi btn-tambah" onclick="ubahStok(${barang.id}, 1)">+1</button>
+            <button class="btn-aksi btn-hapus" onclick="hapusBarang(${barang.id})">Hapus</button>
+          </td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
     muatData();
   </script>
 </body>

@@ -2,58 +2,59 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <!-- KUNCI 1: Cegah zoom manual -->
   <title>Stok Toko Hana</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; background: #f7f7f7; margin: 0; padding: 10px; } /* Padding makin tipis */
-   .container { max-width: 600px; margin: auto; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 5px #ccc; } /* Padding dikecilin lagi */
+    body { font-family: system-ui, sans-serif; background: #f7f7f7; margin: 0; padding: 10px; }
+   .container { max-width: 600px; margin: auto; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 5px #ccc; }
     h1 { text-align: center; color: #333; font-size: 22px; margin: 0 0 12px 0; }
     h3 { font-size: 15px; margin: 10px 0 6px 0; }
 
-    input, button { padding: 10px; margin: 4px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; } /* Font turun dikit */
+    /* KUNCI 2: SEMUA INPUT WAJIB 16PX BIAR NGGAK ZOOM DI IPHONE */
+    input, button, select { padding: 10px; margin: 4px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; } 
     .form-row { display: flex; gap: 6px; } 
     .form-row input { flex: 1; min-width: 0; }
-    #namaBarang { flex: 7; } /* KUNCI 1: Nama 70% */
-    #jumlahStok { flex: 3; text-align: center; } /* KUNCI 1: Stok 30% doang, rata tengah */
+    #namaBarang { flex: 7; }
+    #jumlahStok { flex: 3; text-align: center; }
 
     .btn-simpan { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; width: 100%; }
-    
     #searchBox { width: 100%; margin-bottom: 10px; }
 
    .table-wrapper { width: 100%; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; min-width: 320px; } /* Font tabel turun */
-    th, td { border: 1px solid #ddd; padding: 6px 3px; text-align: center; } /* Padding super tipis */
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; min-width: 340px; }
+    th, td { border: 1px solid #ddd; padding: 6px 3px; text-align: center; }
     th { background: #f2f2f2; }
-    td:nth-child(1) { text-align: left; padding-left: 6px; width: 45%; } /* Nama dikasih porsi paling gede */
-    td:nth-child(2) { width: 15%; } /* Stok tipis aja */
-    td:nth-child(3) { width: 40%; } /* Aksi dikasih porsi lebih */
+    td:nth-child(1) { text-align: left; padding-left: 6px; width: 40%; }
+    td:nth-child(2) { width: 15%; }
+    td:nth-child(3) { width: 45%; } /* Aksi dikasih lebih lebar */
 
-    /* KUNCI 2: Aksi jadi 1 baris semua, super compact */
+    /* KUNCI 3: STYLE BARU BUAT AKSI + INPUT JUMLAH */
    .aksi-group { display: flex; gap: 3px; justify-content: center; align-items: center; }
-   .btn-aksi { padding: 5px 6px; width: auto; min-width: 30px; border: none; color: white; cursor: pointer; border-radius: 5px; font-weight: bold; font-size: 12px; line-height: 1; }
+   .input-jumlah { width: 40px; padding: 5px; text-align: center; font-size: 14px; height: 30px; } /* Kotak kecil buat angka */
+   .btn-aksi { padding: 5px 6px; width: auto; min-width: 30px; border: none; color: white; cursor: pointer; border-radius: 5px; font-weight: bold; font-size: 12px; height: 30px; line-height: 1; }
    .btn-kurang { background: #ffc107; color: black; }
    .btn-tambah { background: #17a2b8; }
-   .btn-hapus { background: #dc3545; padding: 5px 8px; } /* X aja biar pendek */
+   .btn-hapus { background: #dc3545; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📦 Stok Toko Hana v1.4</h1>
+    <h1>📦 Stok Toko Hana v1.5</h1>
 
     <h3>Tambah Barang</h3>
     <div class="form-row">
       <input type="text" id="namaBarang" placeholder="Nama Barang">
-      <input type="number" id="jumlahStok" placeholder="0" inputmode="numeric"> <!-- Placeholder "0" aja biar pendek banget -->
+      <input type="number" id="jumlahStok" placeholder="0" inputmode="numeric">
     </div>
     <button class="btn-simpan" onclick="tambahBarang()">Simpan Barang</button>
 
     <h3>Daftar Stok</h3>
-    <input type="text" id="searchBox" placeholder="🔍 Cari..." onkeyup="tampilkanTabel()"> <!-- Placeholder pendekin -->
+    <input type="text" id="searchBox" placeholder="🔍 Cari..." onkeyup="tampilkanTabel()">
 
     <div class="table-wrapper">
       <table>
-        <thead><tr><th>Nama</th><th>Stok</th><th>Aksi</th></tr></thead>
+        <thead><tr><th>Nama</th><th>Stok</th><th>Aksi Cepat</th></tr></thead>
         <tbody id="tabelStok"></tbody>
       </table>
     </div>
@@ -85,18 +86,29 @@
       document.getElementById('jumlahStok').value = '';
     }
 
-    function ubahStok(id, jumlah) {
+    // KUNCI 3: FUNGSI BARU, ADA PARAMETER JUMLAH
+    function ubahStok(id, tipe) {
       const barang = dataStok.find(b => b.id === id);
-      if (barang) {
+      if (!barang) return;
+
+      // Ambil angka dari kotak input di baris itu
+      const inputEl = document.getElementById(`jumlah-${id}`);
+      let jumlah = parseInt(inputEl.value) || 1; // Kalo kosong, default 1
+
+      if (tipe === 'kurang') {
+        barang.stok -= jumlah;
+      } else { // 'tambah'
         barang.stok += jumlah;
-        if (barang.stok < 0) { barang.stok = 0; }
-        simpanData();
-        tampilkanTabel();
       }
+      
+      if (barang.stok < 0) { barang.stok = 0; }
+      inputEl.value = 1; // Reset lagi ke 1 biar siap dipake
+      simpanData();
+      tampilkanTabel();
     }
 
     function hapusBarang(id) {
-      if (confirm('Hapus?')) { // Teks confirm dipendekin juga
+      if (confirm('Hapus?')) {
         dataStok = dataStok.filter(b => b.id !== id);
         simpanData();
         tampilkanTabel();
@@ -113,19 +125,20 @@
       );
 
       if (dataYangDitampilkan.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3">Kosong</td></tr>'; // Teks dipendekin
+        tbody.innerHTML = '<tr><td colspan="3">Kosong</td></tr>';
         return;
       }
 
       dataYangDitampilkan.forEach(barang => {
-        // KUNCI 2: Tombol jadi 1 baris. "Hapus" ganti jadi "X" biar pendek
+        // KUNCI 3: ADA INPUT ANGKA DI TENGAH TOMBOL
         const row = `<tr>
           <td>${barang.nama}</td>
           <td><b>${barang.stok}</b></td>
           <td>
             <div class="aksi-group">
-              <button class="btn-aksi btn-kurang" onclick="ubahStok(${barang.id}, -1)">-1</button>
-              <button class="btn-aksi btn-tambah" onclick="ubahStok(${barang.id}, 1)">+1</button>
+              <button class="btn-aksi btn-kurang" onclick="ubahStok(${barang.id}, 'kurang')">- </button>
+              <input type="number" class="input-jumlah" id="jumlah-${barang.id}" value="1" min="1" inputmode="numeric"> 
+              <button class="btn-aksi btn-tambah" onclick="ubahStok(${barang.id}, 'tambah')">+ </button>
               <button class="btn-aksi btn-hapus" onclick="hapusBarang(${barang.id})">X</button> 
             </div>
           </td>

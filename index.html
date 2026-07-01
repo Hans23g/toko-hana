@@ -1649,6 +1649,8 @@ function App() {
     kurir: 'J&T Express',
     resi: ''
   });
+  const mainScrollRef = useRef(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Voice recognition search state
   const [voiceSearching, setVoiceSearching] = useState(false);
@@ -2417,6 +2419,24 @@ function App() {
       showToast(lang === 'id' ? '🪙 Nilai tukar Koin Pi diperbarui!' : '🪙 Pi Network exchange rate updated!');
     }
   };
+  const handleMainScroll = e => {
+    const {
+      scrollTop,
+      scrollHeight,
+      clientHeight
+    } = e.target;
+    // Show back to top button when scrolled to the very bottom of the page (with a tiny 40px threshold)
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 40;
+    setShowBackToTop(isAtBottom);
+  };
+  const scrollToTop = () => {
+    if (mainScrollRef.current) {
+      mainScrollRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  };
   const handleSaveBanner = e => {
     e.preventDefault();
     if (!bannerForm.title || !bannerForm.image) {
@@ -2588,7 +2608,9 @@ function App() {
   }), /*#__PURE__*/React.createElement("span", {
     className: "text-[8px] font-black uppercase text-amber-300 mt-0.5 leading-none"
   }, lang)))))), /*#__PURE__*/React.createElement("main", {
-    className: "flex-1 overflow-y-auto flex flex-col"
+    ref: mainScrollRef,
+    onScroll: handleMainScroll,
+    className: "flex-1 overflow-y-auto flex flex-col scroll-smooth"
   }, currentTab === 'Home' && banners.length > 0 ? /*#__PURE__*/React.createElement("div", {
     className: "relative w-full h-44 overflow-hidden bg-neutral-900 group"
   }, banners.map((banner, index) => /*#__PURE__*/React.createElement("div", {
@@ -3032,7 +3054,18 @@ function App() {
   }, "Info Pengiriman:"), /*#__PURE__*/React.createElement("span", null, "Kurir: ", /*#__PURE__*/React.createElement("strong", null, o.kurir), " | No. Resi: ", /*#__PURE__*/React.createElement("strong", null, o.resi))))))), /*#__PURE__*/React.createElement("button", {
     onClick: handleLogout,
     className: "w-full bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 font-bold py-3 rounded-xl transition-all text-center"
-  }, "Keluar dari Akun"))))) :
+  }, "Keluar dari Akun")))), /*#__PURE__*/React.createElement("button", {
+    onClick: scrollToTop,
+    className: `fixed bottom-20 right-4 z-40 bg-black/40 backdrop-blur-md border border-white/10 text-[#FFD700] hover:bg-black/60 w-11 h-11 rounded-full flex flex-col items-center justify-center shadow-lg active:scale-95 transition-all duration-300 ${showBackToTop ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-4 pointer-events-none'}`,
+    title: "Kembali ke Atas"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "ChevronUp",
+    size: 18,
+    className: "text-[#FFD700]",
+    strokeWidth: 2.5
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[7px] font-black text-[#FFD700] uppercase leading-none mt-0.5"
+  }, "Top"))) :
   /*#__PURE__*/
   // --- 2. BACKOFFICE FULL SCREEN VIEW WITH CRASH PROTECTION (`/admin` page) ---
   React.createElement("div", {
@@ -4033,5 +4066,5 @@ function App() {
 
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a148f0dcd8c04b6d',t:'MTc4Mjk0NTkyNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

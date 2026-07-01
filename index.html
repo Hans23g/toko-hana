@@ -1456,15 +1456,18 @@ function App() {
   const [merchantWaNumber, setMerchantWaNumber] = useState(() => {
     return safeStorage.getItem('toko_hana_wa_number') || '628122792099';
   });
+  const [piExchangeRate, setPiExchangeRate] = useState(() => {
+    return parseFloat(safeStorage.getItem('toko_hana_pi_rate')) || 2000000;
+  });
   useEffect(() => {
     safeStorage.setItem('toko_hana_lang', lang);
   }, [lang]);
   const t = key => {
     return translations[lang][key] || translations['id'][key] || key;
   };
-  const convertRpToPi = rp => rp / 2000000;
+  const convertRpToPi = rp => rp / piExchangeRate;
   const formatPi = rp => {
-    const piVal = rp / 2000000;
+    const piVal = rp / piExchangeRate;
     return piVal.toLocaleString('en-US', {
       minimumFractionDigits: 4,
       maximumFractionDigits: 6
@@ -1892,13 +1895,13 @@ function App() {
     message += `------------------------------------------\n`;
     cart.forEach((item, idx) => {
       const itemTotal = item.product.price * item.quantity;
-      const itemPi = itemTotal / 2000000;
+      const itemPi = convertRpToPi(itemTotal);
       message += `${idx + 1}. *${item.product.name}* (x${item.quantity}) = Rp ${itemTotal.toLocaleString('id-ID')} (${itemPi.toFixed(4)} π)\n`;
     });
     message += `------------------------------------------\n`;
-    message += `*Subtotal:* Rp ${cartSubtotal.toLocaleString('id-ID')} (${(cartSubtotal / 2000000).toFixed(4)} π)\n`;
-    message += `*Ongkir:* ${deliveryFee === 0 ? 'Gratis (Promo Pi)' : `Rp ${deliveryFee.toLocaleString('id-ID')} (${(deliveryFee / 2000000).toFixed(4)} π)`}\n`;
-    message += `*Total Pembayaran:* *Rp ${cartTotal.toLocaleString('id-ID')}* (*${(cartTotal / 2000000).toFixed(4)} π*)\n\n`;
+    message += `*Subtotal:* Rp ${cartSubtotal.toLocaleString('id-ID')} (${convertRpToPi(cartSubtotal).toFixed(4)} π)\n`;
+    message += `*Ongkir:* ${deliveryFee === 0 ? 'Gratis (Promo Pi)' : `Rp ${deliveryFee.toLocaleString('id-ID')} (${convertRpToPi(deliveryFee).toFixed(4)} π)`}\n`;
+    message += `*Total Pembayaran:* *Rp ${cartTotal.toLocaleString('id-ID')}* (*${convertRpToPi(cartTotal).toFixed(4)} π*)\n\n`;
     message += `*--- DATA PENGIRIMAN ---*\n`;
     message += `👤 *Nama:* ${buyerName}\n`;
     message += `📞 *WA/Telp:* ${buyerPhone}\n`;
@@ -2405,6 +2408,15 @@ function App() {
     safeStorage.setItem('toko_hana_wa_number', cleaned);
     showToast(lang === 'id' ? '📞 Nomor WhatsApp Merchant diperbarui!' : '📞 Merchant WhatsApp number updated!');
   };
+  const handleSavePiRate = e => {
+    e.preventDefault();
+    const val = parseFloat(e.target.elements.piRate.value.trim());
+    if (val > 0) {
+      setPiExchangeRate(val);
+      safeStorage.setItem('toko_hana_pi_rate', val.toString());
+      showToast(lang === 'id' ? '🪙 Nilai tukar Koin Pi diperbarui!' : '🪙 Pi Network exchange rate updated!');
+    }
+  };
   const handleSaveBanner = e => {
     e.preventDefault();
     if (!bannerForm.title || !bannerForm.image) {
@@ -2683,7 +2695,7 @@ function App() {
     className: "font-extrabold text-red-500 text-xs"
   }, "Rp ", product.price.toLocaleString('id-ID')), /*#__PURE__*/React.createElement("span", {
     className: "text-[9px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200"
-  }, (product.price / 2000000).toFixed(4), " π"))) : /*#__PURE__*/React.createElement("div", {
+  }, convertRpToPi(product.price).toFixed(4), " π"))) : /*#__PURE__*/React.createElement("div", {
     className: "flex flex-col"
   }, /*#__PURE__*/React.createElement("div", {
     className: "h-2"
@@ -2693,7 +2705,7 @@ function App() {
     className: "font-extrabold text-[#703d92] text-xs"
   }, "Rp ", product.price.toLocaleString('id-ID')), /*#__PURE__*/React.createElement("span", {
     className: "text-[9px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200"
-  }, (product.price / 2000000).toFixed(4), " π"))), /*#__PURE__*/React.createElement("span", {
+  }, convertRpToPi(product.price).toFixed(4), " π"))), /*#__PURE__*/React.createElement("span", {
     className: "text-[9px] text-gray-400 font-semibold mt-1"
   }, t('soldLabel'), ": ", product.sold || 0, " | ", t('stockLabel'), ": ", product.stock || 0)))))) : /*#__PURE__*/React.createElement("div", {
     className: "mx-4 mt-6 bg-white rounded-2xl p-8 text-center border border-purple-50"
@@ -3604,6 +3616,31 @@ function App() {
     className: "bg-[#703d92] text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm shadow-purple-100 active:scale-95 transition-all"
   }, lang === 'id' ? 'Simpan Nomor WhatsApp' : 'Save WhatsApp Number')), /*#__PURE__*/React.createElement("div", {
     className: "border-t border-gray-100 pt-3 mt-3"
+  }), /*#__PURE__*/React.createElement("form", {
+    onSubmit: handleSavePiRate,
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
+    className: "block font-semibold text-gray-600 mb-1"
+  }, lang === 'id' ? 'Nilai Tukar 1 Pi dalam Rupiah (Rp)' : '1 Pi Exchange Rate in Rupiah (Rp)'), /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    name: "piRate",
+    defaultValue: piExchangeRate,
+    placeholder: "Contoh: 2000000",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-[#703d92] font-semibold text-gray-800",
+    required: true,
+    min: "1",
+    step: "any"
+  }), /*#__PURE__*/React.createElement("p", {
+    className: "text-[9px] text-gray-400 mt-0.5"
+  }, lang === 'id' ? `Nilai konsensus saat ini: 1 Pi = Rp ${piExchangeRate.toLocaleString('id-ID')} (Rp 2.000 = ${(2000 / piExchangeRate).toLocaleString('en-US', {
+    maximumFractionDigits: 6
+  })} Pi).` : `Current rate: 1 Pi = Rp ${piExchangeRate.toLocaleString('id-ID')} (Rp 2,000 = ${(2000 / piExchangeRate).toLocaleString('en-US', {
+    maximumFractionDigits: 6
+  })} Pi).`)), /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    className: "bg-[#703d92] text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm shadow-purple-100 active:scale-95 transition-all"
+  }, lang === 'id' ? 'Simpan Nilai Tukar Pi' : 'Save Pi Exchange Rate')), /*#__PURE__*/React.createElement("div", {
+    className: "border-t border-gray-100 pt-3 mt-3"
   }), /*#__PURE__*/React.createElement("div", {
     className: "space-y-3"
   }, /*#__PURE__*/React.createElement("h5", {
@@ -3958,7 +3995,7 @@ function App() {
     className: "font-black text-base text-[#703d92]"
   }, "Rp ", selectedProductDetail.price.toLocaleString('id-ID')), /*#__PURE__*/React.createElement("span", {
     className: "font-black text-amber-500 text-xs bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200 mt-1 flex items-center gap-1 shadow-sm"
-  }, "🪙 ", (selectedProductDetail.price / 2000000).toFixed(4), " π")))), /*#__PURE__*/React.createElement("button", {
+  }, "🪙 ", convertRpToPi(selectedProductDetail.price).toFixed(4), " π")))), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       handleAddToCart(selectedProductDetail);
       setSelectedProductDetail(null);
@@ -3977,5 +4014,5 @@ function App() {
 
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a147eb8ff84dff8f',t:'MTc4MjkzNTIyMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a14804e3cceca714',t:'MTc4MjkzNjI1OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

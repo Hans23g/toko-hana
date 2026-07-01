@@ -525,6 +525,13 @@ const safeStorage = {
     } catch (e) {
       console.warn('safeStorage.setItem skipped:', e.message);
     }
+  },
+  removeItem: key => {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.warn('safeStorage.removeItem skipped:', e.message);
+    }
   }
 };
 
@@ -1760,7 +1767,7 @@ function App() {
     if (currentUser) {
       safeStorage.setItem('toko_hana_active_user', JSON.stringify(currentUser));
     } else {
-      localStorage.removeItem('toko_hana_active_user');
+      safeStorage.removeItem('toko_hana_active_user');
     }
   }, [currentUser]);
 
@@ -2568,17 +2575,7 @@ function App() {
     name: "Bell",
     size: 18,
     className: "text-white"
-  })), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setCurrentTab('Cart'),
-    className: "w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors relative",
-    title: "Keranjang Belanja"
-  }, /*#__PURE__*/React.createElement(LucideIcon, {
-    name: "ShoppingCart",
-    size: 18,
-    className: "text-white"
-  }), totalCartItems > 0 && /*#__PURE__*/React.createElement("span", {
-    className: "absolute -top-1 -right-1 bg-amber-400 text-[#703d92] font-black text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white"
-  }, totalCartItems)))))), /*#__PURE__*/React.createElement("main", {
+  })))))), /*#__PURE__*/React.createElement("main", {
     className: "flex-1 overflow-y-auto flex flex-col"
   }, currentTab === 'Home' && banners.length > 0 ? /*#__PURE__*/React.createElement("div", {
     className: "relative w-full h-44 overflow-hidden bg-neutral-900 group"
@@ -3983,5 +3980,6 @@ function App() {
     root.render(React.createElement(App));
 
   </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a147c4adaaf29cee',t:'MTc4MjkzMzYyOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

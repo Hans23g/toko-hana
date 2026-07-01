@@ -2557,6 +2557,14 @@ function App() {
   }))), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center space-x-2 flex-shrink-0"
   }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => showToast('🔔 Tidak ada notifikasi baru.'),
+    className: "w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors relative",
+    title: "Notifikasi"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Bell",
+    size: 18,
+    className: "text-white"
+  })), /*#__PURE__*/React.createElement("button", {
     onClick: () => setLang(lang === 'id' ? 'en' : 'id'),
     className: "w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex flex-col items-center justify-center transition-all border border-white/20 cursor-pointer active:scale-95",
     title: lang === 'id' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia'
@@ -2567,15 +2575,7 @@ function App() {
     strokeWidth: 2
   }), /*#__PURE__*/React.createElement("span", {
     className: "text-[8px] font-black uppercase text-amber-300 mt-0.5 leading-none"
-  }, lang)), /*#__PURE__*/React.createElement("button", {
-    onClick: () => showToast('🔔 Tidak ada notifikasi baru.'),
-    className: "w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors relative",
-    title: "Notifikasi"
-  }, /*#__PURE__*/React.createElement(LucideIcon, {
-    name: "Bell",
-    size: 18,
-    className: "text-white"
-  })))))), /*#__PURE__*/React.createElement("main", {
+  }, lang)))))), /*#__PURE__*/React.createElement("main", {
     className: "flex-1 overflow-y-auto flex flex-col"
   }, currentTab === 'Home' && banners.length > 0 ? /*#__PURE__*/React.createElement("div", {
     className: "relative w-full h-44 overflow-hidden bg-neutral-900 group"
@@ -3980,6 +3980,6 @@ function App() {
     root.render(React.createElement(App));
 
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a147c4adaaf29cee',t:'MTc4MjkzMzYyOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

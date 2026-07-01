@@ -3762,27 +3762,21 @@ function App() {
   })))))))), /*#__PURE__*/React.createElement("div", {
     className: "fixed bottom-0 left-0 right-0 sm:absolute z-30 h-20 flex flex-col justify-end select-none pointer-events-none"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "relative w-full h-16 pointer-events-auto flex items-end"
+    className: "relative w-full h-16 pointer-events-auto"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "absolute inset-0 z-0 flex items-end bg-transparent"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex-1 h-16 bg-[#703d92] border-t border-purple-400/10 shadow-[0_-4px_16px_rgba(0,0,0,0.05)]"
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "w-24 h-16 bg-transparent relative flex-shrink-0"
+    className: "absolute inset-0 z-0 bg-transparent"
   }, /*#__PURE__*/React.createElement("svg", {
-    className: "w-full h-20 text-[#703d92] absolute drop-shadow-[0_-8px_16px_rgba(0,0,0,0.08)]",
-    viewBox: "0 0 96 64",
-    preserveAspectRatio: "xMidYMid meet",
+    className: "w-full h-20 text-[#703d92] drop-shadow-[0_-10px_24px_rgba(0,0,0,0.15)]",
+    viewBox: "0 0 400 64",
+    preserveAspectRatio: "none",
     style: {
-      top: '-16px'
+      transform: 'translateY(-16px)'
     }
   }, /*#__PURE__*/React.createElement("path", {
-    d: "M 0 16 L 16 16 A 32 32 0 0 0 80 16 L 96 16 L 96 64 L 0 64 Z",
+    d: "M 0 16 L 166 16 A 34 34 0 0 0 234 16 L 400 16 L 400 64 L 0 64 Z",
     fill: "currentColor"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "flex-1 h-16 bg-[#703d92] border-t border-purple-400/10 shadow-[0_-4px_16px_rgba(0,0,0,0.05)]"
-  })), /*#__PURE__*/React.createElement("nav", {
-    className: "relative z-10 flex items-center justify-around w-full h-16 pb-1"
+  }))), /*#__PURE__*/React.createElement("nav", {
+    className: "relative z-10 flex items-center justify-around h-full pb-1 px-1"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setCurrentTab('Home');
@@ -3795,7 +3789,7 @@ function App() {
     className: currentTab === 'Home' ? 'text-[#FFD700]' : 'text-white',
     strokeWidth: currentTab === 'Home' ? 2.5 : 2
   }), /*#__PURE__*/React.createElement("span", {
-    className: `text-[9px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Home' ? 'text-[#FFD700]' : 'text-white/80'}`
+    className: "text-[9px] tracking-tight mt-1 font-bold text-white/80 active:text-[#FFD700]"
   }, "Home")), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setCurrentTab('Promo');
@@ -3808,7 +3802,7 @@ function App() {
     className: currentTab === 'Promo' ? 'text-[#FFD700]' : 'text-white',
     strokeWidth: 2
   }), /*#__PURE__*/React.createElement("span", {
-    className: `text-[9px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Promo' ? 'text-[#FFD700]' : 'text-white/80'}`
+    className: "text-[9px] tracking-tight mt-1 font-bold text-white/80 active:text-[#FFD700]"
   }, "Promo")), /*#__PURE__*/React.createElement("div", {
     className: "relative flex flex-col items-center justify-center flex-1 h-full"
   }, /*#__PURE__*/React.createElement("button", {
@@ -3832,7 +3826,7 @@ function App() {
     className: currentTab === 'Cart' ? 'text-[#FFD700]' : 'text-white',
     strokeWidth: 2
   }), /*#__PURE__*/React.createElement("span", {
-    className: `text-[9px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Cart' ? 'text-[#FFD700]' : 'text-white/80'}`
+    className: "text-[9px] tracking-tight mt-1 font-bold text-white/80 active:text-[#FFD700]"
   }, lang === 'id' ? 'Keranjang' : 'Cart'), totalCartItems > 0 && /*#__PURE__*/React.createElement("span", {
     className: "absolute top-1.5 right-3.5 bg-amber-400 text-[#2d1242] font-black text-[8px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-[#703d92]"
   }, totalCartItems)), /*#__PURE__*/React.createElement("button", {
@@ -3856,7 +3850,7 @@ function App() {
     className: currentTab === 'Profil' || currentTab === 'AdminPage' ? 'text-[#FFD700]' : 'text-white',
     strokeWidth: 2
   }), /*#__PURE__*/React.createElement("span", {
-    className: `text-[9px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Profil' || currentTab === 'AdminPage' ? 'text-[#FFD700]' : 'text-white/80'}`
+    className: "text-[9px] tracking-tight mt-1 font-bold text-white/80 active:text-[#FFD700]"
   }, adminLoggedIn ? t('tabAdmin') : currentUser ? lang === 'id' ? 'Saya' : 'Me' : lang === 'id' ? 'Saya' : 'Me'))))), showCategorySheet && /*#__PURE__*/React.createElement("div", {
     className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center animate-fade-in",
     onClick: () => setShowCategorySheet(false)
@@ -4039,5 +4033,5 @@ function App() {
 
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a148a7822a0ea12f',t:'MTc4Mjk0MjkyMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

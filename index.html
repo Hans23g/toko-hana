@@ -2552,16 +2552,16 @@ function App() {
       setSearchQuery(e.target.value);
       if (currentTab !== 'Home' && currentTab !== 'Promo') setCurrentTab('Home');
     },
-    className: "w-full bg-white text-gray-800 placeholder-gray-400 pl-10 pr-9 py-2.5 rounded-full text-xs focus:outline-none transition-all font-medium"
+    className: "w-full bg-white text-gray-800 placeholder-gray-400 pl-10 pr-9 py-2.5 rounded-full text-xs border-2 border-[#FFD700]/40 focus:border-[#FFD700] focus:shadow-[0_0_12px_rgba(255,215,0,0.35)] focus:outline-none transition-all font-medium"
   }), /*#__PURE__*/React.createElement("div", {
-    className: "absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+    className: "absolute left-3.5 top-1/2 -translate-y-1/2 text-[#D4AF37]"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "Search",
     size: 14,
     className: "stroke-[2.5]"
   })), /*#__PURE__*/React.createElement("button", {
     onClick: triggerVoiceSearch,
-    className: `absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full ${voiceSearching ? 'bg-red-100 text-red-600 animate-pulse' : 'text-gray-400 hover:text-[#703d92]'}`,
+    className: `absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full transition-all ${voiceSearching ? 'bg-red-100 text-red-600 animate-pulse' : 'text-[#D4AF37] hover:text-[#FFD700]'}`,
     title: "Pencarian Suara"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "Mic",
@@ -3759,39 +3759,55 @@ function App() {
       name: "Trash2",
       size: 12
     }))));
-  })))))))), /*#__PURE__*/React.createElement("nav", {
-    className: "fixed bottom-0 left-0 right-0 sm:absolute z-30 bg-[#703d92] border-t border-purple-400/20 flex items-end justify-around pb-1.5 pt-2 px-1 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] h-16 flex-shrink-0"
+  })))))))), /*#__PURE__*/React.createElement("div", {
+    className: "fixed bottom-0 left-0 right-0 sm:absolute z-30 h-20 flex flex-col justify-end select-none pointer-events-none"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "relative w-full h-16 pointer-events-auto"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "absolute inset-0 z-0 bg-transparent"
+  }, /*#__PURE__*/React.createElement("svg", {
+    className: "w-full h-20 text-[#703d92] drop-shadow-[0_-8px_24px_rgba(0,0,0,0.12)]",
+    viewBox: "0 0 400 64",
+    preserveAspectRatio: "none",
+    style: {
+      transform: 'translateY(-16px)'
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M 0 16 L 150 16 C 172 16, 175 48, 200 48 C 225 48, 228 16, 250 16 L 400 16 L 400 64 L 0 64 Z",
+    fill: "currentColor"
+  }))), /*#__PURE__*/React.createElement("nav", {
+    className: "relative z-10 flex items-center justify-around h-full pb-1 px-1"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setCurrentTab('Home');
       setSelectedCategory('Semua');
     },
-    className: "flex flex-col items-center justify-center flex-1 h-full focus:outline-none"
+    className: "flex flex-col items-center justify-center flex-1 h-full focus:outline-none active:scale-95 transition-all"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "Home",
     size: 20,
-    className: currentTab === 'Home' ? 'text-[#FFD700]' : 'text-purple-200',
+    className: currentTab === 'Home' ? 'text-[#FFD700]' : 'text-white',
     strokeWidth: currentTab === 'Home' ? 2.5 : 2
   }), /*#__PURE__*/React.createElement("span", {
-    className: `text-[10px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Home' ? 'text-[#FFD700]' : 'text-purple-200'}`
-  }, t('tabHome'))), /*#__PURE__*/React.createElement("button", {
+    className: `text-[9px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Home' ? 'text-[#FFD700]' : 'text-white/80'}`
+  }, "Home")), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setCurrentTab('Promo');
       setSelectedCategory('Semua');
     },
-    className: "flex flex-col items-center justify-center flex-1 h-full focus:outline-none"
+    className: "flex flex-col items-center justify-center flex-1 h-full focus:outline-none active:scale-95 transition-all"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "Tag",
     size: 20,
-    className: currentTab === 'Promo' ? 'text-[#FFD700]' : 'text-purple-200',
+    className: currentTab === 'Promo' ? 'text-[#FFD700]' : 'text-white',
     strokeWidth: 2
   }), /*#__PURE__*/React.createElement("span", {
-    className: `text-[10px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Promo' ? 'text-[#FFD700]' : 'text-purple-200'}`
-  }, t('tabPromo'))), /*#__PURE__*/React.createElement("div", {
-    className: "relative flex flex-col items-center justify-center flex-1 h-full select-none"
+    className: `text-[9px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Promo' ? 'text-[#FFD700]' : 'text-white/80'}`
+  }, "Promo")), /*#__PURE__*/React.createElement("div", {
+    className: "relative flex flex-col items-center justify-center flex-1 h-full"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowQrisModal(true),
-    className: "absolute -top-6 bg-gradient-to-tr from-[#703d92] to-[#2d1242] text-[#FFD700] w-14 h-14 rounded-full shadow-[0_4px_16px_rgba(255,215,0,0.35)] border-4 border-[#FFD700] flex items-center justify-center active:scale-95 transition-all focus:outline-none",
+    className: "absolute -top-7 bg-gradient-to-tr from-[#703d92] to-[#2d1242] text-[#FFD700] w-13 h-14 rounded-full shadow-[0_4px_16px_rgba(255,215,0,0.35)] border-4 border-[#FFD700] flex items-center justify-center active:scale-95 transition-all focus:outline-none",
     title: "Pindai QRIS Merchant"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "QrCode",
@@ -3800,16 +3816,16 @@ function App() {
     strokeWidth: 2.5
   }))), /*#__PURE__*/React.createElement("button", {
     onClick: () => setCurrentTab('Cart'),
-    className: "relative flex flex-col items-center justify-center flex-1 h-full focus:outline-none"
+    className: "relative flex flex-col items-center justify-center flex-1 h-full focus:outline-none active:scale-95 transition-all"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "ShoppingCart",
     size: 20,
-    className: currentTab === 'Cart' ? 'text-[#FFD700]' : 'text-purple-200',
+    className: currentTab === 'Cart' ? 'text-[#FFD700]' : 'text-white',
     strokeWidth: 2
   }), /*#__PURE__*/React.createElement("span", {
-    className: `text-[10px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Cart' ? 'text-[#FFD700]' : 'text-purple-200'}`
-  }, t('tabCart')), totalCartItems > 0 && /*#__PURE__*/React.createElement("span", {
-    className: "absolute top-1 right-3 bg-amber-400 text-[#2d1242] font-black text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-[#2d1242]"
+    className: `text-[9px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Cart' ? 'text-[#FFD700]' : 'text-white/80'}`
+  }, lang === 'id' ? 'Keranjang' : 'Cart'), totalCartItems > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "absolute top-1.5 right-3.5 bg-amber-400 text-[#2d1242] font-black text-[8px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-[#703d92]"
   }, totalCartItems)), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       if (currentUser && currentUser.role === 'customer') {
@@ -3824,15 +3840,15 @@ function App() {
         setAuthActiveTab('login');
       }
     },
-    className: "flex flex-col items-center justify-center flex-1 h-full focus:outline-none"
+    className: "flex flex-col items-center justify-center flex-1 h-full focus:outline-none active:scale-95 transition-all"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "User",
     size: 20,
-    className: currentTab === 'Profil' || currentTab === 'AdminPage' ? 'text-[#FFD700]' : 'text-purple-200',
+    className: currentTab === 'Profil' || currentTab === 'AdminPage' ? 'text-[#FFD700]' : 'text-white',
     strokeWidth: 2
   }), /*#__PURE__*/React.createElement("span", {
-    className: `text-[10px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Profil' || currentTab === 'AdminPage' ? 'text-[#FFD700]' : 'text-purple-200'}`
-  }, adminLoggedIn ? t('tabAdmin') : currentUser ? lang === 'id' ? 'Saya' : 'Me' : t('tabAdmin')))), showCategorySheet && /*#__PURE__*/React.createElement("div", {
+    className: `text-[9px] tracking-tight mt-1 font-bold transition-all ${currentTab === 'Profil' || currentTab === 'AdminPage' ? 'text-[#FFD700]' : 'text-white/80'}`
+  }, adminLoggedIn ? t('tabAdmin') : currentUser ? lang === 'id' ? 'Saya' : 'Me' : lang === 'id' ? 'Saya' : 'Me'))))), showCategorySheet && /*#__PURE__*/React.createElement("div", {
     className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center animate-fade-in",
     onClick: () => setShowCategorySheet(false)
   }, /*#__PURE__*/React.createElement("div", {
@@ -4013,6 +4029,6 @@ function App() {
     root.render(React.createElement(App));
 
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a14829595912ce4e',t:'MTc4MjkzNzc1Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

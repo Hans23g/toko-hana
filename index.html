@@ -2660,10 +2660,10 @@ function App() {
   }, "Produk"), /*#__PURE__*/React.createElement("span", {
     className: "text-xs text-gray-400 font-semibold"
   }, filteredProducts.length, " item")), loading ? /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-2 gap-3.5 px-4 pb-8"
+    className: "grid grid-cols-2 gap-2.5 px-3 pb-8"
   }, [1, 2, 3, 4].map(idx => /*#__PURE__*/React.createElement("div", {
     key: idx,
-    className: "bg-white rounded-3xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col border border-gray-100/50 p-3.5 space-y-3 animate-pulse"
+    className: "bg-white rounded-2xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col border border-gray-100/50 p-3.5 space-y-3 animate-pulse"
   }, /*#__PURE__*/React.createElement("div", {
     className: "h-40 bg-purple-50/70 rounded-2xl w-full"
   }), /*#__PURE__*/React.createElement("div", {
@@ -2677,12 +2677,12 @@ function App() {
   }), /*#__PURE__*/React.createElement("div", {
     className: "h-3 bg-amber-50 rounded-md w-1/4"
   }))))) : filteredProducts.length > 0 ? /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-2 gap-3.5 px-4 pb-8"
+    className: "grid grid-cols-2 gap-2.5 px-3 pb-8"
   }, filteredProducts.map(product => /*#__PURE__*/React.createElement("div", {
     key: product.id,
     onClick: () => setSelectedProductDetail(product) // Click whole card opens details!
     ,
-    className: "bg-white rounded-3xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col hover:shadow-md transition-all group relative cursor-pointer border border-gray-100/50 animate-fade-in"
+    className: "bg-white rounded-2xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col hover:shadow-md transition-all group relative cursor-pointer border border-gray-100/50 animate-fade-in"
   }, product.original_price && product.original_price > product.price && /*#__PURE__*/React.createElement("span", {
     className: "absolute top-3 left-3 z-20 bg-red-500 text-white font-black text-[9px] uppercase px-2.5 py-0.5 rounded-lg shadow-sm"
   }, "PROMO"), /*#__PURE__*/React.createElement("div", {
@@ -2731,7 +2731,7 @@ function App() {
   }, /*#__PURE__*/React.createElement("h4", {
     className: "font-bold text-sm text-gray-700"
   }, "Produk Tidak Ditemukan"))), currentTab === 'Home' && /*#__PURE__*/React.createElement("div", {
-    className: "bg-[#2d1242] text-white p-6 mt-12 text-center space-y-3.5 border-t border-[#FFD700]/25 pb-24 flex-shrink-0 animate-fade-in relative z-10"
+    className: "bg-[#2d1242] text-white p-4.5 mt-6 text-center space-y-2.5 border-t border-[#FFD700]/25 pb-16 flex-shrink-0 animate-fade-in relative z-10"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-10 h-10 bg-amber-500 text-white font-black text-lg rounded-full flex items-center justify-center mx-auto shadow-md shadow-amber-200/20"
   }, "π"), /*#__PURE__*/React.createElement("h4", {
@@ -2874,7 +2874,7 @@ function App() {
   }, lang === 'id' ? 'Kirim Pesanan' : 'Place Order')))), currentTab === 'Profil' && /*#__PURE__*/React.createElement("div", {
     className: "animate-fade-in p-4 pb-8 text-xs"
   }, !currentUser ? /*#__PURE__*/React.createElement("div", {
-    className: "bg-white rounded-3xl p-5 border shadow-md space-y-4"
+    className: "bg-white rounded-2xl p-5 border shadow-md space-y-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex bg-[#F5F3F7] p-1.5 rounded-2xl"
   }, /*#__PURE__*/React.createElement("button", {
@@ -2988,7 +2988,7 @@ function App() {
   }, currentUser.name), /*#__PURE__*/React.createElement("p", {
     className: "text-[10px] text-purple-200 font-black uppercase tracking-wider"
   }, lang === 'id' ? 'Pelanggan Setia Toko Hana' : 'Toko Hana Loyal Customer')), /*#__PURE__*/React.createElement("div", {
-    className: "bg-white rounded-3xl p-4 border shadow-sm"
+    className: "bg-white rounded-2xl p-4 border shadow-sm"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "font-extrabold text-[#703d92] border-b pb-2 mb-3 flex items-center gap-1.5 uppercase tracking-wider text-[11px]"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
@@ -3025,7 +3025,7 @@ function App() {
     type: "submit",
     className: "bg-[#703d92] text-white font-bold py-2 px-5 rounded-xl"
   }, "Simpan Perubahan"))), /*#__PURE__*/React.createElement("div", {
-    className: "bg-white rounded-3xl p-4 border shadow-sm"
+    className: "bg-white rounded-2xl p-4 border shadow-sm"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "font-extrabold text-[#703d92] border-b pb-2 mb-3 flex items-center gap-1.5 uppercase tracking-wider text-[11px]"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
@@ -4072,6 +4072,6 @@ function App() {
     root.render(React.createElement(App));
 
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1498d6f0ecffd95',t:'MTc4Mjk1MjMzNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a149cce2fc17ce23',t:'MTc4Mjk1NDkzNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -738,6 +738,30 @@ const supabaseService = {
       };
     }
   },
+  getOrders: async () => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('orders').select('*').order('created_at', {
+        ascending: false
+      });
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
   subscribeProducts: onUpdateCallback => {
     const client = getSupabaseClient();
     if (!client) return null;
@@ -1709,6 +1733,30 @@ function App() {
       setLoading(false);
     };
     fetchProducts();
+    const fetchOrders = async () => {
+      const {
+        data,
+        error
+      } = await supabaseService.getOrders();
+      if (data && data.length > 0) {
+        const mapped = data.map(o => ({
+          id: o.id,
+          customer_name: o.customer_name,
+          phone: o.phone,
+          address: o.address,
+          items: typeof o.items === 'string' ? JSON.parse(o.items) : o.items,
+          total: o.total,
+          payment_method: o.payment_method,
+          status: o.status,
+          date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+          kurir: o.courier || '',
+          resi: o.resi || ''
+        }));
+        setOrders(mapped);
+        safeStorage.setItem('toko_hana_orders', JSON.stringify(mapped));
+      }
+    };
+    fetchOrders();
     const channel = supabaseService.subscribeProducts(payload => {
       console.log('Realtime update detected in products table!');
       fetchProducts();
@@ -1893,6 +1941,29 @@ function App() {
       }
     });
     setOrders(prevOrders => [newOrder, ...prevOrders]);
+
+    // Sync Checkout Order to Supabase Database
+    const client = getSupabaseClient();
+    if (client) {
+      const dbOrder = {
+        id: newOrderId,
+        customer_name: buyerName,
+        phone: buyerPhone,
+        address: buyerAddress,
+        total: cartTotal,
+        payment_method: paymentMethod,
+        status: 'Belum Bayar',
+        // Default status matching schema and payment method
+        items: orderItems,
+        resi: null,
+        courier: null
+      };
+      client.from('orders').insert([dbOrder]).then(({
+        error: dbErr
+      }) => {
+        if (dbErr) console.warn('Failed to sync order to database:', dbErr.message);else console.log('Successfully synced new order to Supabase database!');
+      });
+    }
     let message = `*Halo Toko Hana, saya mau pesan (Event Solo Host Pi Network):*\n`;
     message += `------------------------------------------\n`;
     cart.forEach((item, idx) => {
@@ -2388,6 +2459,20 @@ function App() {
       kurir: shipForm.kurir,
       resi: shipForm.resi
     } : o));
+
+    // Sync Shipping/Resi update to Supabase Database
+    const client = getSupabaseClient();
+    if (client) {
+      client.from('orders').update({
+        status: 'Selesai',
+        courier: shipForm.kurir,
+        resi: shipForm.resi
+      }).eq('id', selectedOrderToShip.id).then(({
+        error: dbErr
+      }) => {
+        if (dbErr) console.warn('Failed to update shipping in database:', dbErr.message);else console.log('Successfully updated shipping status on Supabase!');
+      });
+    }
     showToast(`📦 Order ${selectedOrderToShip.id} dikirim via ${shipForm.kurir}!`);
     setSelectedOrderToShip(null);
     setShipForm({
@@ -3471,7 +3556,7 @@ function App() {
     className: "border-t pt-1.5 flex justify-between font-extrabold text-gray-700"
   }, /*#__PURE__*/React.createElement("span", null, "Total Bayar:"), /*#__PURE__*/React.createElement("span", {
     className: "text-[#703d92]"
-  }, "Rp ", (o.total || 0).toLocaleString('id-ID'))), o.status === 'Baru' && /*#__PURE__*/React.createElement("div", {
+  }, "Rp ", (o.total || 0).toLocaleString('id-ID'))), (o.status === 'Baru' || o.status === 'Belum Bayar') && /*#__PURE__*/React.createElement("div", {
     className: "flex gap-2 pt-2"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => {
@@ -3479,6 +3564,18 @@ function App() {
         ...order,
         status: 'Diproses'
       } : order));
+
+      // Sync order status update to Supabase!
+      const client = getSupabaseClient();
+      if (client) {
+        client.from('orders').update({
+          status: 'Diproses'
+        }).eq('id', o.id).then(({
+          error
+        }) => {
+          if (error) console.warn('Failed to update status on Supabase:', error.message);else console.log('Successfully updated order status to Diproses on Supabase!');
+        });
+      }
       showToast(`Order ${o.id} diproses!`);
     },
     className: "flex-1 bg-blue-600 text-white font-bold py-1.5 rounded-lg text-[10px]"
@@ -4079,5 +4176,6 @@ function App() {
     root.render(React.createElement(App));
 
   </script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a14f3358c8deccce',t:'MTc4MzAxMTU2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

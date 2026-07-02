@@ -1747,6 +1747,7 @@ function App() {
           items: typeof o.items === 'string' ? JSON.parse(o.items) : o.items,
           total: o.total,
           payment_method: o.payment_method,
+          channel: (o.payment_method || '').includes('Offline') ? 'Offline' : 'Online',
           status: o.status,
           date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
           kurir: o.courier || '',
@@ -1892,9 +1893,10 @@ function App() {
     e.preventDefault();
     if (cart.length === 0) return;
     const form = e.target;
-    const buyerName = form.elements.buyerName.value.trim() || 'Pelanggan Toko Hana';
-    const buyerPhone = form.elements.buyerPhone.value.trim() || '-';
-    const buyerAddress = form.elements.buyerAddress.value.trim() || 'Alamat Toko';
+    const isGuestCheckout = currentUser && currentUser.role === 'guest';
+    const buyerName = (form.elements.buyerName ? form.elements.buyerName.value.trim() : '') || (isGuestCheckout ? lang === 'id' ? 'Pelanggan Tamu' : 'Guest Customer' : 'Pelanggan Toko Hana');
+    const buyerPhone = (form.elements.buyerPhone ? form.elements.buyerPhone.value.trim() : '') || '-';
+    const buyerAddress = (form.elements.buyerAddress ? form.elements.buyerAddress.value.trim() : '') || (isGuestCheckout ? lang === 'id' ? 'Pembelian Langsung di Toko' : 'In-Store Purchase' : 'Alamat Toko');
     const paymentMethod = form.elements.paymentMethod.value;
     const newOrderId = "HNA-" + Math.floor(Math.random() * 900000 + 100000);
     const orderItems = cart.map(item => ({
@@ -1902,6 +1904,11 @@ function App() {
       quantity: item.quantity,
       price: item.product.price
     }));
+
+    // Offline (guest in-store) orders: no delivery fee, channel marker embedded in payment_method
+    const effectiveDeliveryFee = isGuestCheckout ? 0 : deliveryFee;
+    const effectiveTotal = cartSubtotal + effectiveDeliveryFee;
+    const dbPaymentMethod = isGuestCheckout ? `${paymentMethod} (Offline)` : paymentMethod;
     const newOrder = {
       id: newOrderId,
       customer_name: buyerName,
@@ -1909,37 +1916,40 @@ function App() {
       address: buyerAddress,
       items: orderItems,
       subtotal: cartSubtotal,
-      delivery_fee: deliveryFee,
-      total: cartTotal,
-      payment_method: paymentMethod,
+      delivery_fee: effectiveDeliveryFee,
+      total: effectiveTotal,
+      payment_method: dbPaymentMethod,
+      channel: isGuestCheckout ? 'Offline' : 'Online',
       status: "Baru",
       date: new Date().toISOString().split('T')[0],
       kurir: "",
       resi: ""
     };
 
-    // Update customers rekap list
-    setCustomers(prevCustomers => {
-      const existing = prevCustomers.find(c => c.name.toLowerCase() === buyerName.toLowerCase());
-      if (existing) {
-        return prevCustomers.map(c => c.name.toLowerCase() === buyerName.toLowerCase() ? {
-          ...c,
-          total_spending: c.total_spending + cartTotal,
-          phone: buyerPhone,
-          address: buyerAddress
-        } : c);
-      } else {
-        const nextId = prevCustomers.length > 0 ? Math.max(...prevCustomers.map(c => c.id)) + 1 : 1;
-        return [...prevCustomers, {
-          id: nextId,
-          name: buyerName,
-          phone: buyerPhone,
-          address: buyerAddress,
-          total_spending: cartTotal,
-          join_date: new Date().toISOString().split('T')[0]
-        }];
-      }
-    });
+    // Update customers rekap list (skip for anonymous guest/offline buyers)
+    if (!isGuestCheckout) {
+      setCustomers(prevCustomers => {
+        const existing = prevCustomers.find(c => c.name.toLowerCase() === buyerName.toLowerCase());
+        if (existing) {
+          return prevCustomers.map(c => c.name.toLowerCase() === buyerName.toLowerCase() ? {
+            ...c,
+            total_spending: c.total_spending + effectiveTotal,
+            phone: buyerPhone,
+            address: buyerAddress
+          } : c);
+        } else {
+          const nextId = prevCustomers.length > 0 ? Math.max(...prevCustomers.map(c => c.id)) + 1 : 1;
+          return [...prevCustomers, {
+            id: nextId,
+            name: buyerName,
+            phone: buyerPhone,
+            address: buyerAddress,
+            total_spending: effectiveTotal,
+            join_date: new Date().toISOString().split('T')[0]
+          }];
+        }
+      });
+    }
     setOrders(prevOrders => [newOrder, ...prevOrders]);
 
     // Sync Checkout Order to Supabase Database
@@ -1950,8 +1960,9 @@ function App() {
         customer_name: buyerName,
         phone: buyerPhone,
         address: buyerAddress,
-        total: cartTotal,
-        payment_method: paymentMethod,
+        total: effectiveTotal,
+        payment_method: dbPaymentMethod,
+        // "(Offline)" marker distinguishes in-store guest sales
         status: 'Belum Bayar',
         // Default status matching schema and payment method
         items: orderItems,
@@ -1963,6 +1974,18 @@ function App() {
       }) => {
         if (dbErr) console.warn('Failed to sync order to database:', dbErr.message);else console.log('Successfully synced new order to Supabase database!');
       });
+    }
+
+    // GUEST / OFFLINE FLOW: no WhatsApp needed — the buyer is physically at the store!
+    if (isGuestCheckout) {
+      setCart([]);
+      if (paymentMethod === 'QRIS') {
+        setShowQrisModal(true);
+        showToast(lang === 'id' ? `🧾 Pesanan offline ${newOrderId} tercatat! Silakan pindai QRIS di kasir.` : `🧾 Offline order ${newOrderId} recorded! Please scan the QRIS at the counter.`);
+      } else {
+        showToast(lang === 'id' ? `🧾 Pesanan offline ${newOrderId} tercatat! Silakan bayar Cash di kasir.` : `🧾 Offline order ${newOrderId} recorded! Please pay Cash at the counter.`);
+      }
+      return;
     }
     let message = `*Halo Toko Hana, saya mau pesan (Event Solo Host Pi Network):*\n`;
     message += `------------------------------------------\n`;
@@ -2048,55 +2071,56 @@ function App() {
       return;
     }
 
-    // 2. CUSTOMER CHECK (Look in local customers first for frictionless testing)
-    const existingCustomer = customers.find(c => c.phone === authEmail || c.name.toLowerCase() === authEmail.toLowerCase() || c.phone && authEmail.includes(c.phone));
-
-    // Attempt standard Supabase Sign-In
+    // 2. CUSTOMER CHECK — STRICT SECURITY MODE 🔒
+    // Hanya akun yang TERDAFTAR di Supabase Auth yang boleh masuk.
+    // Tidak ada lagi fallback lokal / auto-register (celah keamanan telah ditutup!)
     showToast('🔐 Memverifikasi akun pelanggan...');
     const {
       data,
       error
     } = await supabaseService.signIn(authEmail, authPassword);
     if (data && data.user) {
-      // Supabase user confirmed
+      // Supabase user confirmed — verified & registered customer!
       const custSession = {
         email: authEmail,
         name: data.user.user_metadata?.name || 'Pelanggan Setia',
-        phone: data.user.user_metadata?.phone || '081234567890',
-        address: data.user.user_metadata?.address || 'Jakarta, Indonesia',
+        phone: data.user.user_metadata?.phone || '-',
+        address: data.user.user_metadata?.address || '-',
         role: 'customer'
       };
       setCurrentUser(custSession);
       showToast(`✨ Selamat Datang Kembali, ${custSession.name}!`);
       setCurrentTab('Home');
+      setAuthEmail('');
+      setAuthPassword('');
     } else {
-      // Local Storage mock authentication (to make sandbox fully operable offline!)
-      const matchedLocal = customers.find(c => c.phone === authPassword || authEmail.toLowerCase().includes(c.name.toLowerCase().split(' ')[0]));
-      if (matchedLocal) {
-        const custSession = {
-          email: authEmail,
-          name: matchedLocal.name,
-          phone: matchedLocal.phone,
-          address: matchedLocal.address,
-          role: 'customer'
-        };
-        setCurrentUser(custSession);
-        showToast(`✨ Selamat Datang Kembali, ${custSession.name}! (Mode Lokal)`);
-        setCurrentTab('Home');
-      } else {
-        // Auto register them as new customer if offline & not found for maximum comfort!
-        const guestSession = {
-          email: authEmail,
-          name: authEmail.split('@')[0],
-          phone: '08123456789',
-          address: 'Alamat Toko Hana',
-          role: 'customer'
-        };
-        setCurrentUser(guestSession);
-        showToast(`✨ Akun Baru Terbuat! Selamat Datang, ${guestSession.name}!`);
-        setCurrentTab('Home');
+      // ❌ LOGIN DITOLAK — akun tidak terdaftar atau kredensial salah!
+      const reason = error && error.message ? error.message : '';
+      console.warn('Login rejected:', reason);
+      setAuthPassword('');
+      if (reason.toLowerCase().includes('fetch') || reason.toLowerCase().includes('network') || reason.toLowerCase().includes('not loaded')) {
+        alert(lang === 'id' ? '⚠️ Tidak dapat terhubung ke server verifikasi. Periksa koneksi internet Anda lalu coba lagi.' : '⚠️ Cannot reach the verification server. Please check your internet connection and try again.');
+        return;
+      }
+      const wantRegister = window.confirm(lang === 'id' ? '❌ Login ditolak!\n\nEmail/kata sandi salah, atau akun Anda belum terdaftar di Toko Hana.\n\nApakah Anda ingin melakukan PENDAFTARAN sekarang?' : '❌ Login rejected!\n\nWrong email/password, or your account is not registered at Toko Hana.\n\nWould you like to REGISTER now?');
+      if (wantRegister) {
+        setAuthActiveTab('register');
       }
     }
+  };
+
+  // --- GUEST MODE (Opsi ke-3: Pelanggan Langsung / Belanja Offline di Toko) ---
+  const handleGuestLogin = () => {
+    const guestSession = {
+      email: '',
+      name: lang === 'id' ? 'Pelanggan Tamu (Offline)' : 'Guest Customer (Offline)',
+      phone: '-',
+      address: lang === 'id' ? 'Pembelian Langsung di Toko' : 'In-Store Purchase',
+      role: 'guest'
+    };
+    setCurrentUser(guestSession);
+    showToast(lang === 'id' ? '🛍️ Mode Tamu aktif! Pembayaran: Cash / QRIS di toko.' : '🛍️ Guest mode active! Payment: Cash / QRIS in-store.');
+    setCurrentTab('Home');
     setAuthEmail('');
     setAuthPassword('');
   };
@@ -2609,11 +2633,20 @@ function App() {
         d.setDate(d.getDate() - i);
         last7Days.push(d.toISOString().split('T')[0]);
       }
+
+      // Channel detector: Offline = guest in-store sale, Online = delivery order
+      const isOffline = o => o.channel === 'Offline' || (o.payment_method || '').includes('Offline');
       const omzetHariIni = completedOrders.filter(o => o && o.date === todayStr).reduce((sum, o) => sum + (o.total || 0), 0);
       const omzetMingguan = completedOrders.filter(o => o && last7Days.includes(o.date || '')).reduce((sum, o) => sum + (o.total || 0), 0);
+      const omzetOnline = completedOrders.filter(o => o && !isOffline(o)).reduce((sum, o) => sum + (o.total || 0), 0);
+      const omzetOffline = completedOrders.filter(o => o && isOffline(o)).reduce((sum, o) => sum + (o.total || 0), 0);
       return {
         omzetHariIni,
         omzetMingguan,
+        omzetOnline,
+        omzetOffline,
+        countOnline: completedOrders.filter(o => o && !isOffline(o)).length,
+        countOffline: completedOrders.filter(o => o && isOffline(o)).length,
         totalTransactions: completedOrders.length
       };
     } catch (e) {
@@ -2621,6 +2654,10 @@ function App() {
       return {
         omzetHariIni: 0,
         omzetMingguan: 0,
+        omzetOnline: 0,
+        omzetOffline: 0,
+        countOnline: 0,
+        countOffline: 0,
         totalTransactions: 0
       };
     }
@@ -2923,11 +2960,46 @@ function App() {
     className: "flex justify-between text-xs text-gray-500"
   }, /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Subtotal Belanja' : 'Shopping Subtotal'), /*#__PURE__*/React.createElement("span", null, "Rp ", cartSubtotal.toLocaleString('id-ID'))), /*#__PURE__*/React.createElement("div", {
     className: "flex justify-between text-xs text-gray-500"
-  }, /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Ongkir' : 'Shipping Fee'), /*#__PURE__*/React.createElement("span", null, deliveryFee === 0 ? lang === 'id' ? 'Gratis' : 'Free' : `Rp ${deliveryFee.toLocaleString('id-ID')}`)), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Ongkir' : 'Shipping Fee'), /*#__PURE__*/React.createElement("span", null, currentUser?.role === 'guest' ? lang === 'id' ? 'Gratis (Ambil di Toko)' : 'Free (In-Store Pickup)' : deliveryFee === 0 ? lang === 'id' ? 'Gratis' : 'Free' : `Rp ${deliveryFee.toLocaleString('id-ID')}`)), /*#__PURE__*/React.createElement("div", {
     className: "border-t pt-2 flex justify-between text-sm font-extrabold text-gray-800"
   }, /*#__PURE__*/React.createElement("span", null, t('totalLabel')), /*#__PURE__*/React.createElement("span", {
     className: "text-[#703d92]"
-  }, "Rp ", cartTotal.toLocaleString('id-ID')))), /*#__PURE__*/React.createElement("form", {
+  }, "Rp ", (currentUser?.role === 'guest' ? cartSubtotal : cartTotal).toLocaleString('id-ID')))), currentUser && currentUser.role === 'guest' ?
+  /*#__PURE__*/
+  /* --- GUEST / OFFLINE IN-STORE CHECKOUT (Cash atau QRIS saja!) --- */
+  React.createElement("form", {
+    onSubmit: handleCheckoutWhatsApp,
+    className: "bg-white p-4 rounded-2xl space-y-3 text-xs border shadow-sm"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Store",
+    size: 16,
+    className: "text-amber-600 flex-shrink-0 mt-0.5"
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "font-extrabold text-amber-700 block"
+  }, lang === 'id' ? 'Mode Tamu — Belanja Offline di Toko' : 'Guest Mode — In-Store Offline Shopping'), /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px] text-amber-600"
+  }, lang === 'id' ? 'Tanpa ongkir & tanpa data pengiriman. Bayar langsung di kasir.' : 'No shipping fee & no delivery data. Pay directly at the counter.'))), /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    name: "buyerName",
+    placeholder: lang === 'id' ? 'Nama (opsional)' : 'Name (optional)',
+    className: "w-full border rounded-xl p-2.5"
+  }), /*#__PURE__*/React.createElement("select", {
+    name: "paymentMethod",
+    required: true,
+    className: "w-full border rounded-xl p-2.5 bg-white font-bold text-gray-800 focus:border-[#703d92] focus:outline-none"
+  }, /*#__PURE__*/React.createElement("option", {
+    value: "Cash"
+  }, lang === 'id' ? '💵 Bayar Cash di Kasir' : '💵 Pay Cash at Counter'), /*#__PURE__*/React.createElement("option", {
+    value: "QRIS"
+  }, lang === 'id' ? '📱 Pindai QRIS di Kasir' : '📱 Scan QRIS at Counter')), /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    className: "w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold py-3 rounded-xl shadow"
+  }, lang === 'id' ? '🧾 Catat Pesanan Offline' : '🧾 Record Offline Order')) :
+  /*#__PURE__*/
+  /* --- ONLINE CHECKOUT (Pelanggan Terdaftar / Umum) --- */
+  React.createElement("form", {
     onSubmit: handleCheckoutWhatsApp,
     className: "bg-white p-4 rounded-2xl space-y-3 text-xs border shadow-sm"
   }, /*#__PURE__*/React.createElement("input", {
@@ -3058,7 +3130,62 @@ function App() {
   })), /*#__PURE__*/React.createElement("button", {
     type: "submit",
     className: "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-xs"
-  }, t('registerBtn')))) :
+  }, t('registerBtn'))), /*#__PURE__*/React.createElement("div", {
+    className: "pt-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3 mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 h-px bg-gray-200"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[9px] font-black uppercase tracking-widest text-gray-400"
+  }, lang === 'id' ? 'Atau' : 'Or'), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 h-px bg-gray-200"
+  })), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: handleGuestLogin,
+    className: "w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#2d1242] font-extrabold py-3.5 rounded-xl shadow-md transition-all text-xs flex items-center justify-center gap-2"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Store",
+    size: 15
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Masuk sebagai Tamu (Belanja di Toko)' : 'Continue as Guest (In-Store Shopping)')), /*#__PURE__*/React.createElement("p", {
+    className: "text-center text-[9px] text-gray-400 mt-2 leading-relaxed"
+  }, lang === 'id' ? 'Khusus pelanggan langsung/offline — tanpa daftar & login. Pembayaran hanya Cash atau QRIS di kasir.' : 'For walk-in/offline customers — no registration needed. Payment via Cash or QRIS at the counter only.'))) : currentUser.role === 'guest' ?
+  /*#__PURE__*/
+  // B2. GUEST MODE PROFILE (Pelanggan Tamu / Offline)
+  React.createElement("div", {
+    className: "space-y-4 animate-fade-in"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-gradient-to-tr from-amber-400 to-amber-500 text-[#2d1242] p-5 rounded-3xl shadow-md text-center relative overflow-hidden"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "absolute -right-10 -top-10 w-28 h-28 bg-white/10 rounded-full"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "absolute -left-10 -bottom-10 w-28 h-28 bg-white/10 rounded-full"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "relative w-16 h-16 bg-[#703d92] rounded-full mx-auto flex items-center justify-center shadow-lg border-2 border-white/30"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Store",
+    className: "text-amber-300",
+    size: 28
+  })), /*#__PURE__*/React.createElement("h3", {
+    className: "font-extrabold text-base mt-2"
+  }, lang === 'id' ? 'Pelanggan Tamu' : 'Guest Customer'), /*#__PURE__*/React.createElement("p", {
+    className: "text-[10px] font-black uppercase tracking-wider opacity-80"
+  }, lang === 'id' ? 'Mode Belanja Offline di Toko' : 'In-Store Offline Shopping Mode')), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-2xl p-4 border shadow-sm text-[11px] text-gray-600 space-y-2"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-extrabold text-[#703d92] uppercase tracking-wider text-[11px] border-b pb-2"
+  }, lang === 'id' ? 'ℹ️ Info Mode Tamu' : 'ℹ️ Guest Mode Info'), /*#__PURE__*/React.createElement("p", null, "• ", lang === 'id' ? 'Pembayaran hanya Cash atau QRIS langsung di kasir.' : 'Payment via Cash or QRIS at the counter only.'), /*#__PURE__*/React.createElement("p", null, "• ", lang === 'id' ? 'Tanpa ongkir — barang diambil langsung di toko.' : 'No shipping fee — items picked up in-store.'), /*#__PURE__*/React.createElement("p", null, "• ", lang === 'id' ? 'Ingin belanja online + pengiriman? Silakan daftar akun pelanggan!' : 'Want online shopping + delivery? Please register a customer account!')), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setCurrentUser(null);
+      setAuthActiveTab('register');
+      setCurrentTab('Profil');
+      showToast(lang === 'id' ? '📝 Silakan lengkapi pendaftaran akun Anda!' : '📝 Please complete your account registration!');
+    },
+    className: "w-full bg-[#703d92] hover:bg-[#553C9A] text-white font-bold py-3 rounded-xl transition-all text-center text-xs"
+  }, lang === 'id' ? '✨ Daftar Jadi Pelanggan Online' : '✨ Register as Online Customer'), /*#__PURE__*/React.createElement("button", {
+    onClick: handleLogout,
+    className: "w-full bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 font-bold py-3 rounded-xl transition-all text-center"
+  }, lang === 'id' ? 'Keluar dari Mode Tamu' : 'Exit Guest Mode')) :
   /*#__PURE__*/
   // B. If logged in as CUSTOMER: CUSTOMER DASHBOARD (Halaman Pelanggan)
   React.createElement("div", {
@@ -3537,9 +3664,13 @@ function App() {
     className: "flex items-center justify-between"
   }, /*#__PURE__*/React.createElement("span", {
     className: "font-extrabold text-gray-800"
-  }, o.id), /*#__PURE__*/React.createElement("span", {
+  }, o.id), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: `font-black text-[8px] uppercase px-2 py-0.5 rounded-full ${o.channel === 'Offline' || (o.payment_method || '').includes('Offline') ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`
+  }, o.channel === 'Offline' || (o.payment_method || '').includes('Offline') ? '🏪 Offline' : '🌐 Online'), /*#__PURE__*/React.createElement("span", {
     className: `font-black text-[8px] uppercase px-2 py-0.5 rounded-full ${o.status === 'Selesai' ? 'bg-green-100 text-green-700' : o.status === 'Diproses' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'}`
-  }, o.status)), /*#__PURE__*/React.createElement("div", {
+  }, o.status))), /*#__PURE__*/React.createElement("div", {
     className: "text-[10px] font-bold text-gray-700"
   }, "Pelanggan: ", o.customer_name, " (", o.phone, ")"), /*#__PURE__*/React.createElement("div", {
     className: "text-[10px] text-gray-500"
@@ -3581,7 +3712,28 @@ function App() {
     className: "flex-1 bg-blue-600 text-white font-bold py-1.5 rounded-lg text-[10px]"
   }, "Proses Orderan")), o.status === 'Diproses' && /*#__PURE__*/React.createElement("div", {
     className: "flex gap-2 pt-2"
-  }, /*#__PURE__*/React.createElement("button", {
+  }, o.channel === 'Offline' || (o.payment_method || '').includes('Offline') ? /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setOrders(prev => prev.map(order => order.id === o.id ? {
+        ...order,
+        status: 'Selesai'
+      } : order));
+      const client = getSupabaseClient();
+      if (client) {
+        client.from('orders').update({
+          status: 'Selesai',
+          courier: 'Ambil di Toko',
+          resi: 'OFFLINE-KASIR'
+        }).eq('id', o.id).then(({
+          error
+        }) => {
+          if (error) console.warn('Failed to complete offline order on Supabase:', error.message);else console.log('Offline order marked Selesai on Supabase!');
+        });
+      }
+      showToast(`🏪 Order offline ${o.id} selesai (lunas di kasir)!`);
+    },
+    className: "flex-1 bg-emerald-600 text-white font-bold py-1.5 rounded-lg text-[10px]"
+  }, "✅ Selesaikan (Lunas di Kasir)") : /*#__PURE__*/React.createElement("button", {
     onClick: () => setSelectedOrderToShip(o),
     className: "flex-1 bg-amber-500 text-white font-bold py-1.5 rounded-lg text-[10px]"
   }, "Kirim & Input Resi")))))), adminActiveSubMenu === 'pengiriman' && /*#__PURE__*/React.createElement("div", {
@@ -3682,7 +3834,37 @@ function App() {
     style: {
       width: '68%'
     }
-  })))), /*#__PURE__*/React.createElement("div", {
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-blue-50 p-3.5 rounded-2xl border border-blue-100"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5 mb-1"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Globe",
+    size: 12,
+    className: "text-blue-600"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-blue-600 font-black uppercase text-[8px] tracking-wider"
+  }, "Penjualan Online")), /*#__PURE__*/React.createElement("h3", {
+    className: "text-sm font-black text-blue-700"
+  }, "Rp ", (financeRecap?.omzetOnline || 0).toLocaleString('id-ID')), /*#__PURE__*/React.createElement("span", {
+    className: "text-[9px] text-blue-500 font-bold"
+  }, financeRecap?.countOnline || 0, " transaksi")), /*#__PURE__*/React.createElement("div", {
+    className: "bg-amber-50 p-3.5 rounded-2xl border border-amber-100"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5 mb-1"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Store",
+    size: 12,
+    className: "text-amber-600"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-amber-600 font-black uppercase text-[8px] tracking-wider"
+  }, "Penjualan Offline")), /*#__PURE__*/React.createElement("h3", {
+    className: "text-sm font-black text-amber-700"
+  }, "Rp ", (financeRecap?.omzetOffline || 0).toLocaleString('id-ID')), /*#__PURE__*/React.createElement("span", {
+    className: "text-[9px] text-amber-500 font-bold"
+  }, financeRecap?.countOffline || 0, " transaksi")))), /*#__PURE__*/React.createElement("div", {
     className: "border-t border-gray-100 pt-3"
   }, /*#__PURE__*/React.createElement("span", {
     className: "text-[9px] text-gray-400 uppercase tracking-widest font-black block mb-2"
@@ -4170,12 +4352,11 @@ function App() {
   }), /*#__PURE__*/React.createElement("span", null, t('addCartBtn'))))));
 }
 
-    // Mount the React app to the root container
-    const container = document.getElementById('root');
-    const root = ReactDOM.createRoot(container);
-    root.render(React.createElement(App));
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
+root.render(React.createElement(App));
 
-  </script>
+</script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a14f3358c8deccce',t:'MTc4MzAxMTU2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a14fae548b3d62dc',t:'MTc4MzAxNjU5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -1065,14 +1065,15 @@ function App() {
       if (data && data.length > 0) {
         const mapped = data.map(item => {
           let catName = 'Sembako';
-          if (item.category_id === 2) catName = 'Minuman';
-          else if (item.category_id === 3) catName = 'Snack';
-          else if (item.category_id === 4) catName = 'Digital';
-          else if (item.category_id === 5) catName = 'Kosmetik';
-          else if (item.category_id === 6) catName = 'Makanan Instan';
-          else if (item.category_id === 7) catName = 'Bumbu Dapur';
-          else if (item.category_id === 8) catName = 'Rumah Tangga';
-          else if (item.category_id === 9) catName = 'Rokok 18+';
+          if (item.category_id === 2 || item.category_id === 'Minuman') catName = 'Minuman';
+          else if (item.category_id === 3 || item.category_id === 'Snack') catName = 'Snack';
+          else if (item.category_id === 4 || item.category_id === 'Digital') catName = 'Digital';
+          else if (item.category_id === 5 || item.category_id === 'Kosmetik') catName = 'Kosmetik';
+          else if (item.category_id === 6 || item.category_id === 'Makanan Instan') catName = 'Makanan Instan';
+          else if (item.category_id === 7 || item.category_id === 'Bumbu Dapur') catName = 'Bumbu Dapur';
+          else if (item.category_id === 8 || item.category_id === 'Rumah Tangga') catName = 'Rumah Tangga';
+          else if (item.category_id === 9 || item.category_id === 'Rokok 18+') catName = 'Rokok 18+';
+          else if (typeof item.category_id === 'string' && item.category_id.trim() !== '') catName = item.category_id;
 
           return {
             id: item.id,
@@ -1547,11 +1548,8 @@ function App() {
     const stockNum = parseInt(prodForm.stock) || 0;
     const soldNum = parseInt(prodForm.sold) || 0;
     
-    const categoryMap = {
-      'Sembako': 1, 'Minuman': 2, 'Snack': 3, 'Digital': 4, 'Kosmetik': 5,
-      'Makanan Instan': 6, 'Bumbu Dapur': 7, 'Rumah Tangga': 8, 'Rokok 18+': 9
-    };
-    const catId = categoryMap[prodForm.category] || 1;
+    // Store the actual category name string to align perfectly with the text type and seeding script!
+    const catId = prodForm.category;
 
     if (editingProduct) {
       const updatesDb = {

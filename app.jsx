@@ -22,6 +22,13 @@ const safeStorage = {
     } catch (e) {
       console.warn('safeStorage.setItem skipped:', e.message);
     }
+  },
+  removeItem: (key) => {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.warn('safeStorage.removeItem skipped:', e.message);
+    }
   }
 };
 
@@ -843,6 +850,11 @@ function App() {
   const [merchantWaNumber, setMerchantWaNumber] = useState(() => {
     return safeStorage.getItem('toko_hana_wa_number') || '628122792099';
   });
+
+  const [piExchangeRate, setPiExchangeRate] = useState(() => {
+    return parseFloat(safeStorage.getItem('toko_hana_pi_rate')) || 2000000;
+  });
+
   
 
   useEffect(() => {
@@ -852,9 +864,9 @@ function App() {
     return translations[lang][key] || translations['id'][key] || key;
   };
 
-  const convertRpToPi = (rp) => rp / 2000000;
+  const convertRpToPi = (rp) => rp / piExchangeRate;
   const formatPi = (rp) => {
-    const piVal = rp / 2000000;
+    const piVal = rp / piExchangeRate;
     return piVal.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 6 }) + ' π';
   };
 
@@ -1021,6 +1033,8 @@ function App() {
   // Shipping Form Fields
   const [selectedOrderToShip, setSelectedOrderToShip] = useState(null);
   const [shipForm, setShipForm] = useState({ kurir: 'J&T Express', resi: '' });
+    const mainScrollRef = useRef(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Voice recognition search state
   const [voiceSearching, setVoiceSearching] = useState(false);
@@ -1146,7 +1160,7 @@ function App() {
     if (currentUser) {
       safeStorage.setItem('toko_hana_active_user', JSON.stringify(currentUser));
     } else {
-      localStorage.removeItem('toko_hana_active_user');
+      safeStorage.removeItem('toko_hana_active_user');
     }
   }, [currentUser]);
 
@@ -1270,13 +1284,13 @@ function App() {
     message += `------------------------------------------\n`;
     cart.forEach((item, idx) => {
       const itemTotal = item.product.price * item.quantity;
-      const itemPi = itemTotal / 2000000;
+      const itemPi = convertRpToPi(itemTotal);
       message += `${idx + 1}. *${item.product.name}* (x${item.quantity}) = Rp ${itemTotal.toLocaleString('id-ID')} (${itemPi.toFixed(4)} π)\n`;
     });
     message += `------------------------------------------\n`;
-    message += `*Subtotal:* Rp ${cartSubtotal.toLocaleString('id-ID')} (${(cartSubtotal / 2000000).toFixed(4)} π)\n`;
-    message += `*Ongkir:* ${deliveryFee === 0 ? 'Gratis (Promo Pi)' : `Rp ${deliveryFee.toLocaleString('id-ID')} (${(deliveryFee / 2000000).toFixed(4)} π)`}\n`;
-    message += `*Total Pembayaran:* *Rp ${cartTotal.toLocaleString('id-ID')}* (*${(cartTotal / 2000000).toFixed(4)} π*)\n\n`;
+    message += `*Subtotal:* Rp ${cartSubtotal.toLocaleString('id-ID')} (${(convertRpToPi(cartSubtotal)).toFixed(4)} π)\n`;
+    message += `*Ongkir:* ${deliveryFee === 0 ? 'Gratis (Promo Pi)' : `Rp ${deliveryFee.toLocaleString('id-ID')} (${(convertRpToPi(deliveryFee)).toFixed(4)} π)`}\n`;
+    message += `*Total Pembayaran:* *Rp ${cartTotal.toLocaleString('id-ID')}* (*${(convertRpToPi(cartTotal)).toFixed(4)} π*)\n\n`;
     message += `*--- DATA PENGIRIMAN ---*\n`;
     message += `👤 *Nama:* ${buyerName}\n`;
     message += `📞 *WA/Telp:* ${buyerPhone}\n`;
@@ -1446,6 +1460,22 @@ function App() {
       showToast(`✨ Registrasi Berhasil! Selamat Datang, ${authName}! (Sesi Lokal)`);
     } else {
       showToast(`✨ Akun Supabase Berhasil Terbuat! Selamat Datang, ${authName}!`);
+      
+      // Real-time Sync to public.customers table in your Supabase Database!
+      const client = getSupabaseClient();
+      if (client) {
+        client.from('customers').insert([{
+          email: authEmail,
+          name: authName,
+          phone: authPhone,
+          address: authAddress,
+          total_spending: 0
+        }]).then(({ error: dbErr }) => {
+          if (dbErr) console.warn('Failed to sync to public.customers table:', dbErr.message);
+          else console.log('Successfully synced new customer profile to database.');
+        });
+      }
+
       const activeSession = {
         email: authEmail,
         name: authName,
@@ -1758,6 +1788,28 @@ function App() {
     showToast(lang === 'id' ? '📞 Nomor WhatsApp Merchant diperbarui!' : '📞 Merchant WhatsApp number updated!');
   };
 
+  const handleSavePiRate = (e) => {
+    e.preventDefault();
+    const val = parseFloat(e.target.elements.piRate.value.trim());
+    if (val > 0) {
+      setPiExchangeRate(val);
+      safeStorage.setItem('toko_hana_pi_rate', val.toString());
+      showToast(lang === 'id' ? '🪙 Nilai tukar Koin Pi diperbarui!' : '🪙 Pi Network exchange rate updated!');
+    }
+  };
+
+  const handleMainScroll = (e) => {
+    const { scrollTop } = e.target;
+    // Show back to top button when scrolled down more than 150px (highly responsive!)
+    setShowBackToTop(scrollTop > 150);
+  };
+
+  const scrollToTop = () => {
+    if (mainScrollRef.current) {
+      mainScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const handleSaveBanner = (e) => {
     e.preventDefault();
     if (!bannerForm.title || !bannerForm.image) {
@@ -1877,7 +1929,7 @@ function App() {
         <div className="flex-1 flex flex-col">
           
           {/* --- STICKY COMBINED WRAPPER (SHOPEE STYLE) --- */}
-          <div className="sticky top-0 z-40 bg-white flex flex-col">
+          <div className="sticky top-0 z-50 bg-[#703d92] flex flex-col w-full shadow-md">
             
             {/* --- FULL BLEED STICKY HEADER --- */}
             <header 
@@ -1902,17 +1954,17 @@ function App() {
                       setSearchQuery(e.target.value);
                       if (currentTab !== 'Home' && currentTab !== 'Promo') setCurrentTab('Home');
                     }}
-                    className="w-full bg-white text-gray-800 placeholder-gray-400 pl-10 pr-9 py-2.5 rounded-full text-xs focus:outline-none transition-all font-medium"
+                    className="w-full bg-white text-gray-800 placeholder-gray-400 pl-10 pr-9 py-2.5 rounded-full text-xs border-[3px] border-[#FFD700] focus:shadow-[0_0_15px_rgba(255,215,0,0.5)] focus:outline-none transition-all font-semibold"
                   />
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#D4AF37]">
                     <LucideIcon name="Search" size={14} className="stroke-[2.5]" />
                   </div>
                   
                   {/* 🎤 Voice Search */}
                   <button 
                     onClick={triggerVoiceSearch}
-                    className={`absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full ${
-                      voiceSearching ? 'bg-red-100 text-red-600 animate-pulse' : 'text-gray-400 hover:text-[#703d92]'
+                    className={`absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full transition-all ${
+                      voiceSearching ? 'bg-red-100 text-red-600 animate-pulse' : 'text-[#D4AF37] hover:text-[#FFD700]'
                     }`}
                     title="Pencarian Suara"
                   >
@@ -1921,8 +1973,16 @@ function App() {
                 </div>
 
 
-                {/* Circular Action Buttons: Bell & Cart on the Right */}
+                {/* Circular Action Buttons: 2 Icons Only (Bell & Language Swapped) */}
                 <div className="flex items-center space-x-2 flex-shrink-0">
+                  <button 
+                    onClick={() => showToast('🔔 Tidak ada notifikasi baru.')}
+                    className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors relative"
+                    title="Notifikasi"
+                  >
+                    <LucideIcon name="Bell" size={18} className="text-white" />
+                  </button>
+
                   {/* Premium Language Toggle (ID/EN) */}
                   <button 
                     onClick={() => setLang(lang === 'id' ? 'en' : 'id')}
@@ -1932,33 +1992,13 @@ function App() {
                     <LucideIcon name="Globe" size={15} className="text-white" strokeWidth={2} />
                     <span className="text-[8px] font-black uppercase text-amber-300 mt-0.5 leading-none">{lang}</span>
                   </button>
-  
-                  <button 
-                    onClick={() => showToast('🔔 Tidak ada notifikasi baru.')}
-                    className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors relative"
-                    title="Notifikasi"
-                  >
-                    <LucideIcon name="Bell" size={18} className="text-white" />
-                  </button>
-                  <button 
-                    onClick={() => setCurrentTab('Cart')} 
-                    className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors relative"
-                    title="Keranjang Belanja"
-                  >
-                    <LucideIcon name="ShoppingCart" size={18} className="text-white" />
-                    {totalCartItems > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-amber-400 text-[#703d92] font-black text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">
-                        {totalCartItems}
-                      </span>
-                    )}
-                  </button>
                 </div>
               </div>
             </header>
           </div>
 
           {/* --- SCROLLABLE MAIN LAYOUT WITH CATEGORY MENU PRECISELY PLACED BELOW THE BANNER --- */}
-          <main className="flex-1 overflow-y-auto flex flex-col">
+          <main ref={mainScrollRef} onScroll={handleMainScroll} className="flex-1 overflow-y-auto flex flex-col scroll-smooth">
             
             {/* [A] PROMO BANNER CAROUSEL (AT THE TOP) */}
             {currentTab === 'Home' && banners.length > 0 ? (
@@ -1997,8 +2037,8 @@ function App() {
 
             {/* [B] STICKY CATEGORY MENU (PLACED PRECISELY BELOW THE BANNER, STICKY UNDER HEADER ON SCROLL) */}
             {currentTab === 'Home' && (
-              <div className="sticky top-0 z-20 bg-white border-b border-gray-100 flex flex-col py-3 shadow-sm">
-                <div className="flex overflow-x-auto px-4 gap-4 no-scrollbar scroll-smooth">
+              <div className="sticky top-0 z-20 bg-white border-b border-gray-100 flex flex-col py-2 shadow-sm">
+                <div className="flex overflow-x-auto px-3 gap-3 no-scrollbar scroll-smooth">
                   {(categories || []).map((cat, idx) => {
                     const isActive = selectedCategory === cat.name;
                     const isSemua = cat.name === 'Semua';
@@ -2007,10 +2047,10 @@ function App() {
                       <button
                         key={cat.name + '-' + idx}
                         onClick={() => isSemua ? setShowCategorySheet(true) : setSelectedCategory(cat.name)}
-                        className="flex flex-col items-center flex-shrink-0 space-y-1.5 focus:outline-none"
+                        className="flex flex-col items-center flex-shrink-0 space-y-1 focus:outline-none"
                       >
                         <div 
-                          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all border ${
+                          className={`w-11 h-11 rounded-full flex items-center justify-center transition-all border ${
                             isActive 
                               ? 'bg-[#703d92] text-white border-[#703d92]' 
                               : 'bg-white border-gray-200 text-gray-400'
@@ -2038,9 +2078,9 @@ function App() {
 
                 {/* --- PRODUCT GRID (SHIMMER SKELETON CARDS FOR SMOOT LUXURY) --- */}
                 {loading ? (
-                  <div className="grid grid-cols-2 gap-3.5 px-4 pb-8">
+                  <div className="grid grid-cols-2 gap-2.5 px-3 pb-8">
                     {[1, 2, 3, 4].map(idx => (
-                      <div key={idx} className="bg-white rounded-3xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col border border-gray-100/50 p-3.5 space-y-3 animate-pulse">
+                      <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col border border-gray-100/50 p-3.5 space-y-3 animate-pulse">
                         <div className="h-40 bg-purple-50/70 rounded-2xl w-full" />
                         <div className="h-3.5 bg-gray-100 rounded-md w-3/4" />
                         <div className="h-2.5 bg-gray-50 rounded-md w-1/2" />
@@ -2052,12 +2092,12 @@ function App() {
                     ))}
                   </div>
                 ) : filteredProducts.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-3.5 px-4 pb-8">
+                  <div className="grid grid-cols-2 gap-2.5 px-3 pb-8">
                     {filteredProducts.map(product => (
                       <div 
                         key={product.id} 
                         onClick={() => setSelectedProductDetail(product)} // Click whole card opens details!
-                        className="bg-white rounded-3xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col hover:shadow-md transition-all group relative cursor-pointer border border-gray-100/50 animate-fade-in"
+                        className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col hover:shadow-md transition-all group relative cursor-pointer border border-gray-100/50 animate-fade-in"
                       >
                         {/* Discount Badge */}
                         {product.original_price && product.original_price > product.price && (
@@ -2084,7 +2124,7 @@ function App() {
                                 <span className="text-[10px] text-gray-400 line-through">Rp {product.original_price.toLocaleString('id-ID')}</span>
                                 <div className="flex items-center justify-between">
                                   <span className="font-extrabold text-red-500 text-xs">Rp {product.price.toLocaleString('id-ID')}</span>
-                                  <span className="text-[9px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">{(product.price / 2000000).toFixed(4)} π</span>
+                                  <span className="text-[9px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">{(convertRpToPi(product.price)).toFixed(4)} π</span>
                                 </div>
                               </div>
                             ) : (
@@ -2092,7 +2132,7 @@ function App() {
                                 <div className="h-2" />
                                 <div className="flex items-center justify-between">
                                   <span className="font-extrabold text-[#703d92] text-xs">Rp {product.price.toLocaleString('id-ID')}</span>
-                                  <span className="text-[9px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">{(product.price / 2000000).toFixed(4)} π</span>
+                                  <span className="text-[9px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">{(convertRpToPi(product.price)).toFixed(4)} π</span>
                                 </div>
                               </div>
                             )}
@@ -2112,6 +2152,23 @@ function App() {
                     <h4 className="font-bold text-sm text-gray-700">Produk Tidak Ditemukan</h4>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* --- PREMIUM LUXURY FOOTER (ADDS SCROLLABLE HEIGHT AND COMPLETES ESTHETICS!) --- */}
+            {currentTab === 'Home' && (
+              <div className="bg-[#2d1242] text-white p-4.5 mt-6 text-center space-y-2.5 border-t border-[#FFD700]/25 pb-16 flex-shrink-0 animate-fade-in relative z-10">
+                <div className="w-10 h-10 bg-amber-500 text-white font-black text-lg rounded-full flex items-center justify-center mx-auto shadow-md shadow-amber-200/20">π</div>
+                <h4 className="font-extrabold text-[#FFD700] text-sm tracking-widest uppercase">Toko Hana v3.7 Global</h4>
+                <p className="text-[10px] text-purple-200 font-medium max-w-[280px] mx-auto leading-relaxed">
+                  {lang === 'id' 
+                    ? 'Warung digital premium terintegrasi ekosistem Pi Network. Melayani pembayaran Rupiah & Pi Coin secara resmi.'
+                    : 'Premium digital stall integrated with Pi Network ecosystem. Supporting Rupiah & Pi Coin payments globally.'
+                  }
+                </p>
+                <div className="text-[8px] text-purple-300 font-bold uppercase tracking-wider pt-2 border-t border-purple-800/40">
+                  © 2026 Toko Hana • Solo Host Event Ecosystem
+                </div>
               </div>
             )}
 
@@ -2235,7 +2292,7 @@ function App() {
                 
                 {/* A. If not logged in: UNIFIED LOGIN & SIGN-UP SCREEN */}
                 {!currentUser ? (
-                  <div className="bg-white rounded-3xl p-5 border shadow-md space-y-4">
+                  <div className="bg-white rounded-2xl p-5 border shadow-md space-y-4">
                     
                     {/* Unified Selector Tabs (MASUK vs DAFTAR) */}
                     <div className="flex bg-[#F5F3F7] p-1.5 rounded-2xl">
@@ -2260,11 +2317,7 @@ function App() {
                     {/* Tab [1] MASUK FORM */}
                     {authActiveTab === 'login' && (
                       <form onSubmit={handleUnifiedLogin} className="space-y-3.5">
-                        <div className="bg-purple-50/70 p-3 rounded-2xl border border-purple-100">
-                          <p className="text-[10px] text-purple-700 font-bold leading-relaxed">
-                            💡 Sandi demo admin: <strong>admin_70666@web-library.net</strong> / password <strong>hana123</strong>.
-                          </p>
-                        </div>
+
                         
                         <div>
                           <label className="block text-gray-600 font-bold mb-1">{lang === 'id' ? 'Email / No. WhatsApp Pelanggan' : 'Email / WhatsApp Number'}</label>
@@ -2392,7 +2445,7 @@ function App() {
                     </div>
 
                     {/* Edit Profile Form */}
-                    <div className="bg-white rounded-3xl p-4 border shadow-sm">
+                    <div className="bg-white rounded-2xl p-4 border shadow-sm">
                       <h4 className="font-extrabold text-[#703d92] border-b pb-2 mb-3 flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
                         <LucideIcon name="User" size={13} />
                         <span>{lang === 'id' ? 'Data Profil Saya' : 'My Profile Details'}</span>
@@ -2415,7 +2468,7 @@ function App() {
                     </div>
 
                     {/* Riwayat Belanja Saya (Order History Tracker) */}
-                    <div className="bg-white rounded-3xl p-4 border shadow-sm">
+                    <div className="bg-white rounded-2xl p-4 border shadow-sm">
                       <h4 className="font-extrabold text-[#703d92] border-b pb-2 mb-3 flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
                         <LucideIcon name="ShoppingCart" size={13} />
                         <span>Riwayat Belanja Saya ({customerOrdersList.length})</span>
@@ -2471,6 +2524,18 @@ function App() {
               </div>
             )}
           </main>
+
+          {/* Floating Back to Top Button (Snug, Transparent Glassmorphic, shown only when scrolled to bottom) */}
+          <button
+            onClick={scrollToTop}
+            className={`absolute bottom-20 right-4 z-40 bg-black/40 backdrop-blur-md border border-white/10 text-[#FFD700] hover:bg-black/60 w-11 h-11 rounded-full flex flex-col items-center justify-center shadow-lg active:scale-95 transition-all duration-300 ${
+              showBackToTop ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-4 pointer-events-none'
+            }`}
+            title="Kembali ke Atas"
+          >
+            <LucideIcon name="ChevronUp" size={18} className="text-[#FFD700]" strokeWidth={2.5} />
+            <span className="text-[7px] font-black text-[#FFD700] uppercase leading-none mt-0.5">Top</span>
+          </button>
         </div>
       ) : (
         
@@ -2927,6 +2992,37 @@ function App() {
 
                   <div className="border-t border-gray-100 pt-3 mt-3"></div>
 
+                  {/* Pi Network Rate Configuration */}
+                  <form onSubmit={handleSavePiRate} className="space-y-3">
+                    <div>
+                      <label className="block font-semibold text-gray-600 mb-1">{lang === 'id' ? 'Nilai Tukar 1 Pi dalam Rupiah (Rp)' : '1 Pi Exchange Rate in Rupiah (Rp)'}</label>
+                      <input 
+                        type="number" 
+                        name="piRate"
+                        defaultValue={piExchangeRate}
+                        placeholder="Contoh: 2000000"
+                        className="w-full border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-[#703d92] font-semibold text-gray-800"
+                        required
+                        min="1"
+                        step="any"
+                      />
+                      <p className="text-[9px] text-gray-400 mt-0.5">
+                        {lang === 'id' 
+                          ? `Nilai konsensus saat ini: 1 Pi = Rp ${piExchangeRate.toLocaleString('id-ID')} (Rp 2.000 = ${(2000 / piExchangeRate).toLocaleString('en-US', {maximumFractionDigits: 6})} Pi).`
+                          : `Current rate: 1 Pi = Rp ${piExchangeRate.toLocaleString('id-ID')} (Rp 2,000 = ${(2000 / piExchangeRate).toLocaleString('en-US', {maximumFractionDigits: 6})} Pi).`
+                        }
+                      </p>
+                    </div>
+                    <button 
+                      type="submit"
+                      className="bg-[#703d92] text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm shadow-purple-100 active:scale-95 transition-all"
+                    >
+                      {lang === 'id' ? 'Simpan Nilai Tukar Pi' : 'Save Pi Exchange Rate'}
+                    </button>
+                  </form>
+
+                  <div className="border-t border-gray-100 pt-3 mt-3"></div>
+
                   {/* 🎏 Promo Banners CRUD */}
                   <div className="space-y-3">
                     <h5 className="font-extrabold text-[#703d92] flex items-center gap-1.5 uppercase tracking-wider text-[11px] mt-2">
@@ -3042,82 +3138,96 @@ function App() {
         </div>
       )}
 
-      {/* --- FIXED BOTTOM NAVBAR (5 TABS AS SHOWN IN THE SCREENSHOT - NO QRIS LABEL AS DIRECTED BY THE IMAGE!) --- */}
-      <nav className="fixed bottom-0 left-0 right-0 sm:absolute z-30 bg-white border-t border-gray-100 flex items-end justify-around pb-1.5 pt-2 px-1 shadow-[0_-4px_16px_rgba(0,0,0,0.03)] h-16 flex-shrink-0">
-        
-        {/* Tab 1: Home */}
-        <button
-          onClick={() => { setCurrentTab('Home'); setSelectedCategory('Semua'); }}
-          className={`flex flex-col items-center justify-center flex-1 h-full`}
-        >
-          <LucideIcon name="Home" size={20} className={currentTab === 'Home' ? 'text-[#703d92]' : 'text-gray-400'} strokeWidth={currentTab === 'Home' ? 2.5 : 2} />
-          <span className={`text-[10px] tracking-tight mt-1 font-bold ${currentTab === 'Home' ? 'text-[#703d92]' : 'text-gray-400'}`}>
-            {t('tabHome')}
-          </span>
-        </button>
+      {/* --- EXTRA PREMIUM SEAMLESS CURVED CUTOUT BOTTOM NAVBAR (100% PIXEL PERFECT MATCH TO TEMA.PNG!) --- */}
+      <div className="fixed bottom-0 left-0 right-0 sm:absolute z-30 h-20 flex flex-col justify-end select-none pointer-events-none">
+        <div className="relative w-full h-16 pointer-events-auto">
+          
+          {/* Custom SVG Background to render the perfect physical cutout curve (dip/scoop) */}
+          <div className="absolute inset-0 z-0 bg-transparent">
+            <svg className="w-full h-20 text-[#703d92] drop-shadow-[0_-10px_24px_rgba(0,0,0,0.15)]" viewBox="0 0 400 64" preserveAspectRatio="none" style={{ transform: 'translateY(-16px)' }}>
+              <path d="M 0 16 L 166 16 A 34 34 0 0 0 234 16 L 400 16 L 400 64 L 0 64 Z" fill="currentColor" />
+            </svg>
+          </div>
 
-        {/* Tab 2: Promo */}
-        <button
-          onClick={() => { setCurrentTab('Promo'); setSelectedCategory('Semua'); }}
-          className={`flex flex-col items-center justify-center flex-1 h-full`}
-        >
-          <LucideIcon name="Tag" size={20} className={currentTab === 'Promo' ? 'text-[#703d92]' : 'text-gray-400'} strokeWidth={2} />
-          <span className={`text-[10px] tracking-tight mt-1 font-bold ${currentTab === 'Promo' ? 'text-[#703d92]' : 'text-gray-400'}`}>
-            {t('tabPromo')}
-          </span>
-        </button>
+          {/* Interactive Navigation Elements aligned on top of the physical SVG background */}
+          <nav className="relative z-10 flex items-center justify-around h-full pb-1 px-1">
+            
+            {/* Tab 1: Home */}
+            <button
+              onClick={() => { setCurrentTab('Home'); setSelectedCategory('Semua'); }}
+              className="flex flex-col items-center justify-center flex-1 h-full focus:outline-none active:scale-95 transition-all"
+            >
+              <LucideIcon name="Home" size={20} className={currentTab === 'Home' ? 'text-[#FFD700]' : 'text-white'} strokeWidth={currentTab === 'Home' ? 2.5 : 2} />
+              <span className="text-[9px] tracking-tight mt-1 font-bold text-white/80 active:text-[#FFD700]">
+                Home
+              </span>
+            </button>
 
-        {/* Tab 3: QRIS (ELEVATED LARGE CENTER GRADIENT BUTTON - NO TEXT LABEL AS SHOWN IN THE IMAGE!) */}
-        <div className="relative flex flex-col items-center justify-center flex-1 h-full select-none">
-          <button
-            onClick={() => setShowQrisModal(true)}
-            className="absolute -top-6 bg-gradient-to-tr from-[#703d92] to-[#8e51b8] text-white w-14 h-14 rounded-full shadow-[0_4px_16px_rgba(112,61,146,0.3)] border-4 border-white flex items-center justify-center active:scale-95 transition-all focus:outline-none"
-            title="Pindai QRIS Merchant"
-          >
-            <LucideIcon name="QrCode" size={22} className="text-white" strokeWidth={2.5} />
-          </button>
+            {/* Tab 2: Promo */}
+            <button
+              onClick={() => { setCurrentTab('Promo'); setSelectedCategory('Semua'); }}
+              className="flex flex-col items-center justify-center flex-1 h-full focus:outline-none active:scale-95 transition-all"
+            >
+              <LucideIcon name="Tag" size={20} className={currentTab === 'Promo' ? 'text-[#FFD700]' : 'text-white'} strokeWidth={2} />
+              <span className="text-[9px] tracking-tight mt-1 font-bold text-white/80 active:text-[#FFD700]">
+                Promo
+              </span>
+            </button>
+
+            {/* Tab 3: QRIS (ELEVATED LARGE CENTER GRADIENT BUTTON - NO TEXT LABEL AS SHOWN IN THE IMAGE!) */}
+            <div className="relative flex flex-col items-center justify-center flex-1 h-full">
+              <button
+                onClick={() => setShowQrisModal(true)}
+                className="absolute bg-gradient-to-tr from-[#703d92] to-[#2d1242] text-[#FFD700] w-14 h-14 rounded-full shadow-[0_4px_16px_rgba(255,215,0,0.35)] border-4 border-[#FFD700] flex items-center justify-center active:scale-95 transition-all focus:outline-none"
+                style={{ top: '-15px' }}
+                title="Pindai QRIS Merchant"
+              >
+                <LucideIcon name="QrCode" size={22} className="text-[#FFD700]" strokeWidth={2.5} />
+              </button>
+            </div>
+
+            {/* Tab 4: Cart */}
+            <button
+              onClick={() => setCurrentTab('Cart')}
+              className="relative flex flex-col items-center justify-center flex-1 h-full focus:outline-none active:scale-95 transition-all"
+            >
+              <LucideIcon name="ShoppingCart" size={20} className={currentTab === 'Cart' ? 'text-[#FFD700]' : 'text-white'} strokeWidth={2} />
+              <span className="text-[9px] tracking-tight mt-1 font-bold text-white/80 active:text-[#FFD700]">
+                {lang === 'id' ? 'Keranjang' : 'Cart'}
+              </span>
+              {totalCartItems > 0 && (
+                <span className="absolute top-1.5 right-3.5 bg-amber-400 text-[#2d1242] font-black text-[8px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-[#703d92]">
+                  {totalCartItems}
+                </span>
+              )}
+            </button>
+
+            {/* Tab 5: Admin / Profile (Saya) */}
+            <button
+              onClick={() => {
+                if (currentUser && currentUser.role === 'customer') {
+                  setCurrentTab('Profil');
+                } else if (adminLoggedIn && currentTab === 'AdminPage') {
+                  setCurrentTab('Profil');
+                } else if (adminLoggedIn) {
+                  setCurrentTab('AdminPage');
+                  window.location.hash = '#/admin';
+                } else {
+                  setCurrentTab('Profil');
+                  setAuthActiveTab('login');
+                }
+              }}
+              className="flex flex-col items-center justify-center flex-1 h-full focus:outline-none active:scale-95 transition-all"
+            >
+              <LucideIcon name="User" size={20} className={currentTab === 'Profil' || currentTab === 'AdminPage' ? 'text-[#FFD700]' : 'text-white'} strokeWidth={2} />
+              <span className="text-[9px] tracking-tight mt-1 font-bold text-white/80 active:text-[#FFD700]">
+                {adminLoggedIn ? t('tabAdmin') : (currentUser ? (lang === 'id' ? 'Saya' : 'Me') : (lang === 'id' ? 'Saya' : 'Me'))}
+              </span>
+            </button>
+
+          </nav>
         </div>
-
-        {/* Tab 4: Cart */}
-        <button
-          onClick={() => setCurrentTab('Cart')}
-          className="relative flex flex-col items-center justify-center flex-1 h-full"
-        >
-          <LucideIcon name="ShoppingCart" size={20} className={currentTab === 'Cart' ? 'text-[#703d92]' : 'text-gray-400'} strokeWidth={2} />
-          <span className={`text-[10px] tracking-tight mt-1 font-bold ${currentTab === 'Cart' ? 'text-[#703d92]' : 'text-gray-400'}`}>
-            {t('tabCart')}
-          </span>
-          {totalCartItems > 0 && (
-            <span className="absolute top-2 right-4 bg-amber-400 text-[#703d92] font-black text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">
-              {totalCartItems}
-            </span>
-          )}
-        </button>
-
-        {/* Tab 5: Admin */}
-        <button
-          onClick={() => {
-            if (currentUser && currentUser.role === 'customer') {
-              setCurrentTab('Profil');
-            } else if (adminLoggedIn && currentTab === 'AdminPage') {
-              setCurrentTab('Profil');
-            } else if (adminLoggedIn) {
-              setCurrentTab('AdminPage');
-              window.location.hash = '#/admin';
-            } else {
-              setCurrentTab('Profil');
-              setAuthActiveTab('login');
-            }
-          }}
-          className="flex flex-col items-center justify-center flex-1 h-full"
-        >
-          <LucideIcon name="User" size={20} className={currentTab === 'Profil' || currentTab === 'AdminPage' ? 'text-[#703d92]' : 'text-gray-400'} strokeWidth={2} />
-          <span className={`text-[10px] tracking-tight mt-1 font-bold ${currentTab === 'Profil' || currentTab === 'AdminPage' ? 'text-[#703d92]' : 'text-gray-400'}`}>
-            {adminLoggedIn ? t('tabAdmin') : (currentUser ? t('tabProfile') : t('tabAdmin'))}
-          </span>
-        </button>
-
-      </nav>
+      </div>
 
       {/* --- BOTTOM SHEET MODAL: ALL CATEGORIES GRID --- */}
       {showCategorySheet && (
@@ -3288,7 +3398,7 @@ function App() {
                   )}
                   <span className="font-black text-base text-[#703d92]">Rp {selectedProductDetail.price.toLocaleString('id-ID')}</span>
                   <span className="font-black text-amber-500 text-xs bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200 mt-1 flex items-center gap-1 shadow-sm">
-                    🪙 {(selectedProductDetail.price / 2000000).toFixed(4)} π
+                    🪙 {(convertRpToPi(selectedProductDetail.price)).toFixed(4)} π
                   </span>
                 </div>
               </div>

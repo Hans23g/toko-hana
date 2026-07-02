@@ -1619,6 +1619,9 @@ function App() {
   const [showCategorySheet, setShowCategorySheet] = useState(false);
   // QRIS Image View Modal
   const [showQrisModal, setShowQrisModal] = useState(false);
+  const [qrisModalStartTab, setQrisModalStartTab] = useState('qris'); // qris | pi — tab awal saat modal pembayaran dibuka
+  const [paymentChoice, setPaymentChoice] = useState('Transfer QRIS'); // Online: Transfer QRIS | Koin Pi | COD
+  const [guestPaymentChoice, setGuestPaymentChoice] = useState('Cash'); // Offline/Guest: Cash | QRIS | Koin Pi
 
   // Active sub tab inside Auth Screen (MASUK vs DAFTAR)
   const [authActiveTab, setAuthActiveTab] = useState('login'); // login | register
@@ -1897,7 +1900,7 @@ function App() {
     const buyerName = (form.elements.buyerName ? form.elements.buyerName.value.trim() : '') || (isGuestCheckout ? lang === 'id' ? 'Pelanggan Tamu' : 'Guest Customer' : 'Pelanggan Toko Hana');
     const buyerPhone = (form.elements.buyerPhone ? form.elements.buyerPhone.value.trim() : '') || '-';
     const buyerAddress = (form.elements.buyerAddress ? form.elements.buyerAddress.value.trim() : '') || (isGuestCheckout ? lang === 'id' ? 'Pembelian Langsung di Toko' : 'In-Store Purchase' : 'Alamat Toko');
-    const paymentMethod = form.elements.paymentMethod.value;
+    const paymentMethod = isGuestCheckout ? guestPaymentChoice : paymentChoice;
     const newOrderId = "HNA-" + Math.floor(Math.random() * 900000 + 100000);
     const orderItems = cart.map(item => ({
       product_name: item.product.name,
@@ -1980,8 +1983,14 @@ function App() {
     if (isGuestCheckout) {
       setCart([]);
       if (paymentMethod === 'QRIS') {
+        setQrisModalStartTab('qris');
         setShowQrisModal(true);
         showToast(lang === 'id' ? `🧾 Pesanan offline ${newOrderId} tercatat! Silakan pindai QRIS di kasir.` : `🧾 Offline order ${newOrderId} recorded! Please scan the QRIS at the counter.`);
+      } else if (paymentMethod === 'Koin Pi') {
+        // 🪙 Edukasi Pi Network: langsung buka tab Pi Solo Host di modal pembayaran!
+        setQrisModalStartTab('pi');
+        setShowQrisModal(true);
+        showToast(lang === 'id' ? `🪙 Pesanan offline ${newOrderId} tercatat! Total: ${convertRpToPi(effectiveTotal).toFixed(4)} π — tunjukkan ke kasir.` : `🪙 Offline order ${newOrderId} recorded! Total: ${convertRpToPi(effectiveTotal).toFixed(4)} π — show it to the cashier.`);
       } else {
         showToast(lang === 'id' ? `🧾 Pesanan offline ${newOrderId} tercatat! Silakan bayar Cash di kasir.` : `🧾 Offline order ${newOrderId} recorded! Please pay Cash at the counter.`);
       }
@@ -2102,6 +2111,12 @@ function App() {
         alert(lang === 'id' ? '⚠️ Tidak dapat terhubung ke server verifikasi. Periksa koneksi internet Anda lalu coba lagi.' : '⚠️ Cannot reach the verification server. Please check your internet connection and try again.');
         return;
       }
+
+      // 📧 KASUS KHUSUS: Akun terdaftar tapi email belum dikonfirmasi (setting "Confirm email" aktif di Supabase)
+      if (reason.toLowerCase().includes('not confirmed')) {
+        alert(lang === 'id' ? '📧 Akun Anda SUDAH terdaftar, tetapi email belum dikonfirmasi!\n\nSilakan buka kotak masuk email Anda dan klik link konfirmasi dari Toko Hana, lalu login kembali.\n\n(Admin: fitur konfirmasi email dapat dimatikan di Supabase Dashboard > Authentication > Sign In/Providers > Email > nonaktifkan "Confirm email")' : '📧 Your account IS registered, but the email has not been confirmed yet!\n\nPlease open your email inbox and click the confirmation link from Toko Hana, then log in again.\n\n(Admin: email confirmation can be disabled in Supabase Dashboard > Authentication > Sign In/Providers > Email > turn off "Confirm email")');
+        return;
+      }
       const wantRegister = window.confirm(lang === 'id' ? '❌ Login ditolak!\n\nEmail/kata sandi salah, atau akun Anda belum terdaftar di Toko Hana.\n\nApakah Anda ingin melakukan PENDAFTARAN sekarang?' : '❌ Login rejected!\n\nWrong email/password, or your account is not registered at Toko Hana.\n\nWould you like to REGISTER now?');
       if (wantRegister) {
         setAuthActiveTab('register');
@@ -2119,7 +2134,7 @@ function App() {
       role: 'guest'
     };
     setCurrentUser(guestSession);
-    showToast(lang === 'id' ? '🛍️ Mode Tamu aktif! Pembayaran: Cash / QRIS di toko.' : '🛍️ Guest mode active! Payment: Cash / QRIS in-store.');
+    showToast(lang === 'id' ? '🛍️ Mode Tamu aktif! Pembayaran: Cash / QRIS / Koin Pi π di toko.' : '🛍️ Guest mode active! Payment: Cash / QRIS / Pi Coin π in-store.');
     setCurrentTab('Home');
     setAuthEmail('');
     setAuthPassword('');
@@ -2139,61 +2154,67 @@ function App() {
       address: authAddress
     };
 
-    // Register on Supabase Auth
+    // Register on Supabase Auth — STRICT MODE: no local fallback session!
     const {
       data,
       error
     } = await supabaseService.signUp(authEmail, authPassword, metadata);
+    if (error) {
+      console.warn('Supabase Auth sign-up error:', error.message);
+      const msg = (error.message || '').toLowerCase();
+      if (msg.includes('already registered') || msg.includes('already exists')) {
+        alert(lang === 'id' ? '⚠️ Email ini sudah terdaftar di Toko Hana!\n\nSilakan langsung LOGIN memakai email & kata sandi Anda.' : '⚠️ This email is already registered at Toko Hana!\n\nPlease LOGIN using your email & password.');
+        setAuthActiveTab('login');
+      } else if (msg.includes('password')) {
+        alert(lang === 'id' ? '⚠️ Kata sandi kurang kuat! Gunakan minimal 6 karakter.' : '⚠️ Password too weak! Use at least 6 characters.');
+      } else if (msg.includes('rate limit')) {
+        alert(lang === 'id' ? '⏳ Batas pengiriman email konfirmasi tercapai!\n\nServer Supabase membatasi pengiriman email konfirmasi (± 2 email/jam pada paket gratis). Ini terjadi karena fitur "Confirm email" masih AKTIF.\n\nSOLUSI (Admin):\nBuka Supabase Dashboard > Authentication > Sign In/Providers > Email > matikan "Confirm email".\nSetelah dimatikan, pendaftaran TIDAK mengirim email sama sekali sehingga bebas dari batas ini, dan pelanggan bisa langsung login.\n\nAtau tunggu ± 1 jam lalu coba lagi.' : '⏳ Confirmation email sending limit reached!\n\nSupabase limits confirmation emails (± 2 emails/hour on the free plan). This happens because "Confirm email" is still ENABLED.\n\nSOLUTION (Admin):\nOpen Supabase Dashboard > Authentication > Sign In/Providers > Email > turn off "Confirm email".\nOnce disabled, sign-up sends NO email at all so this limit disappears, and customers can log in instantly.\n\nOr wait ± 1 hour and try again.');
+      } else {
+        alert((lang === 'id' ? '❌ Pendaftaran gagal: ' : '❌ Registration failed: ') + error.message);
+      }
+      return;
+    }
+
+    // Success on Supabase Auth — now sync profile to public.customers table
     const newCustomerId = customers.length > 0 ? Math.max(...customers.map(c => c.id)) + 1 : 1;
-    const newCustomerLocal = {
+    setCustomers(prev => [...prev, {
       id: newCustomerId,
       name: authName,
       phone: authPhone,
       address: authAddress,
       total_spending: 0,
       join_date: new Date().toISOString().split('T')[0]
-    };
-
-    // Save profile locally
-    setCustomers(prev => [...prev, newCustomerLocal]);
-    if (error) {
-      console.warn('Supabase Auth sign-up error, falling back locally:', error.message);
-      // Fallback: log them in immediately as a local customer!
-      const localSession = {
+    }]);
+    const client = getSupabaseClient();
+    if (client) {
+      client.from('customers').insert([{
         email: authEmail,
         name: authName,
         phone: authPhone,
         address: authAddress,
-        role: 'customer'
-      };
-      setCurrentUser(localSession);
-      showToast(`✨ Registrasi Berhasil! Selamat Datang, ${authName}! (Sesi Lokal)`);
+        total_spending: 0
+      }]).then(({
+        error: dbErr
+      }) => {
+        if (dbErr) console.warn('Failed to sync to public.customers table:', dbErr.message);else console.log('Successfully synced new customer profile to database.');
+      });
+    }
+
+    // ⚠️ Check: does Supabase require email confirmation? (session null = must confirm first)
+    if (data && data.user && !data.session) {
+      alert(lang === 'id' ? `📧 Pendaftaran Berhasil, ${authName}!\n\nNamun akun Anda perlu KONFIRMASI EMAIL terlebih dahulu.\nSilakan buka kotak masuk email Anda, klik link konfirmasi dari Toko Hana, lalu login.\n\nJika email tidak masuk, periksa folder Spam.` : `📧 Registration Successful, ${authName}!\n\nHowever, your account needs EMAIL CONFIRMATION first.\nPlease open your inbox, click the confirmation link from Toko Hana, then log in.\n\nIf no email arrives, check your Spam folder.`);
+      setAuthActiveTab('login');
     } else {
-      showToast(`✨ Akun Supabase Berhasil Terbuat! Selamat Datang, ${authName}!`);
-
-      // Real-time Sync to public.customers table in your Supabase Database!
-      const client = getSupabaseClient();
-      if (client) {
-        client.from('customers').insert([{
-          email: authEmail,
-          name: authName,
-          phone: authPhone,
-          address: authAddress,
-          total_spending: 0
-        }]).then(({
-          error: dbErr
-        }) => {
-          if (dbErr) console.warn('Failed to sync to public.customers table:', dbErr.message);else console.log('Successfully synced new customer profile to database.');
-        });
-      }
-      const activeSession = {
+      // Instantly active (email confirmation disabled) → log them in right away!
+      showToast(`✨ Akun Berhasil Terbuat! Selamat Datang, ${authName}!`);
+      setCurrentUser({
         email: authEmail,
         name: authName,
         phone: authPhone,
         address: authAddress,
         role: 'customer'
-      };
-      setCurrentUser(activeSession);
+      });
+      setCurrentTab('Home');
     }
 
     // Reset inputs
@@ -2202,7 +2223,6 @@ function App() {
     setAuthName('');
     setAuthPhone('');
     setAuthAddress('');
-    setAuthActiveTab('login');
   };
 
   // --- UNIFIED PROFILE LOGOUT ---
@@ -2666,6 +2686,50 @@ function App() {
     return cart.reduce((total, item) => total + (item.quantity || 0), 0);
   }, [cart]);
 
+  // --- 🪙 BANNER EDUKASI PI NETWORK + BONUS REFERRAL (dipakai di checkout Tamu & Online) ---
+  const PI_REFERRAL_LINK = 'https://minepi.com/giftcoins';
+  const PI_REFERRAL_CODE = 'giftcoins';
+  const renderPiEducationBanner = isGuestVariant => /*#__PURE__*/React.createElement("div", {
+    className: "mt-2.5 bg-gradient-to-r from-[#2d1242] to-[#553C9A] rounded-xl p-3 border border-[#FFD700]/40 animate-fade-in space-y-2.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-start gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-7 h-7 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-full flex items-center justify-center flex-shrink-0 shadow"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-[#2d1242] font-black text-xs"
+  }, "π")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "block font-extrabold text-[#FFD700] text-[10px]"
+  }, lang === 'id' ? 'Apa itu Koin Pi? — Event Solo Host Pi Network!' : 'What is Pi Coin? — Pi Network Solo Host Event!'), /*#__PURE__*/React.createElement("span", {
+    className: "block text-white/80 text-[9px] leading-relaxed mt-0.5"
+  }, lang === 'id' ? `Pi adalah mata uang kripto yang ditambang gratis dari HP. Total belanja Anda setara ${convertRpToPi(cartSubtotal).toFixed(4)} π (kurs: 1 π = Rp ${piExchangeRate.toLocaleString('id-ID')}). ${isGuestVariant ? 'Transfer ke wallet toko & tunjukkan ke kasir — tanyakan cara mulai menambang Pi!' : 'Transfer ke wallet toko melalui aplikasi Pi Browser Anda setelah checkout.'}` : `Pi is a cryptocurrency mined free from your phone. Your total equals ${convertRpToPi(cartSubtotal).toFixed(4)} π (rate: 1 π = Rp ${piExchangeRate.toLocaleString('id-ID')}). ${isGuestVariant ? 'Transfer to the store wallet & show the cashier — ask how to start mining Pi!' : 'Transfer to the store wallet via your Pi Browser app after checkout.'}`))), /*#__PURE__*/React.createElement("div", {
+    className: "bg-[#FFD700]/10 border border-dashed border-[#FFD700]/50 rounded-lg p-2.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5 mb-1"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Gift",
+    size: 12,
+    className: "text-[#FFD700]"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "font-extrabold text-[#FFD700] text-[9.5px] uppercase tracking-wide"
+  }, lang === 'id' ? 'Bonus Koin Pi untuk Pelanggan Baru!' : 'Pi Coin Bonus for New Members!')), /*#__PURE__*/React.createElement("span", {
+    className: "block text-white/80 text-[9px] leading-relaxed"
+  }, lang === 'id' ? /*#__PURE__*/React.createElement(React.Fragment, null, "Belum punya Pi? Daftar Pi Network sekarang dengan kode referal ", /*#__PURE__*/React.createElement("strong", {
+    className: "text-[#FFD700] font-black tracking-wider"
+  }, "\"", PI_REFERRAL_CODE, "\""), " dan dapatkan BONUS Koin Pi gratis sebagai modal awal menambang! 🎉") : /*#__PURE__*/React.createElement(React.Fragment, null, "Don't have Pi yet? Join Pi Network now with referral code ", /*#__PURE__*/React.createElement("strong", {
+    className: "text-[#FFD700] font-black tracking-wider"
+  }, "\"", PI_REFERRAL_CODE, "\""), " and get a FREE Pi Coin BONUS as your mining starter! 🎉")), /*#__PURE__*/React.createElement("a", {
+    href: PI_REFERRAL_LINK,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    className: "mt-2 w-full bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#2d1242] font-black text-[10px] py-2 rounded-lg flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Rocket",
+    size: 12,
+    strokeWidth: 2.5
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'DAFTAR & KLAIM BONUS PI' : 'JOIN & CLAIM PI BONUS')), /*#__PURE__*/React.createElement("span", {
+    className: "block text-center text-white/40 text-[8px] mt-1 break-all"
+  }, "minepi.com/giftcoins")));
+
   // Scans for Customer's specific orders list (For real-time shipment tracker!)
   const customerOrdersList = useMemo(() => {
     if (!currentUser || currentUser.role !== 'customer') return [];
@@ -2966,7 +3030,7 @@ function App() {
     className: "text-[#703d92]"
   }, "Rp ", (currentUser?.role === 'guest' ? cartSubtotal : cartTotal).toLocaleString('id-ID')))), currentUser && currentUser.role === 'guest' ?
   /*#__PURE__*/
-  /* --- GUEST / OFFLINE IN-STORE CHECKOUT (Cash atau QRIS saja!) --- */
+  /* --- GUEST / OFFLINE IN-STORE CHECKOUT (Cash / QRIS / Koin Pi) --- */
   React.createElement("form", {
     onSubmit: handleCheckoutWhatsApp,
     className: "bg-white p-4 rounded-2xl space-y-3 text-xs border shadow-sm"
@@ -2985,15 +3049,68 @@ function App() {
     name: "buyerName",
     placeholder: lang === 'id' ? 'Nama (opsional)' : 'Name (optional)',
     className: "w-full border rounded-xl p-2.5"
-  }), /*#__PURE__*/React.createElement("select", {
-    name: "paymentMethod",
-    required: true,
-    className: "w-full border rounded-xl p-2.5 bg-white font-bold text-gray-800 focus:border-[#703d92] focus:outline-none"
-  }, /*#__PURE__*/React.createElement("option", {
-    value: "Cash"
-  }, lang === 'id' ? '💵 Bayar Cash di Kasir' : '💵 Pay Cash at Counter'), /*#__PURE__*/React.createElement("option", {
-    value: "QRIS"
-  }, lang === 'id' ? '📱 Pindai QRIS di Kasir' : '📱 Scan QRIS at Counter')), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "block text-gray-600 font-bold mb-1.5"
+  }, lang === 'id' ? 'Pilih Metode Pembayaran di Kasir' : 'Choose Payment Method at Counter'), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-3 gap-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setGuestPaymentChoice('Cash'),
+    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${guestPaymentChoice === 'Cash' ? 'border-emerald-500 bg-emerald-50 shadow-md' : 'border-gray-200 bg-white hover:border-emerald-300'}`
+  }, guestPaymentChoice === 'Cash' && /*#__PURE__*/React.createElement("span", {
+    className: "absolute top-1 right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Check",
+    size: 10,
+    className: "text-white",
+    strokeWidth: 3.5
+  })), /*#__PURE__*/React.createElement("div", {
+    className: `w-9 h-9 rounded-full flex items-center justify-center ${guestPaymentChoice === 'Cash' ? 'bg-emerald-500' : 'bg-gray-100'}`
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Banknote",
+    size: 18,
+    className: guestPaymentChoice === 'Cash' ? 'text-white' : 'text-gray-400'
+  })), /*#__PURE__*/React.createElement("span", {
+    className: `font-extrabold text-[9px] leading-tight text-center ${guestPaymentChoice === 'Cash' ? 'text-emerald-700' : 'text-gray-500'}`
+  }, lang === 'id' ? 'Cash' : 'Cash')), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setGuestPaymentChoice('QRIS'),
+    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${guestPaymentChoice === 'QRIS' ? 'border-[#703d92] bg-purple-50 shadow-md' : 'border-gray-200 bg-white hover:border-purple-300'}`
+  }, guestPaymentChoice === 'QRIS' && /*#__PURE__*/React.createElement("span", {
+    className: "absolute top-1 right-1 w-4 h-4 bg-[#703d92] rounded-full flex items-center justify-center"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Check",
+    size: 10,
+    className: "text-white",
+    strokeWidth: 3.5
+  })), /*#__PURE__*/React.createElement("div", {
+    className: `w-9 h-9 rounded-full flex items-center justify-center ${guestPaymentChoice === 'QRIS' ? 'bg-[#703d92]' : 'bg-gray-100'}`
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "QrCode",
+    size: 18,
+    className: guestPaymentChoice === 'QRIS' ? 'text-[#FFD700]' : 'text-gray-400'
+  })), /*#__PURE__*/React.createElement("span", {
+    className: `font-extrabold text-[9px] leading-tight text-center ${guestPaymentChoice === 'QRIS' ? 'text-[#703d92]' : 'text-gray-500'}`
+  }, "QRIS")), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setGuestPaymentChoice('Koin Pi'),
+    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${guestPaymentChoice === 'Koin Pi' ? 'border-[#D4AF37] bg-amber-50 shadow-md' : 'border-gray-200 bg-white hover:border-amber-300'}`
+  }, guestPaymentChoice === 'Koin Pi' && /*#__PURE__*/React.createElement("span", {
+    className: "absolute top-1 right-1 w-4 h-4 bg-[#D4AF37] rounded-full flex items-center justify-center"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Check",
+    size: 10,
+    className: "text-white",
+    strokeWidth: 3.5
+  })), /*#__PURE__*/React.createElement("div", {
+    className: `w-9 h-9 rounded-full flex items-center justify-center ${guestPaymentChoice === 'Koin Pi' ? 'bg-gradient-to-tr from-[#D4AF37] to-[#FFD700]' : 'bg-gray-100'}`
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Coins",
+    size: 18,
+    className: guestPaymentChoice === 'Koin Pi' ? 'text-[#2d1242]' : 'text-gray-400'
+  })), /*#__PURE__*/React.createElement("span", {
+    className: `font-extrabold text-[9px] leading-tight text-center ${guestPaymentChoice === 'Koin Pi' ? 'text-[#B8860B]' : 'text-gray-500'}`
+  }, "Koin Pi π"))), guestPaymentChoice === 'Koin Pi' && renderPiEducationBanner(true)), /*#__PURE__*/React.createElement("button", {
     type: "submit",
     className: "w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold py-3 rounded-xl shadow"
   }, lang === 'id' ? '🧾 Catat Pesanan Offline' : '🧾 Record Offline Order')) :
@@ -3022,17 +3139,68 @@ function App() {
     defaultValue: currentUser?.address || '',
     placeholder: t('formAddress') + ' *',
     className: "w-full border rounded-xl p-2.5"
-  }), /*#__PURE__*/React.createElement("select", {
-    name: "paymentMethod",
-    required: true,
-    className: "w-full border rounded-xl p-2.5 bg-white font-bold text-gray-800 focus:border-[#703d92] focus:outline-none"
-  }, /*#__PURE__*/React.createElement("option", {
-    value: "Transfer QRIS"
-  }, lang === 'id' ? 'Transfer QRIS (Pindai QR)' : 'Transfer QRIS (Scan QR)'), /*#__PURE__*/React.createElement("option", {
-    value: "Koin Pi"
-  }, lang === 'id' ? 'Bayar pakai Koin Pi (Pi Network)' : 'Pay with Pi Coin (Pi Network)'), /*#__PURE__*/React.createElement("option", {
-    value: "COD"
-  }, lang === 'id' ? 'Bayar di Tempat (COD)' : 'Cash On Delivery (COD)')), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "block text-gray-600 font-bold mb-1.5"
+  }, lang === 'id' ? 'Pilih Metode Pembayaran' : 'Choose Payment Method'), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-3 gap-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setPaymentChoice('Transfer QRIS'),
+    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${paymentChoice === 'Transfer QRIS' ? 'border-[#703d92] bg-purple-50 shadow-md' : 'border-gray-200 bg-white hover:border-purple-300'}`
+  }, paymentChoice === 'Transfer QRIS' && /*#__PURE__*/React.createElement("span", {
+    className: "absolute top-1 right-1 w-4 h-4 bg-[#703d92] rounded-full flex items-center justify-center"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Check",
+    size: 10,
+    className: "text-white",
+    strokeWidth: 3.5
+  })), /*#__PURE__*/React.createElement("div", {
+    className: `w-9 h-9 rounded-full flex items-center justify-center ${paymentChoice === 'Transfer QRIS' ? 'bg-[#703d92]' : 'bg-gray-100'}`
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "QrCode",
+    size: 18,
+    className: paymentChoice === 'Transfer QRIS' ? 'text-[#FFD700]' : 'text-gray-400'
+  })), /*#__PURE__*/React.createElement("span", {
+    className: `font-extrabold text-[9px] leading-tight text-center ${paymentChoice === 'Transfer QRIS' ? 'text-[#703d92]' : 'text-gray-500'}`
+  }, "QRIS")), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setPaymentChoice('Koin Pi'),
+    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${paymentChoice === 'Koin Pi' ? 'border-[#D4AF37] bg-amber-50 shadow-md' : 'border-gray-200 bg-white hover:border-amber-300'}`
+  }, paymentChoice === 'Koin Pi' && /*#__PURE__*/React.createElement("span", {
+    className: "absolute top-1 right-1 w-4 h-4 bg-[#D4AF37] rounded-full flex items-center justify-center"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Check",
+    size: 10,
+    className: "text-white",
+    strokeWidth: 3.5
+  })), /*#__PURE__*/React.createElement("div", {
+    className: `w-9 h-9 rounded-full flex items-center justify-center ${paymentChoice === 'Koin Pi' ? 'bg-gradient-to-tr from-[#D4AF37] to-[#FFD700]' : 'bg-gray-100'}`
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Coins",
+    size: 18,
+    className: paymentChoice === 'Koin Pi' ? 'text-[#2d1242]' : 'text-gray-400'
+  })), /*#__PURE__*/React.createElement("span", {
+    className: `font-extrabold text-[9px] leading-tight text-center ${paymentChoice === 'Koin Pi' ? 'text-[#B8860B]' : 'text-gray-500'}`
+  }, "Koin Pi π")), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setPaymentChoice('COD'),
+    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${paymentChoice === 'COD' ? 'border-emerald-500 bg-emerald-50 shadow-md' : 'border-gray-200 bg-white hover:border-emerald-300'}`
+  }, paymentChoice === 'COD' && /*#__PURE__*/React.createElement("span", {
+    className: "absolute top-1 right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Check",
+    size: 10,
+    className: "text-white",
+    strokeWidth: 3.5
+  })), /*#__PURE__*/React.createElement("div", {
+    className: `w-9 h-9 rounded-full flex items-center justify-center ${paymentChoice === 'COD' ? 'bg-emerald-500' : 'bg-gray-100'}`
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Truck",
+    size: 18,
+    className: paymentChoice === 'COD' ? 'text-white' : 'text-gray-400'
+  })), /*#__PURE__*/React.createElement("span", {
+    className: `font-extrabold text-[9px] leading-tight text-center ${paymentChoice === 'COD' ? 'text-emerald-700' : 'text-gray-500'}`
+  }, "COD"))), paymentChoice === 'Koin Pi' && renderPiEducationBanner(false)), /*#__PURE__*/React.createElement("button", {
     type: "submit",
     className: "w-full bg-[#703d92] text-white font-bold py-3 rounded-xl shadow"
   }, lang === 'id' ? 'Kirim Pesanan' : 'Place Order')))), currentTab === 'Profil' && /*#__PURE__*/React.createElement("div", {
@@ -3149,7 +3317,7 @@ function App() {
     size: 15
   }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Masuk sebagai Tamu (Belanja di Toko)' : 'Continue as Guest (In-Store Shopping)')), /*#__PURE__*/React.createElement("p", {
     className: "text-center text-[9px] text-gray-400 mt-2 leading-relaxed"
-  }, lang === 'id' ? 'Khusus pelanggan langsung/offline — tanpa daftar & login. Pembayaran hanya Cash atau QRIS di kasir.' : 'For walk-in/offline customers — no registration needed. Payment via Cash or QRIS at the counter only.'))) : currentUser.role === 'guest' ?
+  }, lang === 'id' ? 'Khusus pelanggan langsung/offline — tanpa daftar & login. Pembayaran Cash, QRIS, atau Koin Pi π di kasir.' : 'For walk-in/offline customers — no registration needed. Payment via Cash, QRIS, or Pi Coin π at the counter.'))) : currentUser.role === 'guest' ?
   /*#__PURE__*/
   // B2. GUEST MODE PROFILE (Pelanggan Tamu / Offline)
   React.createElement("div", {
@@ -3174,7 +3342,7 @@ function App() {
     className: "bg-white rounded-2xl p-4 border shadow-sm text-[11px] text-gray-600 space-y-2"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "font-extrabold text-[#703d92] uppercase tracking-wider text-[11px] border-b pb-2"
-  }, lang === 'id' ? 'ℹ️ Info Mode Tamu' : 'ℹ️ Guest Mode Info'), /*#__PURE__*/React.createElement("p", null, "• ", lang === 'id' ? 'Pembayaran hanya Cash atau QRIS langsung di kasir.' : 'Payment via Cash or QRIS at the counter only.'), /*#__PURE__*/React.createElement("p", null, "• ", lang === 'id' ? 'Tanpa ongkir — barang diambil langsung di toko.' : 'No shipping fee — items picked up in-store.'), /*#__PURE__*/React.createElement("p", null, "• ", lang === 'id' ? 'Ingin belanja online + pengiriman? Silakan daftar akun pelanggan!' : 'Want online shopping + delivery? Please register a customer account!')), /*#__PURE__*/React.createElement("button", {
+  }, lang === 'id' ? 'ℹ️ Info Mode Tamu' : 'ℹ️ Guest Mode Info'), /*#__PURE__*/React.createElement("p", null, "• ", lang === 'id' ? 'Pembayaran Cash, QRIS, atau Koin Pi π langsung di kasir.' : 'Payment via Cash, QRIS, or Pi Coin π at the counter.'), /*#__PURE__*/React.createElement("p", null, "• ", lang === 'id' ? '🪙 Baru dengar Koin Pi? Tanyakan ke kasir cara menambang Pi gratis dari HP Anda!' : '🪙 New to Pi Coin? Ask our cashier how to mine Pi for free from your phone!'), /*#__PURE__*/React.createElement("p", null, "• ", lang === 'id' ? 'Tanpa ongkir — barang diambil langsung di toko.' : 'No shipping fee — items picked up in-store.'), /*#__PURE__*/React.createElement("p", null, "• ", lang === 'id' ? 'Ingin belanja online + pengiriman? Silakan daftar akun pelanggan!' : 'Want online shopping + delivery? Please register a customer account!')), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setCurrentUser(null);
       setAuthActiveTab('register');
@@ -4132,7 +4300,10 @@ function App() {
   }, "Promo")), /*#__PURE__*/React.createElement("div", {
     className: "relative flex flex-col items-center justify-center flex-1 h-full"
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => setShowQrisModal(true),
+    onClick: () => {
+      setQrisModalStartTab('qris');
+      setShowQrisModal(true);
+    },
     className: "absolute bg-gradient-to-tr from-[#703d92] to-[#2d1242] text-[#FFD700] w-14 h-14 rounded-full shadow-[0_4px_16px_rgba(255,215,0,0.35)] border-4 border-[#FFD700] flex items-center justify-center active:scale-95 transition-all focus:outline-none",
     style: {
       top: '-15px'
@@ -4220,7 +4391,8 @@ function App() {
       className: "text-[9px] leading-tight font-extrabold truncate w-full"
     }, translateCategory(cat.name)));
   })))), showQrisModal && (() => {
-    const [payTab, setPayTab] = React.useState('qris'); // qris | pi
+    const payTab = qrisModalStartTab; // qris | pi (lifted state — bisa dibuka langsung di tab Pi!)
+    const setPayTab = setQrisModalStartTab;
     const walletAddress = "GCTK4HANA7666SOLOHOSTPIEVENTECOLOGY777777777777777";
     const copyWallet = () => {
       navigator.clipboard.writeText(walletAddress);
@@ -4357,6 +4529,6 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a14fae548b3d62dc',t:'MTc4MzAxNjU5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1508f26bcf7f916',t:'MTc4MzAyNTgwOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

@@ -762,6 +762,121 @@ const supabaseService = {
       };
     }
   },
+  // ⚙️ SETTINGS — penyimpanan pengaturan Branding di database (anti-hilang saat refresh!)
+  getSettings: async () => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('settings').select('key, value');
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
+  saveSetting: async (key, value) => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        error
+      } = await client.from('settings').upsert([{
+        key,
+        value: String(value),
+        updated_at: new Date().toISOString()
+      }], {
+        onConflict: 'key'
+      });
+      return {
+        error
+      };
+    } catch (e) {
+      return {
+        error: e
+      };
+    }
+  },
+  // 🎏 BANNERS — banner promosi tersimpan di database
+  getBanners: async () => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('banners').select('*').order('id', {
+        ascending: true
+      });
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
+  upsertBanner: async banner => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        error
+      } = await client.from('banners').upsert([{
+        id: banner.id,
+        title: banner.title,
+        image: banner.image,
+        product_id: banner.productId || null
+      }], {
+        onConflict: 'id'
+      });
+      return {
+        error
+      };
+    } catch (e) {
+      return {
+        error: e
+      };
+    }
+  },
+  deleteBanner: async id => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        error
+      } = await client.from('banners').delete().eq('id', id);
+      return {
+        error
+      };
+    } catch (e) {
+      return {
+        error: e
+      };
+    }
+  },
   subscribeProducts: onUpdateCallback => {
     const client = getSupabaseClient();
     if (!client) return null;
@@ -1485,8 +1600,14 @@ function App() {
   });
 
   // 🪙 Alamat Wallet Pi & QR Code Pi Merchant (dapat diubah di Backoffice > Branding)
+  // ⚠️ DEFAULT = wallet Pi RESMI Toko Hana — jangan diubah sembarangan agar tidak salah kirim!
   const [piWalletAddress, setPiWalletAddress] = useState(() => {
-    return safeStorage.getItem('toko_hana_pi_wallet') || 'GCTK4HANA7666SOLOHOSTPIEVENTECOLOGY777777777777777';
+    const stored = safeStorage.getItem('toko_hana_pi_wallet');
+    // Migrasi otomatis: ganti alamat placeholder lama dengan wallet resmi
+    if (!stored || stored.indexOf('GCTK4HANA') === 0) {
+      return 'GCWYFGFRN6YHH62IL2DI4NZGOMKA7XPLZAJJIABAZYUH2U5S6XBS3ZVZ';
+    }
+    return stored;
   });
   const [piWalletQrUrl, setPiWalletQrUrl] = useState(() => {
     return safeStorage.getItem('toko_hana_pi_wallet_qr') || '';
@@ -1769,6 +1890,74 @@ function App() {
       }
     };
     fetchOrders();
+
+    // ⚙️ Muat SETTINGS dari database (sumber kebenaran utama — anti-hilang saat refresh!)
+    const fetchSettings = async () => {
+      const {
+        data,
+        error
+      } = await supabaseService.getSettings();
+      if (error) {
+        console.warn('Settings table not reachable (jalankan settings_banners.sql?):', error.message);
+        return;
+      }
+      if (data && data.length > 0) {
+        const map = {};
+        data.forEach(row => {
+          map[row.key] = row.value;
+        });
+        if (map.pi_wallet) {
+          setPiWalletAddress(map.pi_wallet);
+          safeStorage.setItem('toko_hana_pi_wallet', map.pi_wallet);
+        }
+        if (map.pi_wallet_qr !== undefined) {
+          setPiWalletQrUrl(map.pi_wallet_qr || '');
+          safeStorage.setItem('toko_hana_pi_wallet_qr', map.pi_wallet_qr || '');
+        }
+        if (map.pi_rate && parseFloat(map.pi_rate) > 0) {
+          setPiExchangeRate(parseFloat(map.pi_rate));
+          safeStorage.setItem('toko_hana_pi_rate', map.pi_rate);
+        }
+        if (map.wa_number) {
+          setMerchantWaNumber(map.wa_number);
+          safeStorage.setItem('toko_hana_wa_number', map.wa_number);
+        }
+        if (map.qris_image !== undefined) {
+          setQrisImageUrl(map.qris_image || '');
+          safeStorage.setItem('toko_hana_qris_image', map.qris_image || '');
+        }
+        if (map.header_pattern !== undefined) {
+          setHeaderPatternUrl(map.header_pattern || '');
+          safeStorage.setItem('toko_hana_header_pattern', map.header_pattern || '');
+        }
+        console.log('⚙️ Settings loaded from Supabase database!');
+      }
+    };
+    fetchSettings();
+
+    // 🎏 Muat BANNERS dari database
+    const fetchBanners = async () => {
+      const {
+        data,
+        error
+      } = await supabaseService.getBanners();
+      if (error) {
+        console.warn('Banners table not reachable (jalankan settings_banners.sql?):', error.message);
+        return;
+      }
+      if (data && data.length > 0) {
+        const mapped = data.map(b => ({
+          id: b.id,
+          title: b.title,
+          image: b.image,
+          productId: b.product_id || ''
+        }));
+        setBanners(mapped);
+        safeStorage.setItem('toko_hana_banners', JSON.stringify(mapped));
+        console.log('🎏 Banners loaded from Supabase database!');
+      }
+    };
+    fetchBanners();
     const channel = supabaseService.subscribeProducts(payload => {
       console.log('Realtime update detected in products table!');
       fetchProducts();
@@ -1820,6 +2009,9 @@ function App() {
   useEffect(() => {
     safeStorage.setItem('toko_hana_categories', JSON.stringify(categories));
   }, [categories]);
+  useEffect(() => {
+    safeStorage.setItem('toko_hana_banners', JSON.stringify(banners));
+  }, [banners]);
   useEffect(() => {
     safeStorage.setItem('toko_hana_customers', JSON.stringify(customers));
   }, [customers]);
@@ -2532,11 +2724,26 @@ function App() {
       resi: ''
     });
   };
+
+  // ⚙️ Simpan setting ke database Supabase (persist lintas perangkat & refresh)
+  const persistSettingToDb = (key, value) => {
+    supabaseService.saveSetting(key, value).then(({
+      error
+    }) => {
+      if (error) {
+        console.warn('Gagal simpan setting "' + key + '" ke DB:', error.message);
+        showToast(lang === 'id' ? '⚠️ Tersimpan lokal saja — tabel settings belum ada di database!' : '⚠️ Saved locally only — settings table missing in database!');
+      } else {
+        console.log('Setting "' + key + '" tersimpan ke database.');
+      }
+    });
+  };
   const handleSaveHeaderPattern = e => {
     e.preventDefault();
     const urlInput = e.target.elements.headerPattern.value.trim();
     setHeaderPatternUrl(urlInput);
     safeStorage.setItem('toko_hana_header_pattern', urlInput);
+    persistSettingToDb('header_pattern', urlInput);
     showToast('🖼️ Pattern Header diperbarui!');
   };
   const handleSaveQrisImage = e => {
@@ -2544,6 +2751,7 @@ function App() {
     const qrisInput = e.target.elements.qrisImage.value.trim();
     setQrisImageUrl(qrisInput);
     safeStorage.setItem('toko_hana_qris_image', qrisInput);
+    persistSettingToDb('qris_image', qrisInput);
     showToast('💳 Gambar QRIS Merchant diperbarui!');
   };
   const handleSaveWaNumber = e => {
@@ -2552,6 +2760,7 @@ function App() {
     const cleaned = input.replace(/[^0-9]/g, '');
     setMerchantWaNumber(cleaned);
     safeStorage.setItem('toko_hana_wa_number', cleaned);
+    persistSettingToDb('wa_number', cleaned);
     showToast(lang === 'id' ? '📞 Nomor WhatsApp Merchant diperbarui!' : '📞 Merchant WhatsApp number updated!');
   };
   const handleSavePiRate = e => {
@@ -2560,6 +2769,7 @@ function App() {
     if (val > 0) {
       setPiExchangeRate(val);
       safeStorage.setItem('toko_hana_pi_rate', val.toString());
+      persistSettingToDb('pi_rate', val.toString());
       showToast(lang === 'id' ? '🪙 Nilai tukar Koin Pi diperbarui!' : '🪙 Pi Network exchange rate updated!');
     }
   };
@@ -2575,8 +2785,10 @@ function App() {
     }
     setPiWalletAddress(addr);
     safeStorage.setItem('toko_hana_pi_wallet', addr);
+    persistSettingToDb('pi_wallet', addr);
     setPiWalletQrUrl(qrUrl);
     safeStorage.setItem('toko_hana_pi_wallet_qr', qrUrl);
+    persistSettingToDb('pi_wallet_qr', qrUrl);
     showToast(lang === 'id' ? '🪙 Pengaturan Wallet Pi berhasil disimpan!' : '🪙 Pi Wallet settings saved!');
   };
   const handleMainScroll = e => {
@@ -2601,13 +2813,33 @@ function App() {
       return;
     }
     const linkedProdId = bannerForm.productId ? parseInt(bannerForm.productId) : '';
+    // 🎏 Simpan banner ke DATABASE agar tidak hilang saat refresh!
+    const persistBannerToDb = banner => {
+      supabaseService.upsertBanner(banner).then(({
+        error
+      }) => {
+        if (error) {
+          console.warn('Gagal simpan banner ke DB:', error.message);
+          showToast(lang === 'id' ? '⚠️ Banner tersimpan lokal saja — tabel banners belum ada di database!' : '⚠️ Banner saved locally only — banners table missing in database!');
+        } else {
+          console.log('Banner tersimpan ke database.');
+        }
+      });
+    };
     if (editingBanner) {
+      const updatedBanner = {
+        id: editingBanner.id,
+        title: bannerForm.title,
+        image: bannerForm.image,
+        productId: linkedProdId
+      };
       setBanners(prev => prev.map(b => b.id === editingBanner.id ? {
         ...b,
         title: bannerForm.title,
         image: bannerForm.image,
         productId: linkedProdId
       } : b));
+      persistBannerToDb(updatedBanner);
       showToast(`✏️ Banner diperbarui!`);
     } else {
       const newId = banners.length > 0 ? Math.max(...banners.map(b => b.id)) + 1 : 1;
@@ -2618,6 +2850,7 @@ function App() {
         productId: linkedProdId
       };
       setBanners(prev => [...prev, newBanner]);
+      persistBannerToDb(newBanner);
       showToast(`✨ Banner ditambahkan!`);
     }
     setBannerForm({
@@ -2638,6 +2871,12 @@ function App() {
   const handleDeleteBanner = id => {
     if (confirm('Apakah Anda yakin ingin menghapus banner ini?')) {
       setBanners(prev => prev.filter(b => b.id !== id));
+      // 🎏 Hapus juga dari database!
+      supabaseService.deleteBanner(id).then(({
+        error
+      }) => {
+        if (error) console.warn('Gagal hapus banner dari DB:', error.message);else console.log('Banner terhapus dari database.');
+      });
       showToast('🗑️ Banner berhasil dihapus.');
     }
   };

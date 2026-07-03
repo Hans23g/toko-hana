@@ -877,6 +877,100 @@ const supabaseService = {
       };
     }
   },
+  // 🗂️ CATEGORIES — kategori produk tersimpan di database
+  getCategories: async () => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('categories').select('*').order('sort_order', {
+        ascending: true
+      });
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
+  saveCategories: async categoriesList => {
+    // Simpan SELURUH daftar kategori sekaligus (nama, ikon, urutan) — upsert massal
+    const client = getSupabaseClient();
+    if (!client) return {
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const rows = categoriesList.map((c, idx) => ({
+        name: c.name,
+        icon: c.icon,
+        sort_order: idx
+      }));
+      const {
+        error
+      } = await client.from('categories').upsert(rows, {
+        onConflict: 'name'
+      });
+      return {
+        error
+      };
+    } catch (e) {
+      return {
+        error: e
+      };
+    }
+  },
+  deleteCategory: async name => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        error
+      } = await client.from('categories').delete().eq('name', name);
+      return {
+        error
+      };
+    } catch (e) {
+      return {
+        error: e
+      };
+    }
+  },
+  // 👥 CUSTOMERS — rekap pelanggan dimuat dari database
+  getCustomers: async () => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('customers').select('*').order('id', {
+        ascending: true
+      });
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
   subscribeProducts: onUpdateCallback => {
     const client = getSupabaseClient();
     if (!client) return null;
@@ -1935,6 +2029,55 @@ function App() {
     };
     fetchSettings();
 
+    // 🗂️ Muat CATEGORIES dari database
+    const fetchCategories = async () => {
+      const {
+        data,
+        error
+      } = await supabaseService.getCategories();
+      if (error) {
+        console.warn('Categories table not reachable (jalankan categories_sync.sql?):', error.message);
+        return;
+      }
+      if (data && data.length > 0) {
+        const mapped = data.map(c => ({
+          name: c.name,
+          icon: c.icon
+        }));
+        setCategories(mapped);
+        safeStorage.setItem('toko_hana_categories', JSON.stringify(mapped));
+        console.log('🗂️ Categories loaded from Supabase database!');
+      }
+    };
+    fetchCategories();
+
+    // 👥 Muat CUSTOMERS (rekap pelanggan) dari database
+    const fetchCustomers = async () => {
+      const {
+        data,
+        error
+      } = await supabaseService.getCustomers();
+      if (error) {
+        console.warn('Customers fetch failed:', error.message);
+        return;
+      }
+      if (data && data.length > 0) {
+        const mapped = data.map(c => ({
+          id: c.id,
+          name: c.name,
+          phone: c.phone,
+          address: c.address,
+          email: c.email || '',
+          total_spending: c.total_spending || 0,
+          join_date: c.join_date || (c.created_at ? c.created_at.split('T')[0] : '')
+        }));
+        setCustomers(mapped);
+        safeStorage.setItem('toko_hana_customers', JSON.stringify(mapped));
+        console.log('👥 Customers loaded from Supabase database!');
+      }
+    };
+    fetchCustomers();
+
     // 🎏 Muat BANNERS dari database
     const fetchBanners = async () => {
       const {
@@ -2131,6 +2274,7 @@ function App() {
 
     // Update customers rekap list (skip for anonymous guest/offline buyers)
     if (!isGuestCheckout) {
+      const existingCust = customers.find(c => c.name.toLowerCase() === buyerName.toLowerCase());
       setCustomers(prevCustomers => {
         const existing = prevCustomers.find(c => c.name.toLowerCase() === buyerName.toLowerCase());
         if (existing) {
@@ -2152,6 +2296,33 @@ function App() {
           }];
         }
       });
+
+      // 👥 Sinkronkan rekap belanja pelanggan ke DATABASE juga!
+      const dbClient = getSupabaseClient();
+      if (dbClient) {
+        if (existingCust) {
+          dbClient.from('customers').update({
+            total_spending: (existingCust.total_spending || 0) + effectiveTotal,
+            phone: buyerPhone,
+            address: buyerAddress
+          }).eq('id', existingCust.id).then(({
+            error
+          }) => {
+            if (error) console.warn('Gagal update total_spending pelanggan di DB:', error.message);else console.log('Total belanja pelanggan diperbarui di database.');
+          });
+        } else {
+          dbClient.from('customers').insert([{
+            name: buyerName,
+            phone: buyerPhone,
+            address: buyerAddress,
+            total_spending: effectiveTotal
+          }]).then(({
+            error
+          }) => {
+            if (error) console.warn('Gagal insert pelanggan baru ke DB:', error.message);else console.log('Pelanggan baru dari checkout tersimpan ke database.');
+          });
+        }
+      }
     }
     setOrders(prevOrders => [newOrder, ...prevOrders]);
 
@@ -2459,6 +2630,23 @@ function App() {
       phone: updatedPhone,
       address: updatedAddress
     } : c));
+
+    // 👥 Sinkronkan perubahan profil ke DATABASE juga (cari via email/telepon/nama)
+    const dbClient = getSupabaseClient();
+    if (dbClient) {
+      const matched = customers.find(c => c.phone === currentUser.phone || c.name === currentUser.name);
+      if (matched) {
+        dbClient.from('customers').update({
+          name: updatedName,
+          phone: updatedPhone,
+          address: updatedAddress
+        }).eq('id', matched.id).then(({
+          error
+        }) => {
+          if (error) console.warn('Gagal update profil pelanggan di DB:', error.message);else console.log('Profil pelanggan diperbarui di database.');
+        });
+      }
+    }
     showToast('💾 Profil berhasil diperbarui!');
   };
 
@@ -2648,18 +2836,42 @@ function App() {
       alert('Mohon isi semua data kategori');
       return;
     }
+
+    // 🗂️ Simpan seluruh daftar kategori ke DATABASE (anti-hilang saat refresh!)
+    const persistCategoriesToDb = (list, renamedFrom) => {
+      const doSave = () => supabaseService.saveCategories(list).then(({
+        error
+      }) => {
+        if (error) {
+          console.warn('Gagal simpan kategori ke DB:', error.message);
+          showToast(lang === 'id' ? '⚠️ Tersimpan lokal saja — tabel categories belum ada di database!' : '⚠️ Saved locally only — categories table missing in database!');
+        } else {
+          console.log('Kategori tersimpan ke database.');
+        }
+      });
+      // Jika rename: hapus dulu nama lama dari DB agar tidak jadi duplikat
+      if (renamedFrom) {
+        supabaseService.deleteCategory(renamedFrom).then(() => doSave());
+      } else {
+        doSave();
+      }
+    };
     if (editingCategory) {
-      setCategories(prev => prev.map(c => c.name === editingCategory.name ? {
+      const updatedList = categories.map(c => c.name === editingCategory.name ? {
         ...c,
         name: catForm.name,
         icon: catForm.icon
-      } : c));
+      } : c);
+      setCategories(updatedList);
+      persistCategoriesToDb(updatedList, editingCategory.name !== catForm.name ? editingCategory.name : null);
       showToast(`✏️ Kategori "${catForm.name}" berhasil diubah!`);
     } else {
-      setCategories(prev => [...prev, {
+      const updatedList = [...categories, {
         name: catForm.name,
         icon: catForm.icon
-      }]);
+      }];
+      setCategories(updatedList);
+      persistCategoriesToDb(updatedList, null);
       showToast(`✨ Kategori "${catForm.name}" berhasil ditambahkan!`);
     }
     setCatForm({
@@ -2682,6 +2894,12 @@ function App() {
     }
     if (confirm(`Apakah Anda yakin ingin menghapus kategori "${catName}"?`)) {
       setCategories(prev => prev.filter(c => c.name !== catName));
+      // 🗂️ Hapus juga dari database!
+      supabaseService.deleteCategory(catName).then(({
+        error
+      }) => {
+        if (error) console.warn('Gagal hapus kategori dari DB:', error.message);else console.log('Kategori terhapus dari database.');
+      });
       showToast('🗑️ Kategori berhasil dihapus.');
     }
   };
@@ -2693,6 +2911,12 @@ function App() {
     newCategories[index] = newCategories[targetIndex];
     newCategories[targetIndex] = temp;
     setCategories(newCategories);
+    // 🗂️ Simpan urutan baru ke database (sort_order ikut index baru)
+    supabaseService.saveCategories(newCategories).then(({
+      error
+    }) => {
+      if (error) console.warn('Gagal simpan urutan kategori ke DB:', error.message);else console.log('Urutan kategori tersimpan ke database.');
+    });
   };
   const handleShipOrder = e => {
     e.preventDefault();
@@ -4857,5 +5081,5 @@ root.render(React.createElement(App));
 
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1552d0abcf0f8e6',t:'MTc4MzA3NDIxOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

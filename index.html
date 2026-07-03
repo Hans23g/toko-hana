@@ -3681,7 +3681,9 @@ function App() {
     strokeWidth: 2.5
   }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'DAFTAR & KLAIM BONUS PI' : 'JOIN & CLAIM PI BONUS')), /*#__PURE__*/React.createElement("span", {
     className: "block text-center text-white/40 text-[8px] mt-1 break-all"
-  }, "minepi.com/giftcoins")));
+  }, "minepi.com/giftcoins")), /*#__PURE__*/React.createElement("p", {
+    className: "text-[7.5px] text-white/40 font-semibold leading-relaxed text-center"
+  }, "⚖️ ", lang === 'id' ? 'Fitur edukasi komunitas. Penyelesaian pembayaran resmi dalam Rupiah sesuai UU No. 7/2011.' : 'Community education feature. Official settlement in Rupiah per Law No. 7/2011.'));
 
   // Scans for Customer's specific orders list (For real-time shipment tracker!)
   const customerOrdersList = useMemo(() => {
@@ -3722,7 +3724,7 @@ function App() {
     className: "text-[#FFD700]"
   }, "Hana")), /*#__PURE__*/React.createElement("p", {
     className: "mt-1.5 text-[11px] font-bold text-purple-200 tracking-[0.15em] uppercase animate-splash-rise-2"
-  }, lang === 'id' ? 'Warungnya Rakyat, Bayarnya Bisa Pakai π' : "The People's Store, Payable in π"), /*#__PURE__*/React.createElement("div", {
+  }, lang === 'id' ? 'Warungnya Rakyat, Siap Menyambut Ekosistem π' : "The People's Store, Ready for the π Ecosystem"), /*#__PURE__*/React.createElement("div", {
     className: "mt-6 flex gap-1.5 animate-splash-rise-2"
   }, /*#__PURE__*/React.createElement("span", {
     className: "w-2 h-2 bg-[#FFD700] rounded-full animate-bounce",
@@ -4006,11 +4008,15 @@ function App() {
     className: "font-extrabold text-[#FFD700] text-sm tracking-widest uppercase"
   }, "Toko Hana"), /*#__PURE__*/React.createElement("p", {
     className: "text-[10.5px] text-[#FFD700]/90 font-black tracking-wide"
-  }, lang === 'id' ? '"Warungnya Rakyat, Bayarnya Bisa Pakai π"' : '"The People\'s Store, Payable in π"'), /*#__PURE__*/React.createElement("p", {
+  }, lang === 'id' ? '"Warungnya Rakyat, Siap Menyambut Ekosistem π"' : '"The People\'s Store, Ready for the π Ecosystem"'), /*#__PURE__*/React.createElement("p", {
     className: "text-[10px] text-purple-200 font-medium max-w-[280px] mx-auto leading-relaxed"
-  }, lang === 'id' ? 'Dari warung tetangga jadi gerbang ekonomi digital. Belanja hemat, bayar pakai Rupiah atau Koin Pi, sambil panen HanaPoin! 🏪' : 'From a neighborhood stall to a digital economy gateway. Shop smart, pay in Rupiah or Pi Coin, and harvest HanaPoints! 🏪'), /*#__PURE__*/React.createElement("div", {
+  }, lang === 'id' ? 'Dari warung tetangga jadi gerbang ekonomi digital. Belanja hemat dengan Rupiah, panen HanaPoin, sambil belajar ekosistem Pi Network! 🏪' : 'From a neighborhood stall to a digital economy gateway. Shop smart in Rupiah, harvest HanaPoints, and learn the Pi Network ecosystem! 🏪'), /*#__PURE__*/React.createElement("div", {
+    className: "bg-black/25 rounded-xl p-2.5 max-w-[300px] mx-auto border border-purple-800/40"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-[8px] text-purple-300 font-semibold leading-relaxed text-justify"
+  }, "⚖️ ", lang === 'id' ? 'DISCLAIMER: Sesuai UU No. 7 Tahun 2011 tentang Mata Uang, seluruh transaksi pembayaran di Toko Hana diselesaikan HANYA dalam Rupiah (QRIS, Tunai, COD). Fitur Koin Pi bersifat edukasi, simulasi konversi & kesiapan ekosistem komunitas — BUKAN alat pembayaran yang sah. Kripto adalah aset dengan risiko; Toko Hana tidak menjual/menukarkan kripto.' : 'DISCLAIMER: In accordance with Indonesian Law No. 7/2011 on Currency, all payment transactions at Toko Hana are settled ONLY in Rupiah (QRIS, Cash, COD). Pi Coin features are for education, conversion simulation & community ecosystem readiness — NOT legal tender. Crypto is a risk-bearing asset; Toko Hana does not sell/exchange crypto.')), /*#__PURE__*/React.createElement("div", {
     className: "text-[8px] text-purple-300 font-bold uppercase tracking-wider pt-2 border-t border-purple-800/40"
-  }, "© 2026 Toko Hana v3.7 Global • Bogor, Indonesia 🇮🇩 • Solo Host Pi Ecosystem"))), currentTab === 'Promo' && /*#__PURE__*/React.createElement("div", {
+  }, "© 2026 Toko Hana v3.7 Global • Bogor, Indonesia 🇮🇩 • Pi Community Education Program"))), currentTab === 'Promo' && /*#__PURE__*/React.createElement("div", {
     className: "animate-fade-in pb-6 p-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center space-x-2 mb-4 bg-gradient-to-r from-red-50 to-orange-50 border border-red-100 p-3 rounded-2xl"
@@ -5922,9 +5928,9 @@ function App() {
       className: "font-extrabold text-amber-800 text-xs"
     }, lang === 'id' ? 'Event Komunitas Pi - Solo Host' : 'Pi Community Event - Solo Host'), /*#__PURE__*/React.createElement("p", {
       className: "text-[9px] text-amber-700 font-bold leading-relaxed"
-    }, lang === 'id' ? `Konversi Resmi: 1 Pi = Rp ${piExchangeRate.toLocaleString('id-ID')} (Rp 2.000 = ${(2000 / piExchangeRate).toLocaleString('en-US', {
+    }, lang === 'id' ? `Simulasi Konversi (Edukasi): 1 Pi = Rp ${piExchangeRate.toLocaleString('id-ID')} (Rp 2.000 = ${(2000 / piExchangeRate).toLocaleString('en-US', {
       maximumFractionDigits: 6
-    })} Pi)` : `Official Rate: 1 Pi = Rp ${piExchangeRate.toLocaleString('id-ID')} (Rp 2,000 = ${(2000 / piExchangeRate).toLocaleString('en-US', {
+    })} Pi)` : `Conversion Simulation (Educational): 1 Pi = Rp ${piExchangeRate.toLocaleString('id-ID')} (Rp 2,000 = ${(2000 / piExchangeRate).toLocaleString('en-US', {
       maximumFractionDigits: 6
     })} Pi)`)), piWalletQrUrl && /*#__PURE__*/React.createElement("div", {
       className: "w-full mt-3 flex flex-col items-center"
@@ -5956,7 +5962,7 @@ function App() {
       className: "bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 rounded-lg text-[10px] flex items-center"
     }, "Copy"))), /*#__PURE__*/React.createElement("p", {
       className: "text-[9px] text-gray-400 font-semibold text-center mt-3 max-w-[220px]"
-    }, lang === 'id' ? 'Silakan buka Pi Browser Wallet Anda dan lakukan transfer sesuai total Pi yang tertera.' : 'Please open your Pi Browser Wallet and complete the transfer.')), /*#__PURE__*/React.createElement("button", {
+    }, lang === 'id' ? 'Fitur komunitas eksperimental (Solo Host). Penyelesaian pembayaran resmi tetap dalam Rupiah sesuai UU No. 7/2011.' : 'Experimental community feature (Solo Host). Official payment settlement remains in Rupiah per Indonesian Law No. 7/2011.')), /*#__PURE__*/React.createElement("button", {
       type: "button",
       onClick: () => setShowQrisModal(false),
       className: "w-full mt-4 bg-gradient-to-r from-[#703d92] to-[#553C9A] text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md active:scale-95"
@@ -6021,6 +6027,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a157c536392cc9c6',t:'MTc4MzEwMTQyMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a157ed168e47f918',t:'MTc4MzEwMzA1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

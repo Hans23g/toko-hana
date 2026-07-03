@@ -984,6 +984,35 @@ const supabaseService = {
       console.warn('Realtime subscription registration skipped:', e);
       return null;
     }
+  },
+  // 🔔 REALTIME — orders & banners untuk notifikasi live!
+  subscribeOrders: onUpdateCallback => {
+    const client = getSupabaseClient();
+    if (!client) return null;
+    try {
+      return client.channel('realtime-orders-changes').on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'orders'
+      }, onUpdateCallback).subscribe();
+    } catch (e) {
+      console.warn('Orders realtime subscription skipped:', e);
+      return null;
+    }
+  },
+  subscribeBanners: onUpdateCallback => {
+    const client = getSupabaseClient();
+    if (!client) return null;
+    try {
+      return client.channel('realtime-banners-changes').on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'banners'
+      }, onUpdateCallback).subscribe();
+    } catch (e) {
+      console.warn('Banners realtime subscription skipped:', e);
+      return null;
+    }
   }
 };
 
@@ -1888,6 +1917,36 @@ function App() {
     stock: '50',
     sold: '0'
   });
+  // 🧾 POS RESTOK — Daftar Belanja ke Agen/Supplier
+  const [agentWaNumber, setAgentWaNumber] = useState(() => {
+    return safeStorage.getItem('toko_hana_agent_wa') || '';
+  });
+  const [lowStockThreshold, setLowStockThreshold] = useState(() => {
+    return parseInt(safeStorage.getItem('toko_hana_low_stock_threshold')) || 10;
+  });
+  const [restockSelection, setRestockSelection] = useState({}); // { productId: qtyToOrder }
+
+  // ⭐ HANAPOIN — Program Loyalti Pelanggan
+  const [pointsPerThousand, setPointsPerThousand] = useState(() => {
+    return parseInt(safeStorage.getItem('toko_hana_points_rate')) || 1; // 1 poin per Rp 1.000
+  });
+  const [redeemPointsChecked, setRedeemPointsChecked] = useState(false); // tukar 500 poin = Rp 5.000
+
+  // 🔔 NOTIFIKASI REAL-TIME
+  const [notifications, setNotifications] = useState(() => {
+    try {
+      const local = safeStorage.getItem('toko_hana_notifications');
+      return local ? JSON.parse(local) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [showNotifPanel, setShowNotifPanel] = useState(false);
+
+  // Refs agar callback realtime selalu membaca nilai terkini (anti-stale closure)
+  const currentUserRef = useRef(null);
+  const adminLoggedInRef = useRef(false);
+  const notifSoundEnabled = useRef(true);
   // Category Form Fields
   const [catForm, setCatForm] = useState({
     name: '',
@@ -2024,6 +2083,14 @@ function App() {
           setHeaderPatternUrl(map.header_pattern || '');
           safeStorage.setItem('toko_hana_header_pattern', map.header_pattern || '');
         }
+        if (map.agent_wa !== undefined) {
+          setAgentWaNumber(map.agent_wa || '');
+          safeStorage.setItem('toko_hana_agent_wa', map.agent_wa || '');
+        }
+        if (map.low_stock_threshold && parseInt(map.low_stock_threshold) > 0) {
+          setLowStockThreshold(parseInt(map.low_stock_threshold));
+          safeStorage.setItem('toko_hana_low_stock_threshold', map.low_stock_threshold);
+        }
         console.log('⚙️ Settings loaded from Supabase database!');
       }
     };
@@ -2069,6 +2136,7 @@ function App() {
           address: c.address,
           email: c.email || '',
           total_spending: c.total_spending || 0,
+          loyalty_points: c.loyalty_points || 0,
           join_date: c.join_date || (c.created_at ? c.created_at.split('T')[0] : '')
         }));
         setCustomers(mapped);
@@ -2105,6 +2173,46 @@ function App() {
       console.log('Realtime update detected in products table!');
       fetchProducts();
     });
+
+    // 🔔 REALTIME ORDERS — Notifikasi live untuk Admin & Pelanggan!
+    const ordersChannel = supabaseService.subscribeOrders(payload => {
+      console.log('Realtime orders event:', payload.eventType);
+      const row = payload.new || {};
+      const user = currentUserRef.current;
+      const isAdminSession = adminLoggedInRef.current;
+      if (payload.eventType === 'INSERT') {
+        // ADMIN: order baru masuk!
+        if (isAdminSession) {
+          pushNotification('🛎️', 'Order Baru Masuk!', `${row.id} — ${row.customer_name || 'Pelanggan'} • Rp ${(row.total || 0).toLocaleString('id-ID')} (${row.payment_method || '-'})`);
+          showToast(`🛎️ Order baru: ${row.id} dari ${row.customer_name || 'Pelanggan'}!`);
+        }
+        fetchOrders();
+      } else if (payload.eventType === 'UPDATE') {
+        // PELANGGAN: status pesanannya berubah!
+        if (user && user.role === 'customer' && row.customer_name && user.name && row.customer_name.toLowerCase() === user.name.toLowerCase()) {
+          if (row.status === 'Diproses') {
+            pushNotification('📦', 'Pesanan Diproses!', `Pesanan ${row.id} sedang dikemas oleh Toko Hana.`);
+            showToast(`📦 Pesanan ${row.id} sedang diproses!`);
+          } else if (row.status === 'Selesai' && row.resi) {
+            pushNotification('🚚', 'Pesanan Dikirim!', `${row.id} via ${row.courier || 'kurir'} — Resi: ${row.resi}`);
+            showToast(`🚚 Pesanan ${row.id} dikirim! Resi: ${row.resi}`);
+          }
+        }
+        // ADMIN pun dapat pembaruan data live
+        fetchOrders();
+      }
+    });
+
+    // 🔔 REALTIME BANNERS — Promo baru langsung dikabarkan ke pelanggan!
+    const bannersChannel = supabaseService.subscribeBanners(payload => {
+      if (payload.eventType === 'INSERT' && payload.new) {
+        const user = currentUserRef.current;
+        if (!adminLoggedInRef.current) {
+          pushNotification('🎉', 'Promo Baru di Toko Hana!', `"${payload.new.title}" — cek sekarang di halaman Home!`);
+        }
+      }
+      fetchBanners();
+    });
     const checkUser = async () => {
       // Sync login state with Supabase Auth
       const {
@@ -2138,12 +2246,13 @@ function App() {
     };
     checkUser();
     return () => {
-      if (channel && window.supabase) {
-        const {
-          createClient
-        } = window.supabase;
-        const client = createClient(supabaseUrl, supabaseKey);
-        client.removeChannel(channel);
+      if (window.supabase) {
+        const client = getSupabaseClient();
+        if (client) {
+          if (channel) client.removeChannel(channel);
+          if (ordersChannel) client.removeChannel(ordersChannel);
+          if (bannersChannel) client.removeChannel(bannersChannel);
+        }
       }
     };
   }, []);
@@ -2169,7 +2278,128 @@ function App() {
     } else {
       safeStorage.removeItem('toko_hana_active_user');
     }
+    currentUserRef.current = currentUser;
   }, [currentUser]);
+  useEffect(() => {
+    adminLoggedInRef.current = adminLoggedIn;
+  }, [adminLoggedIn]);
+
+  // 🔔 Persist notifikasi (maks 30 terakhir)
+  useEffect(() => {
+    safeStorage.setItem('toko_hana_notifications', JSON.stringify(notifications.slice(0, 30)));
+  }, [notifications]);
+
+  // 🔔 Tambah notifikasi baru + bunyi "ting!" lembut (Web Audio API — tanpa file eksternal!)
+  const pushNotification = (icon, title, body) => {
+    const newNotif = {
+      id: Date.now() + Math.random(),
+      icon,
+      title,
+      body,
+      time: new Date().toISOString(),
+      read: false
+    };
+    setNotifications(prev => [newNotif, ...prev].slice(0, 30));
+    // Suara notifikasi lembut
+    try {
+      if (notifSoundEnabled.current && window.AudioContext) {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.4);
+        osc.onended = () => ctx.close();
+      }
+    } catch (e) {/* audio blocked, tidak apa-apa */}
+  };
+  const unreadNotifCount = useMemo(() => notifications.filter(n => !n.read).length, [notifications]);
+  const markAllNotifsRead = () => setNotifications(prev => prev.map(n => ({
+    ...n,
+    read: true
+  })));
+  const clearAllNotifs = () => {
+    setNotifications([]);
+    setShowNotifPanel(false);
+  };
+
+  // ═══════════ ⭐ HANAPOIN — PROGRAM LOYALTI ═══════════
+  // Profil poin pelanggan yang sedang login
+  const myCustomerRecord = useMemo(() => {
+    if (!currentUser || currentUser.role !== 'customer') return null;
+    return (customers || []).find(c => c.name && currentUser.name && c.name.toLowerCase() === currentUser.name.toLowerCase() || c.phone && c.phone === currentUser.phone || c.email && currentUser.email && c.email === currentUser.email) || null;
+  }, [customers, currentUser]);
+  const myPoints = myCustomerRecord ? myCustomerRecord.loyalty_points || 0 : 0;
+
+  // Level pelanggan (gamifikasi!): Bronze → Silver → Gold → Pi Pioneer
+  const loyaltyLevel = useMemo(() => {
+    if (myPoints >= 10000) return {
+      name: 'Pi Pioneer',
+      emoji: '💎',
+      multiplier: 2,
+      next: null,
+      nextAt: null
+    };
+    if (myPoints >= 5000) return {
+      name: 'Gold',
+      emoji: '🥇',
+      multiplier: 1.5,
+      next: 'Pi Pioneer',
+      nextAt: 10000
+    };
+    if (myPoints >= 1000) return {
+      name: 'Silver',
+      emoji: '🥈',
+      multiplier: 1.2,
+      next: 'Gold',
+      nextAt: 5000
+    };
+    return {
+      name: 'Bronze',
+      emoji: '🥉',
+      multiplier: 1,
+      next: 'Silver',
+      nextAt: 1000
+    };
+  }, [myPoints]);
+
+  // Hitung poin yang akan didapat dari suatu total belanja
+  const calcPointsEarned = (totalRp, paymentMethod) => {
+    let pts = Math.floor(totalRp / 1000) * pointsPerThousand;
+    if (paymentMethod === 'Koin Pi') pts = pts * 2; // 🪙 Poin 2x untuk pembayar Pi!
+    pts = Math.floor(pts * loyaltyLevel.multiplier);
+    return pts;
+  };
+
+  // Tukar poin: 500 poin = potongan Rp 5.000
+  const REDEEM_UNIT_POINTS = 500;
+  const REDEEM_UNIT_VALUE = 5000;
+  const canRedeem = myPoints >= REDEEM_UNIT_POINTS;
+  const redeemDiscount = redeemPointsChecked && canRedeem ? REDEEM_UNIT_VALUE : 0;
+
+  // Update poin pelanggan (state + database!)
+  const applyPointsChange = (customerRecord, deltaPoints) => {
+    if (!customerRecord) return;
+    const newPoints = Math.max(0, (customerRecord.loyalty_points || 0) + deltaPoints);
+    setCustomers(prev => prev.map(c => c.id === customerRecord.id ? {
+      ...c,
+      loyalty_points: newPoints
+    } : c));
+    const dbClient = getSupabaseClient();
+    if (dbClient) {
+      dbClient.from('customers').update({
+        loyalty_points: newPoints
+      }).eq('id', customerRecord.id).then(({
+        error
+      }) => {
+        if (error) console.warn('Gagal sync poin ke DB (jalankan hanapoin_loyalty.sql?):', error.message);else console.log('⭐ Poin pelanggan tersinkron ke database:', newPoints);
+      });
+    }
+  };
 
   // Filter products by Tab and category
   const filteredProducts = useMemo(() => {
@@ -2253,8 +2483,25 @@ function App() {
 
     // Offline (guest in-store) orders: no delivery fee, channel marker embedded in payment_method
     const effectiveDeliveryFee = isGuestCheckout ? 0 : deliveryFee;
-    const effectiveTotal = cartSubtotal + effectiveDeliveryFee;
+    // ⭐ HANAPOIN: potongan tukar poin (hanya pelanggan login, bukan tamu)
+    const isMemberCheckout = !isGuestCheckout && currentUser && currentUser.role === 'customer' && myCustomerRecord;
+    const appliedRedeem = isMemberCheckout && redeemPointsChecked && canRedeem ? REDEEM_UNIT_VALUE : 0;
+    const effectiveTotal = Math.max(0, cartSubtotal + effectiveDeliveryFee - appliedRedeem);
     const dbPaymentMethod = isGuestCheckout ? `${paymentMethod} (Offline)` : paymentMethod;
+
+    // ⭐ HANAPOIN: hitung poin masuk & poin keluar
+    let pointsEarned = 0;
+    if (isMemberCheckout) {
+      pointsEarned = calcPointsEarned(effectiveTotal, paymentMethod);
+      const pointsDelta = pointsEarned - (appliedRedeem > 0 ? REDEEM_UNIT_POINTS : 0);
+      applyPointsChange(myCustomerRecord, pointsDelta);
+      if (appliedRedeem > 0) {
+        showToast(`⭐ ${REDEEM_UNIT_POINTS} poin ditukar potongan Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')}! +${pointsEarned} poin baru.`);
+      } else {
+        showToast(`⭐ Selamat! Anda mendapat +${pointsEarned} HanaPoin${paymentMethod === 'Koin Pi' ? ' (2x bonus Pi! 🪙)' : ''}!`);
+      }
+      setRedeemPointsChecked(false);
+    }
     const newOrder = {
       id: newOrderId,
       customer_name: buyerName,
@@ -2377,7 +2624,10 @@ function App() {
     message += `------------------------------------------\n`;
     message += `*Subtotal:* Rp ${cartSubtotal.toLocaleString('id-ID')} (${convertRpToPi(cartSubtotal).toFixed(4)} π)\n`;
     message += `*Ongkir:* ${deliveryFee === 0 ? 'Gratis (Promo Pi)' : `Rp ${deliveryFee.toLocaleString('id-ID')} (${convertRpToPi(deliveryFee).toFixed(4)} π)`}\n`;
-    message += `*Total Pembayaran:* *Rp ${cartTotal.toLocaleString('id-ID')}* (*${convertRpToPi(cartTotal).toFixed(4)} π*)\n\n`;
+    if (appliedRedeem > 0) {
+      message += `*⭐ Potongan HanaPoin:* -Rp ${appliedRedeem.toLocaleString('id-ID')} (${REDEEM_UNIT_POINTS} poin)\n`;
+    }
+    message += `*Total Pembayaran:* *Rp ${effectiveTotal.toLocaleString('id-ID')}* (*${convertRpToPi(effectiveTotal).toFixed(4)} π*)\n\n`;
     message += `*--- DATA PENGIRIMAN ---*\n`;
     message += `👤 *Nama:* ${buyerName}\n`;
     message += `📞 *WA/Telp:* ${buyerPhone}\n`;
@@ -2918,6 +3168,104 @@ function App() {
       if (error) console.warn('Gagal simpan urutan kategori ke DB:', error.message);else console.log('Urutan kategori tersimpan ke database.');
     });
   };
+
+  // ═══════════ 🧾 POS RESTOK — DAFTAR BELANJA KE AGEN/SUPPLIER ═══════════
+  // Produk stok menipis (di bawah ambang batas), diurutkan dari paling kritis
+  const lowStockProducts = useMemo(() => {
+    return (products || []).filter(p => p && (p.stock || 0) <= lowStockThreshold).sort((a, b) => (a.stock || 0) - (b.stock || 0));
+  }, [products, lowStockThreshold]);
+
+  // Toggle centang produk di daftar belanja restok
+  const toggleRestockItem = (productId, defaultQty) => {
+    setRestockSelection(prev => {
+      const next = {
+        ...prev
+      };
+      if (next[productId] !== undefined) {
+        delete next[productId];
+      } else {
+        next[productId] = defaultQty;
+      }
+      return next;
+    });
+  };
+  const updateRestockQty = (productId, qty) => {
+    const cleaned = Math.max(1, parseInt(qty) || 1);
+    setRestockSelection(prev => ({
+      ...prev,
+      [productId]: cleaned
+    }));
+  };
+
+  // Pilih semua / kosongkan semua
+  const selectAllLowStock = () => {
+    const all = {};
+    lowStockProducts.forEach(p => {
+      all[p.id] = restockSelection[p.id] || suggestRestockQty(p);
+    });
+    setRestockSelection(all);
+  };
+  const clearRestockSelection = () => setRestockSelection({});
+
+  // Saran jumlah pesan: genapkan ke kelipatan 10 di atas ambang batas (min 10)
+  const suggestRestockQty = p => {
+    const deficit = Math.max(lowStockThreshold * 2 - (p.stock || 0), 10);
+    return Math.ceil(deficit / 10) * 10;
+  };
+
+  // Simpan pengaturan POS Restok (WA agen + ambang batas stok)
+  const handleSaveRestockSettings = e => {
+    e.preventDefault();
+    const waInput = e.target.elements.agentWa.value.trim().replace(/[^0-9]/g, '');
+    const thresholdInput = parseInt(e.target.elements.threshold.value.trim());
+    if (!waInput) {
+      alert(lang === 'id' ? 'Mohon isi nomor WhatsApp Agen!' : 'Please fill the Agent WhatsApp number!');
+      return;
+    }
+    setAgentWaNumber(waInput);
+    safeStorage.setItem('toko_hana_agent_wa', waInput);
+    persistSettingToDb('agent_wa', waInput);
+    if (thresholdInput > 0) {
+      setLowStockThreshold(thresholdInput);
+      safeStorage.setItem('toko_hana_low_stock_threshold', thresholdInput.toString());
+      persistSettingToDb('low_stock_threshold', thresholdInput.toString());
+    }
+    showToast(lang === 'id' ? '🧾 Pengaturan Restok Agen tersimpan!' : '🧾 Restock settings saved!');
+  };
+
+  // 📤 Kirim Daftar Belanja terpilih ke WhatsApp Agen
+  const handleSendRestockToAgent = () => {
+    const selectedIds = Object.keys(restockSelection);
+    if (selectedIds.length === 0) {
+      alert(lang === 'id' ? 'Pilih dulu barang yang mau dipesan ke agen! ✅' : 'Please select items to order from the agent first! ✅');
+      return;
+    }
+    if (!agentWaNumber) {
+      alert(lang === 'id' ? 'Nomor WhatsApp Agen belum diatur! Isi dulu di form pengaturan di atas daftar.' : 'Agent WhatsApp number not set! Fill it in the settings form above the list.');
+      return;
+    }
+    const selectedProducts = selectedIds.map(id => products.find(p => p.id === parseInt(id) || p.id === id)).filter(Boolean);
+    let message = `*🧾 DAFTAR BELANJA RESTOK — TOKO HANA*\n`;
+    message += `📅 ${new Date().toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    })}\n`;
+    message += `==========================================\n`;
+    selectedProducts.forEach((p, idx) => {
+      const qty = restockSelection[p.id];
+      message += `${idx + 1}. *${p.name}*\n`;
+      message += `    Pesan: *${qty} pcs* (sisa stok: ${p.stock || 0})\n`;
+    });
+    message += `==========================================\n`;
+    message += `Total: *${selectedProducts.length} jenis barang*\n\n`;
+    message += `Mohon konfirmasi ketersediaan & harga terbaru ya. Terima kasih! 🙏\n`;
+    message += `— Toko Hana 🏪`;
+    const waUrl = `https://wa.me/${agentWaNumber}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+    showToast(lang === 'id' ? `📤 Daftar ${selectedProducts.length} barang dikirim ke WA Agen!` : `📤 List of ${selectedProducts.length} items sent to Agent WA!`);
+  };
   const handleShipOrder = e => {
     e.preventDefault();
     if (!selectedOrderToShip) return;
@@ -3266,14 +3614,19 @@ function App() {
   }))), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center space-x-2 flex-shrink-0"
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => showToast('🔔 Tidak ada notifikasi baru.'),
+    onClick: () => {
+      setShowNotifPanel(!showNotifPanel);
+      if (!showNotifPanel) markAllNotifsRead();
+    },
     className: "w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors relative",
     title: "Notifikasi"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "Bell",
     size: 18,
     className: "text-white"
-  })), /*#__PURE__*/React.createElement("button", {
+  }), unreadNotifCount > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "absolute -top-0.5 -right-0.5 bg-red-500 text-white font-black text-[8px] min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center border-2 border-[#703d92] animate-pulse"
+  }, unreadNotifCount > 9 ? '9+' : unreadNotifCount)), /*#__PURE__*/React.createElement("button", {
     onClick: () => setLang(lang === 'id' ? 'en' : 'id'),
     className: "w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex flex-col items-center justify-center transition-all border border-white/20 cursor-pointer active:scale-95",
     title: lang === 'id' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia'
@@ -3284,7 +3637,57 @@ function App() {
     strokeWidth: 2
   }), /*#__PURE__*/React.createElement("span", {
     className: "text-[8px] font-black uppercase text-amber-300 mt-0.5 leading-none"
-  }, lang)))))), /*#__PURE__*/React.createElement("main", {
+  }, lang))))), showNotifPanel && /*#__PURE__*/React.createElement("div", {
+    className: "absolute top-full right-2 mt-1 w-[calc(100%-16px)] max-w-sm bg-white rounded-2xl shadow-2xl border z-[60] overflow-hidden animate-fade-in"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between px-4 py-2.5 bg-[#703d92] text-white"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-extrabold text-[11px] flex items-center gap-1.5"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Bell",
+    size: 13,
+    className: "text-[#FFD700]"
+  }), lang === 'id' ? 'Notifikasi' : 'Notifications'), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2"
+  }, notifications.length > 0 && /*#__PURE__*/React.createElement("button", {
+    onClick: clearAllNotifs,
+    className: "text-[9px] font-bold text-purple-200 hover:text-white"
+  }, lang === 'id' ? 'Hapus Semua' : 'Clear All'), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setShowNotifPanel(false),
+    className: "p-1 bg-white/15 rounded-full"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "X",
+    size: 12
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "max-h-72 overflow-y-auto no-scrollbar"
+  }, notifications.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "p-6 text-center"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Bell",
+    size: 24,
+    className: "text-gray-200 mx-auto mb-2"
+  }), /*#__PURE__*/React.createElement("p", {
+    className: "text-[10px] text-gray-400 font-semibold"
+  }, lang === 'id' ? 'Belum ada notifikasi. Aktivitas toko akan muncul di sini secara real-time! ⚡' : 'No notifications yet. Store activity will appear here in real-time! ⚡')) : notifications.map(n => /*#__PURE__*/React.createElement("div", {
+    key: n.id,
+    className: `flex items-start gap-2.5 px-4 py-3 border-b border-gray-50 ${!n.read ? 'bg-purple-50/50' : 'bg-white'}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-lg flex-shrink-0"
+  }, n.icon), /*#__PURE__*/React.createElement("div", {
+    className: "min-w-0"
+  }, /*#__PURE__*/React.createElement("h6", {
+    className: "font-extrabold text-[10px] text-gray-800"
+  }, n.title), /*#__PURE__*/React.createElement("p", {
+    className: "text-[9px] text-gray-500 leading-relaxed"
+  }, n.body), /*#__PURE__*/React.createElement("span", {
+    className: "text-[8px] text-gray-300 font-bold"
+  }, new Date(n.time).toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit'
+  }), " • ", new Date(n.time).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short'
+  })))))))), /*#__PURE__*/React.createElement("main", {
     ref: mainScrollRef,
     onScroll: handleMainScroll,
     className: "flex-1 overflow-y-auto flex flex-col scroll-smooth"
@@ -3511,11 +3914,33 @@ function App() {
     className: "flex justify-between text-xs text-gray-500"
   }, /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Subtotal Belanja' : 'Shopping Subtotal'), /*#__PURE__*/React.createElement("span", null, "Rp ", cartSubtotal.toLocaleString('id-ID'))), /*#__PURE__*/React.createElement("div", {
     className: "flex justify-between text-xs text-gray-500"
-  }, /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Ongkir' : 'Shipping Fee'), /*#__PURE__*/React.createElement("span", null, currentUser?.role === 'guest' ? lang === 'id' ? 'Gratis (Ambil di Toko)' : 'Free (In-Store Pickup)' : deliveryFee === 0 ? lang === 'id' ? 'Gratis' : 'Free' : `Rp ${deliveryFee.toLocaleString('id-ID')}`)), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Ongkir' : 'Shipping Fee'), /*#__PURE__*/React.createElement("span", null, currentUser?.role === 'guest' ? lang === 'id' ? 'Gratis (Ambil di Toko)' : 'Free (In-Store Pickup)' : deliveryFee === 0 ? lang === 'id' ? 'Gratis' : 'Free' : `Rp ${deliveryFee.toLocaleString('id-ID')}`)), currentUser?.role === 'customer' && myCustomerRecord && /*#__PURE__*/React.createElement("div", {
+    className: `flex items-center justify-between gap-2 p-2.5 rounded-xl border-2 transition-all ${canRedeem ? redeemPointsChecked ? 'border-[#FFD700] bg-amber-50' : 'border-amber-200 bg-amber-50/40' : 'border-gray-100 bg-gray-50 opacity-70'}`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    disabled: !canRedeem,
+    onClick: () => setRedeemPointsChecked(!redeemPointsChecked),
+    className: `w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${redeemPointsChecked && canRedeem ? 'bg-[#D4AF37] border-[#D4AF37]' : 'bg-white border-gray-300'}`
+  }, redeemPointsChecked && canRedeem && /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Check",
+    size: 12,
+    className: "text-white",
+    strokeWidth: 3.5
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "block font-extrabold text-[10px] text-amber-700"
+  }, "⭐ ", lang === 'id' ? `Tukar ${REDEEM_UNIT_POINTS} poin = potongan Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')}` : `Redeem ${REDEEM_UNIT_POINTS} pts = Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} off`), /*#__PURE__*/React.createElement("span", {
+    className: "text-[9px] text-gray-500 font-semibold"
+  }, lang === 'id' ? `Poin Anda: ${myPoints.toLocaleString('id-ID')}` : `Your points: ${myPoints.toLocaleString('id-ID')}`, !canRedeem && (lang === 'id' ? ' (belum cukup)' : ' (not enough)'))))), redeemDiscount > 0 && currentUser?.role === 'customer' && /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between text-xs font-bold text-amber-600"
+  }, /*#__PURE__*/React.createElement("span", null, "⭐ ", lang === 'id' ? 'Potongan HanaPoin' : 'HanaPoin Discount'), /*#__PURE__*/React.createElement("span", null, "- Rp ", redeemDiscount.toLocaleString('id-ID'))), /*#__PURE__*/React.createElement("div", {
     className: "border-t pt-2 flex justify-between text-sm font-extrabold text-gray-800"
   }, /*#__PURE__*/React.createElement("span", null, t('totalLabel')), /*#__PURE__*/React.createElement("span", {
     className: "text-[#703d92]"
-  }, "Rp ", (currentUser?.role === 'guest' ? cartSubtotal : cartTotal).toLocaleString('id-ID')))), currentUser && currentUser.role === 'guest' ?
+  }, "Rp ", (currentUser?.role === 'guest' ? cartSubtotal : Math.max(0, cartTotal - (currentUser?.role === 'customer' ? redeemDiscount : 0))).toLocaleString('id-ID'))), currentUser?.role === 'customer' && myCustomerRecord && cartSubtotal > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "text-center text-[9px] font-bold text-emerald-600 bg-emerald-50 rounded-lg py-1.5"
+  }, lang === 'id' ? `⭐ Anda akan mendapat ± ${calcPointsEarned(Math.max(0, cartTotal - redeemDiscount), paymentChoice)} HanaPoin dari belanja ini${paymentChoice === 'Koin Pi' ? ' (2x bonus Koin Pi! 🪙)' : ''}` : `⭐ You'll earn ± ${calcPointsEarned(Math.max(0, cartTotal - redeemDiscount), paymentChoice)} HanaPoints from this order${paymentChoice === 'Koin Pi' ? ' (2x Pi Coin bonus! 🪙)' : ''}`)), currentUser && currentUser.role === 'guest' ?
   /*#__PURE__*/
   /* --- GUEST / OFFLINE IN-STORE CHECKOUT (Cash / QRIS / Koin Pi) --- */
   React.createElement("form", {
@@ -3862,6 +4287,51 @@ function App() {
   }, currentUser.name), /*#__PURE__*/React.createElement("p", {
     className: "text-[10px] text-purple-200 font-black uppercase tracking-wider"
   }, lang === 'id' ? 'Pelanggan Setia Toko Hana' : 'Toko Hana Loyal Customer')), /*#__PURE__*/React.createElement("div", {
+    className: "bg-gradient-to-br from-[#2d1242] via-[#553C9A] to-[#703d92] rounded-3xl p-4.5 p-5 shadow-lg border border-[#FFD700]/30 relative overflow-hidden"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "absolute -right-8 -top-8 w-24 h-24 bg-[#FFD700]/10 rounded-full"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "absolute right-10 bottom-2 text-[#FFD700]/10 font-black text-5xl select-none"
+  }, "⭐"), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between mb-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Sparkles",
+    size: 14,
+    className: "text-[#FFD700]"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "font-black text-[#FFD700] text-[11px] uppercase tracking-widest"
+  }, "HanaPoin")), /*#__PURE__*/React.createElement("span", {
+    className: "bg-[#FFD700]/20 border border-[#FFD700]/40 text-[#FFD700] font-black text-[9px] px-2.5 py-1 rounded-full"
+  }, loyaltyLevel.emoji, " ", loyaltyLevel.name)), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-end gap-1.5"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl font-black text-white leading-none"
+  }, myPoints.toLocaleString('id-ID')), /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px] text-purple-200 font-bold mb-0.5"
+  }, lang === 'id' ? 'poin' : 'pts')), loyaltyLevel.next ? /*#__PURE__*/React.createElement("div", {
+    className: "mt-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-between text-[8px] font-bold text-purple-200 mb-1"
+  }, /*#__PURE__*/React.createElement("span", null, lang === 'id' ? `Menuju ${loyaltyLevel.next}` : `Towards ${loyaltyLevel.next}`), /*#__PURE__*/React.createElement("span", null, myPoints.toLocaleString('id-ID'), " / ", loyaltyLevel.nextAt.toLocaleString('id-ID'))), /*#__PURE__*/React.createElement("div", {
+    className: "w-full bg-white/10 h-2 rounded-full overflow-hidden"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-gradient-to-r from-[#D4AF37] to-[#FFD700] h-full rounded-full transition-all",
+    style: {
+      width: `${Math.min(100, myPoints / loyaltyLevel.nextAt * 100)}%`
+    }
+  }))) : /*#__PURE__*/React.createElement("div", {
+    className: "mt-3 text-[9px] font-black text-[#FFD700]"
+  }, "💎 ", lang === 'id' ? 'LEVEL TERTINGGI TERCAPAI — Poin 2x setiap belanja!' : 'MAX LEVEL REACHED — 2x points every order!'), /*#__PURE__*/React.createElement("div", {
+    className: "mt-3 grid grid-cols-2 gap-2 text-[8.5px] font-bold"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 rounded-lg p-2 text-purple-100"
+  }, "⭐ ", lang === 'id' ? `1 poin / Rp 1.000 belanja (x${loyaltyLevel.multiplier} level Anda)` : `1 pt / Rp 1,000 spent (x${loyaltyLevel.multiplier} your level)`), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 rounded-lg p-2 text-purple-100"
+  }, "🪙 ", lang === 'id' ? 'Bayar pakai Koin Pi = poin 2x lipat!' : 'Pay with Pi Coin = 2x points!'), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 rounded-lg p-2 text-purple-100 col-span-2"
+  }, "🎁 ", lang === 'id' ? `Tukar ${REDEEM_UNIT_POINTS} poin = potongan Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} di keranjang belanja!` : `Redeem ${REDEEM_UNIT_POINTS} pts = Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} off in your cart!`))), /*#__PURE__*/React.createElement("div", {
     className: "bg-white rounded-2xl p-4 border shadow-sm"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "font-extrabold text-[#703d92] border-b pb-2 mb-3 flex items-center gap-1.5 uppercase tracking-wider text-[11px]"
@@ -4009,6 +4479,11 @@ function App() {
     label: 'Produk',
     icon: 'ShoppingBag'
   }, {
+    id: 'restok',
+    label: 'POS Restok',
+    icon: 'ClipboardList',
+    badge: lowStockProducts.length
+  }, {
     id: 'kategori',
     label: 'Kategori',
     icon: 'LayoutGrid'
@@ -4040,7 +4515,9 @@ function App() {
     name: tab.icon,
     size: 11,
     className: adminActiveSubMenu === tab.id ? 'text-amber-300' : 'text-[#703d92]'
-  }), /*#__PURE__*/React.createElement("span", null, tab.label)))), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("span", null, tab.label), tab.badge > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "bg-red-500 text-white font-black text-[8px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center animate-pulse"
+  }, tab.badge)))), /*#__PURE__*/React.createElement("div", {
     className: "flex-1 p-3 overflow-y-auto pb-8"
   }, adminActiveSubMenu === 'produk' && /*#__PURE__*/React.createElement("div", {
     className: "space-y-4"
@@ -4183,7 +4660,148 @@ function App() {
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "Trash2",
     size: 12
-  })))))))), adminActiveSubMenu === 'kategori' && /*#__PURE__*/React.createElement("div", {
+  })))))))), adminActiveSubMenu === 'restok' && /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4 text-xs"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-2xl p-4 border shadow-sm"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3 flex items-center gap-1.5"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "ClipboardList",
+    size: 13
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'POS Restok — Belanja ke Agen' : 'Restock POS — Order from Agent')), /*#__PURE__*/React.createElement("form", {
+    onSubmit: handleSaveRestockSettings,
+    className: "grid grid-cols-2 gap-2.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-span-2 sm:col-span-1"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "block font-semibold text-gray-600 mb-1"
+  }, lang === 'id' ? 'No. WA Agen/Supplier (62...)' : 'Agent/Supplier WA Number (62...)'), /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    name: "agentWa",
+    defaultValue: agentWaNumber,
+    placeholder: "Contoh: 6281234567890",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-[#703d92] font-semibold"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-span-2 sm:col-span-1"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "block font-semibold text-gray-600 mb-1"
+  }, lang === 'id' ? 'Alert Stok Menipis ≤' : 'Low Stock Alert ≤'), /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    name: "threshold",
+    defaultValue: lowStockThreshold,
+    min: "1",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-[#703d92] font-semibold"
+  })), /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    className: "col-span-2 bg-[#703d92] text-white font-bold py-2.5 rounded-xl text-xs shadow-sm active:scale-95 transition-all"
+  }, lang === 'id' ? '💾 Simpan Pengaturan Restok' : '💾 Save Restock Settings'))), lowStockProducts.length > 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "bg-red-50 border border-red-200 rounded-2xl p-3.5 flex items-start gap-2.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "AlertTriangle",
+    size: 15,
+    className: "text-white"
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "block font-extrabold text-red-700 text-[11px]"
+  }, lang === 'id' ? `⚠️ ${lowStockProducts.length} barang stoknya menipis (≤ ${lowStockThreshold} pcs)!` : `⚠️ ${lowStockProducts.length} items running low (≤ ${lowStockThreshold} pcs)!`), /*#__PURE__*/React.createElement("span", {
+    className: "text-[9px] text-red-500 font-semibold"
+  }, lang === 'id' ? 'Centang barang di bawah, atur jumlah pesan, lalu kirim ke WA agen.' : 'Check items below, set order qty, then send to your agent\'s WA.'))) : /*#__PURE__*/React.createElement("div", {
+    className: "bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "PackageSearch",
+    size: 22,
+    className: "text-emerald-500 mx-auto mb-1.5"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "block font-extrabold text-emerald-700 text-[11px]"
+  }, lang === 'id' ? '✅ Semua stok aman! Tidak ada barang di bawah ambang batas.' : '✅ All stock is healthy! No items below the threshold.'), /*#__PURE__*/React.createElement("span", {
+    className: "text-[9px] text-emerald-600"
+  }, lang === 'id' ? `Ambang batas saat ini: ≤ ${lowStockThreshold} pcs. Naikkan di pengaturan jika ingin daftar lebih luas.` : `Current threshold: ≤ ${lowStockThreshold} pcs. Raise it in settings for a broader list.`)), lowStockProducts.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-2xl p-4 border shadow-sm"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between mb-3"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-extrabold text-[11px] text-[#703d92] uppercase tracking-wider flex items-center gap-1.5"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "ListChecks",
+    size: 13
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Daftar Belanja' : 'Shopping List', " (", Object.keys(restockSelection).length, "/", lowStockProducts.length, ")")), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-1.5"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: selectAllLowStock,
+    className: "bg-purple-50 text-[#703d92] font-bold px-2.5 py-1 rounded-lg text-[9px] border border-purple-100"
+  }, lang === 'id' ? 'Pilih Semua' : 'Select All'), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: clearRestockSelection,
+    className: "bg-gray-50 text-gray-500 font-bold px-2.5 py-1 rounded-lg text-[9px] border border-gray-200"
+  }, lang === 'id' ? 'Kosongkan' : 'Clear'))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2 max-h-80 overflow-y-auto no-scrollbar"
+  }, lowStockProducts.map(p => {
+    const isChecked = restockSelection[p.id] !== undefined;
+    const isCritical = (p.stock || 0) <= Math.max(3, Math.floor(lowStockThreshold / 3));
+    return /*#__PURE__*/React.createElement("div", {
+      key: p.id,
+      className: `flex items-center gap-2.5 p-2.5 rounded-xl border-2 transition-all ${isChecked ? 'border-[#703d92] bg-purple-50/60' : 'border-gray-100 bg-gray-50/50'}`
+    }, /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      onClick: () => toggleRestockItem(p.id, suggestRestockQty(p)),
+      className: `w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${isChecked ? 'bg-[#703d92] border-[#703d92]' : 'bg-white border-gray-300'}`
+    }, isChecked && /*#__PURE__*/React.createElement(LucideIcon, {
+      name: "Check",
+      size: 12,
+      className: "text-white",
+      strokeWidth: 3.5
+    })), /*#__PURE__*/React.createElement("img", {
+      src: p.image,
+      alt: p.name,
+      className: "w-10 h-10 object-cover rounded-lg border flex-shrink-0",
+      onError: e => {
+        e.currentTarget.src = getPlaceholderImage(p.name, p.category);
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "flex-1 min-w-0"
+    }, /*#__PURE__*/React.createElement("h6", {
+      className: "font-bold text-gray-800 text-[10px] truncate"
+    }, p.name), /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center gap-1.5 mt-0.5"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: `font-black text-[8px] uppercase px-1.5 py-0.5 rounded-full ${isCritical ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-100 text-amber-700'}`
+    }, isCritical ? lang === 'id' ? '🚨 KRITIS' : '🚨 CRITICAL' : lang === 'id' ? '⚠️ MENIPIS' : '⚠️ LOW'), /*#__PURE__*/React.createElement("span", {
+      className: "text-[9px] text-gray-500 font-bold"
+    }, lang === 'id' ? 'Sisa' : 'Left', ": ", p.stock || 0, " pcs"))), isChecked && /*#__PURE__*/React.createElement("div", {
+      className: "flex flex-col items-end gap-0.5 flex-shrink-0"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-[8px] text-gray-400 font-bold uppercase"
+    }, lang === 'id' ? 'Pesan' : 'Order'), /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center gap-1"
+    }, /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      onClick: () => updateRestockQty(p.id, restockSelection[p.id] - 5),
+      className: "w-5 h-5 bg-white border rounded text-[10px] font-bold text-gray-600"
+    }, "-"), /*#__PURE__*/React.createElement("input", {
+      type: "number",
+      value: restockSelection[p.id],
+      onChange: e => updateRestockQty(p.id, e.target.value),
+      className: "w-11 border rounded-lg p-1 text-center font-extrabold text-[10px] text-[#703d92] focus:outline-none focus:border-[#703d92]",
+      min: "1"
+    }), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      onClick: () => updateRestockQty(p.id, restockSelection[p.id] + 5),
+      className: "w-5 h-5 bg-white border rounded text-[10px] font-bold text-gray-600"
+    }, "+"))));
+  })), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: handleSendRestockToAgent,
+    disabled: Object.keys(restockSelection).length === 0,
+    className: `w-full mt-3.5 font-extrabold py-3 rounded-xl text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 ${Object.keys(restockSelection).length > 0 ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Send",
+    size: 14
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? `📤 Kirim Daftar Belanja ke WA Agen (${Object.keys(restockSelection).length})` : `📤 Send Shopping List to Agent WA (${Object.keys(restockSelection).length})`)), !agentWaNumber && /*#__PURE__*/React.createElement("p", {
+    className: "text-center text-[9px] text-red-400 font-bold mt-1.5"
+  }, lang === 'id' ? '⚠️ Isi dulu No. WA Agen di pengaturan atas agar bisa kirim!' : '⚠️ Set the Agent WA number in settings above to send!'))), adminActiveSubMenu === 'kategori' && /*#__PURE__*/React.createElement("div", {
     className: "space-y-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "bg-white rounded-2xl p-4 border shadow-sm text-xs"
@@ -5080,6 +5698,6 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1557e8789eeef6a',t:'MTc4MzA3NzU1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a15648235b07c211',t:'MTc4MzA4NTgxNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

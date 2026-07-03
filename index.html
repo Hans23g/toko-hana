@@ -3995,9 +3995,7 @@ function App() {
     onClick: () => setSelectedProductDetail(product) // Click whole card opens details!
     ,
     className: "bg-white rounded-2xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col hover:shadow-md transition-all group relative cursor-pointer border border-gray-100/50 animate-fade-in"
-  }, product.original_price && product.original_price > product.price && /*#__PURE__*/React.createElement("span", {
-    className: "absolute top-3 left-3 z-20 bg-red-500 text-white font-black text-[9px] uppercase px-2.5 py-0.5 rounded-lg shadow-sm"
-  }, "PROMO"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
     className: "relative h-40 bg-gray-50 overflow-hidden"
   }, /*#__PURE__*/React.createElement("img", {
     src: product.image,
@@ -4018,9 +4016,13 @@ function App() {
     className: "mt-2 flex flex-col justify-end"
   }, product.original_price && product.original_price > product.price ? /*#__PURE__*/React.createElement("div", {
     className: "flex flex-col"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5"
   }, /*#__PURE__*/React.createElement("span", {
     className: "text-[10px] text-gray-400 line-through"
-  }, "Rp ", product.original_price.toLocaleString('id-ID')), /*#__PURE__*/React.createElement("div", {
+  }, "Rp ", product.original_price.toLocaleString('id-ID')), /*#__PURE__*/React.createElement("span", {
+    className: "bg-red-500 text-white font-black text-[7.5px] uppercase px-1.5 py-[1px] rounded shadow-sm"
+  }, "PROMO")), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between"
   }, /*#__PURE__*/React.createElement("span", {
     className: "font-extrabold text-red-500 text-xs"
@@ -5835,8 +5837,8 @@ function App() {
       backgroundImage: navPatternUrl ? `linear-gradient(rgba(112,61,146,0.72), rgba(112,61,146,0.72)), url(${navPatternUrl})` : 'none',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      WebkitMask: 'radial-gradient(circle at 50% 0px, transparent 34px, #000 35px)',
-      mask: 'radial-gradient(circle at 50% 0px, transparent 34px, #000 35px)'
+      WebkitMask: 'radial-gradient(circle at 50% 13px, transparent 31px, #000 32px)',
+      mask: 'radial-gradient(circle at 50% 13px, transparent 31px, #000 32px)'
     }
   })), /*#__PURE__*/React.createElement("nav", {
     className: "relative z-10 flex items-center justify-around h-full pb-1 px-1"
@@ -6115,5 +6117,6 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a158aae9ba8df90a',t:'MTc4MzExMDgzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a158f8e92bde45df',t:'MTc4MzExNDAyNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

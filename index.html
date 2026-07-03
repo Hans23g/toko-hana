@@ -1884,6 +1884,7 @@ function App() {
   const [authName, setAuthName] = useState('');
   const [authPhone, setAuthPhone] = useState('');
   const [authAddress, setAuthAddress] = useState('');
+  const [authReferralCode, setAuthReferralCode] = useState(''); // 🤝 Kode referal "Ajak Teman" (opsional)
 
   // Custom header pattern URL state
   const [headerPatternUrl, setHeaderPatternUrl] = useState(() => {
@@ -2137,6 +2138,7 @@ function App() {
           email: c.email || '',
           total_spending: c.total_spending || 0,
           loyalty_points: c.loyalty_points || 0,
+          referred_by: c.referred_by || null,
           join_date: c.join_date || (c.created_at ? c.created_at.split('T')[0] : '')
         }));
         setCustomers(mapped);
@@ -2378,6 +2380,32 @@ function App() {
   // Tukar poin: 500 poin = potongan Rp 5.000
   const REDEEM_UNIT_POINTS = 500;
   const REDEEM_UNIT_VALUE = 5000;
+
+  // 🤝 PROGRAM REFERAL "AJAK TEMAN"
+  const REFERRAL_BONUS_REFERRER = 100; // poin untuk pengajak
+  const REFERRAL_BONUS_NEWBIE = 50; // poin selamat datang untuk teman baru
+  const myReferralCode = myCustomerRecord ? `HANA-${myCustomerRecord.id}` : '';
+  const myReferralsCount = useMemo(() => {
+    if (!myCustomerRecord) return 0;
+    return (customers || []).filter(c => c.referred_by === `HANA-${myCustomerRecord.id}`).length;
+  }, [customers, myCustomerRecord]);
+
+  // Bagikan kode referal via WhatsApp
+  const shareReferralCode = () => {
+    if (!myReferralCode) return;
+    const shareMsg = lang === 'id' ? `Halo! 👋 Aku belanja kebutuhan sehari-hari di *Toko Hana* — warung digital yang bisa bayar pakai QRIS bahkan Koin Pi! 🪙\n\nDaftar pakai kode referalku ya:\n🎁 *${myReferralCode}*\n\nKamu langsung dapat *${REFERRAL_BONUS_NEWBIE} HanaPoin GRATIS* buat potongan belanja! ⭐` : `Hi! 👋 I shop daily needs at *Toko Hana* — a digital store that accepts QRIS and even Pi Coin! 🪙\n\nSign up with my referral code:\n🎁 *${myReferralCode}*\n\nYou'll instantly get *${REFERRAL_BONUS_NEWBIE} FREE HanaPoints* for shopping discounts! ⭐`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareMsg)}`, '_blank');
+    showToast(lang === 'id' ? '📤 Ajakan referal siap dikirim via WhatsApp!' : '📤 Referral invite ready to share via WhatsApp!');
+  };
+  const copyReferralCode = () => {
+    if (!myReferralCode) return;
+    try {
+      navigator.clipboard.writeText(myReferralCode);
+      showToast(lang === 'id' ? `📋 Kode ${myReferralCode} disalin!` : `📋 Code ${myReferralCode} copied!`);
+    } catch (e) {
+      showToast(myReferralCode);
+    }
+  };
   const canRedeem = myPoints >= REDEEM_UNIT_POINTS;
   const redeemDiscount = redeemPointsChecked && canRedeem ? REDEEM_UNIT_VALUE : 0;
 
@@ -2796,6 +2824,24 @@ function App() {
       return;
     }
 
+    // 🤝 PROGRAM REFERAL "AJAK TEMAN": validasi kode (format HANA-<id>)
+    let referrerRecord = null;
+    let newbieBonus = 0;
+    const cleanRefCode = authReferralCode.trim().toUpperCase();
+    if (cleanRefCode) {
+      const refIdMatch = cleanRefCode.match(/^HANA-?(\d+)$/);
+      const refId = refIdMatch ? parseInt(refIdMatch[1]) : null;
+      referrerRecord = refId ? (customers || []).find(c => c.id === refId) : null;
+      if (!referrerRecord) {
+        showToast(lang === 'id' ? '⚠️ Kode referal tidak dikenal — pendaftaran lanjut tanpa bonus referal.' : '⚠️ Unknown referral code — registration continues without referral bonus.');
+      } else if (referrerRecord.name.toLowerCase() === authName.toLowerCase() || referrerRecord.phone === authPhone) {
+        referrerRecord = null; // 🚫 Anti-curang: tidak boleh mereferal diri sendiri!
+        showToast(lang === 'id' ? '🚫 Tidak bisa memakai kode referal milik sendiri!' : '🚫 You cannot use your own referral code!');
+      } else {
+        newbieBonus = REFERRAL_BONUS_NEWBIE;
+      }
+    }
+
     // Success on Supabase Auth — now sync profile to public.customers table
     const newCustomerId = customers.length > 0 ? Math.max(...customers.map(c => c.id)) + 1 : 1;
     setCustomers(prev => [...prev, {
@@ -2804,6 +2850,8 @@ function App() {
       phone: authPhone,
       address: authAddress,
       total_spending: 0,
+      loyalty_points: newbieBonus,
+      referred_by: referrerRecord ? `HANA-${referrerRecord.id}` : null,
       join_date: new Date().toISOString().split('T')[0]
     }]);
     const client = getSupabaseClient();
@@ -2813,12 +2861,21 @@ function App() {
         name: authName,
         phone: authPhone,
         address: authAddress,
-        total_spending: 0
+        total_spending: 0,
+        loyalty_points: newbieBonus,
+        referred_by: referrerRecord ? `HANA-${referrerRecord.id}` : null
       }]).then(({
         error: dbErr
       }) => {
         if (dbErr) console.warn('Failed to sync to public.customers table:', dbErr.message);else console.log('Successfully synced new customer profile to database.');
       });
+    }
+
+    // 🤝 Beri bonus poin ke PENGAJAK (referrer) — state + database!
+    if (referrerRecord) {
+      applyPointsChange(referrerRecord, REFERRAL_BONUS_REFERRER);
+      pushNotification('🤝', lang === 'id' ? 'Bonus Referal Masuk!' : 'Referral Bonus Earned!', lang === 'id' ? `${referrerRecord.name} mendapat +${REFERRAL_BONUS_REFERRER} poin karena mengajak ${authName} bergabung!` : `${referrerRecord.name} earned +${REFERRAL_BONUS_REFERRER} pts for inviting ${authName}!`);
+      showToast(lang === 'id' ? `🤝 Kode referal valid! Anda +${REFERRAL_BONUS_NEWBIE} poin, ${referrerRecord.name} +${REFERRAL_BONUS_REFERRER} poin!` : `🤝 Valid referral! You get +${REFERRAL_BONUS_NEWBIE} pts, ${referrerRecord.name} gets +${REFERRAL_BONUS_REFERRER} pts!`);
     }
 
     // ⚠️ Check: does Supabase require email confirmation? (session null = must confirm first)
@@ -2844,6 +2901,7 @@ function App() {
     setAuthName('');
     setAuthPhone('');
     setAuthAddress('');
+    setAuthReferralCode('');
   };
 
   // --- UNIFIED PROFILE LOGOUT ---
@@ -4207,7 +4265,22 @@ function App() {
     value: authPassword,
     onChange: e => setAuthPassword(e.target.value),
     className: "w-full border rounded-xl p-3 focus:outline-none focus:border-[#703d92]"
-  })), /*#__PURE__*/React.createElement("button", {
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "bg-amber-50/60 border border-dashed border-amber-300 rounded-xl p-3"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "block text-amber-700 font-extrabold mb-1 flex items-center gap-1"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Gift",
+    size: 12
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Kode Referal Teman (opsional)' : 'Friend\'s Referral Code (optional)')), /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    placeholder: "Contoh: HANA-3",
+    value: authReferralCode,
+    onChange: e => setAuthReferralCode(e.target.value),
+    className: "w-full border border-amber-200 rounded-xl p-3 focus:outline-none focus:border-amber-500 font-mono uppercase bg-white"
+  }), /*#__PURE__*/React.createElement("p", {
+    className: "text-[9px] text-amber-600 font-semibold mt-1"
+  }, lang === 'id' ? `🎁 Isi kode teman → Anda langsung dapat ${REFERRAL_BONUS_NEWBIE} HanaPoin, teman Anda +${REFERRAL_BONUS_REFERRER} poin!` : `🎁 Enter a friend's code → you instantly get ${REFERRAL_BONUS_NEWBIE} HanaPoints, your friend gets +${REFERRAL_BONUS_REFERRER}!`)), /*#__PURE__*/React.createElement("button", {
     type: "submit",
     className: "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-xs"
   }, t('registerBtn'))), /*#__PURE__*/React.createElement("div", {
@@ -4331,7 +4404,53 @@ function App() {
     className: "bg-white/10 rounded-lg p-2 text-purple-100"
   }, "🪙 ", lang === 'id' ? 'Bayar pakai Koin Pi = poin 2x lipat!' : 'Pay with Pi Coin = 2x points!'), /*#__PURE__*/React.createElement("div", {
     className: "bg-white/10 rounded-lg p-2 text-purple-100 col-span-2"
-  }, "🎁 ", lang === 'id' ? `Tukar ${REDEEM_UNIT_POINTS} poin = potongan Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} di keranjang belanja!` : `Redeem ${REDEEM_UNIT_POINTS} pts = Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} off in your cart!`))), /*#__PURE__*/React.createElement("div", {
+  }, "🎁 ", lang === 'id' ? `Tukar ${REDEEM_UNIT_POINTS} poin = potongan Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} di keranjang belanja!` : `Redeem ${REDEEM_UNIT_POINTS} pts = Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} off in your cart!`))), myCustomerRecord && /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-2xl p-4 border-2 border-dashed border-amber-300 shadow-sm relative overflow-hidden"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "absolute -right-6 -top-6 w-20 h-20 bg-amber-100/60 rounded-full"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "relative"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "font-extrabold text-amber-700 flex items-center gap-1.5 uppercase tracking-wider text-[11px] mb-1"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Gift",
+    size: 13
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? '🤝 Ajak Teman, Panen Poin!' : '🤝 Invite Friends, Harvest Points!')), /*#__PURE__*/React.createElement("p", {
+    className: "text-[9.5px] text-gray-500 font-semibold leading-relaxed mb-3"
+  }, lang === 'id' ? /*#__PURE__*/React.createElement(React.Fragment, null, "Bagikan kode di bawah. Teman daftar pakai kode Anda → dia dapat ", /*#__PURE__*/React.createElement("strong", {
+    className: "text-amber-600"
+  }, "+", REFERRAL_BONUS_NEWBIE, " poin"), ", Anda dapat ", /*#__PURE__*/React.createElement("strong", {
+    className: "text-amber-600"
+  }, "+", REFERRAL_BONUS_REFERRER, " poin"), ". Tanpa batas — makin banyak ajak, makin kaya poin! 🚀") : /*#__PURE__*/React.createElement(React.Fragment, null, "Share your code below. A friend signs up with it → they get ", /*#__PURE__*/React.createElement("strong", {
+    className: "text-amber-600"
+  }, "+", REFERRAL_BONUS_NEWBIE, " pts"), ", you get ", /*#__PURE__*/React.createElement("strong", {
+    className: "text-amber-600"
+  }, "+", REFERRAL_BONUS_REFERRER, " pts"), ". Unlimited — the more you invite, the richer you get! 🚀")), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2 mb-2.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 bg-gradient-to-r from-amber-50 to-amber-100 border-2 border-amber-400 rounded-xl py-2.5 text-center"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "font-black text-base text-amber-700 tracking-[0.2em] font-mono"
+  }, myReferralCode)), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: copyReferralCode,
+    className: "bg-amber-500 hover:bg-amber-600 text-white font-bold px-3.5 rounded-xl text-[10px] flex items-center gap-1 active:scale-95 transition-all"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Copy",
+    size: 12
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Salin' : 'Copy'))), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: shareReferralCode,
+    className: "w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-extrabold py-3 rounded-xl text-[11px] shadow-md flex items-center justify-center gap-2 active:scale-95 transition-all"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Send",
+    size: 13
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Ajak Teman via WhatsApp' : 'Invite Friends via WhatsApp')), /*#__PURE__*/React.createElement("div", {
+    className: "mt-2.5 flex items-center justify-center gap-1.5 text-[9px] font-bold text-gray-400"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "User",
+    size: 10
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? `${myReferralsCount} teman sudah bergabung lewat kode Anda ${myReferralsCount > 0 ? '— keren! 🏆' : '— jadilah yang pertama mengajak!'}` : `${myReferralsCount} friends joined via your code ${myReferralsCount > 0 ? '— awesome! 🏆' : '— be the first to invite!'}`)))), /*#__PURE__*/React.createElement("div", {
     className: "bg-white rounded-2xl p-4 border shadow-sm"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "font-extrabold text-[#703d92] border-b pb-2 mb-3 flex items-center gap-1.5 uppercase tracking-wider text-[11px]"
@@ -5698,6 +5817,6 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a15689846c0a9c2d',t:'MTc4MzA4ODQ5Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a156b577b96b585b',t:'MTc4MzA5MDI5Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

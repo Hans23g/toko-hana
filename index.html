@@ -477,6 +477,23 @@ var supabase=function(e){function t(e,t){var r={};for(var s in e)Object.prototyp
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    /* 🌙 TEMA MALAM TOKO HANA — override otomatis kelas terang di area konten */
+    .dark-theme .bg-white { background-color: #1d1130 !important; }
+    .dark-theme .bg-gray-50, .dark-theme .bg-gray-100,
+    .dark-theme .bg-\[\#F5F3F7\] { background-color: #2d1242 !important; }
+    .dark-theme .bg-gray-50\/50 { background-color: rgba(45,18,66,0.5) !important; }
+    .dark-theme .text-gray-800, .dark-theme .text-gray-700 { color: #EDE7F6 !important; }
+    .dark-theme .text-gray-600, .dark-theme .text-gray-500 { color: #B9A7D6 !important; }
+    .dark-theme .text-gray-400, .dark-theme .text-gray-300 { color: #8b76ab !important; }
+    .dark-theme .border, .dark-theme .border-gray-100, .dark-theme .border-gray-200 { border-color: rgba(85,60,154,0.35) !important; }
+    .dark-theme .text-\[\#703d92\] { color: #c9a8e8 !important; }
+    .dark-theme input, .dark-theme textarea, .dark-theme select {
+      background-color: #2d1242 !important;
+      color: #EDE7F6 !important;
+      border-color: rgba(85,60,154,0.5) !important;
+    }
+    .dark-theme input::placeholder, .dark-theme textarea::placeholder { color: #8b76ab !important; }
+    .dark-theme .shadow-sm, .dark-theme .shadow-md { box-shadow: 0 2px 10px rgba(0,0,0,0.45) !important; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .animate-slide-up { animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -1943,6 +1960,27 @@ function App() {
     }
   });
   const [showNotifPanel, setShowNotifPanel] = useState(false);
+
+  // 👤 AVATAR & 🌙 TEMA — preferensi pribadi per perangkat
+  const [avatarGender, setAvatarGender] = useState(() => {
+    return safeStorage.getItem('toko_hana_avatar_gender') || 'pria'; // pria | wanita
+  });
+  const [darkMode, setDarkMode] = useState(() => {
+    return safeStorage.getItem('toko_hana_dark_mode') === 'true';
+  });
+  const [showProfileSettings, setShowProfileSettings] = useState(false); // buka/tutup menu Pengaturan
+
+  const handleSetAvatar = gender => {
+    setAvatarGender(gender);
+    safeStorage.setItem('toko_hana_avatar_gender', gender);
+    showToast(gender === 'wanita' ? lang === 'id' ? '👩 Avatar Wanita dipilih!' : '👩 Female avatar selected!' : lang === 'id' ? '👨 Avatar Pria dipilih!' : '👨 Male avatar selected!');
+  };
+  const toggleDarkMode = () => {
+    const next = !darkMode;
+    setDarkMode(next);
+    safeStorage.setItem('toko_hana_dark_mode', next ? 'true' : 'false');
+    showToast(next ? lang === 'id' ? '🌙 Tema Malam aktif — nyaman di mata!' : '🌙 Night theme on — easy on the eyes!' : lang === 'id' ? '☀️ Tema Terang kembali!' : '☀️ Light theme restored!');
+  };
 
   // Refs agar callback realtime selalu membaca nilai terkini (anti-stale closure)
   const currentUserRef = useRef(null);
@@ -3629,7 +3667,7 @@ function App() {
     return (orders || []).filter(o => o && (o.customer_name?.toLowerCase() === currentUser.name?.toLowerCase() || o.phone === currentUser.phone));
   }, [orders, currentUser]);
   return /*#__PURE__*/React.createElement("div", {
-    className: "flex-1 flex flex-col relative pb-16 bg-white min-h-screen"
+    className: `flex-1 flex flex-col relative pb-16 min-h-screen transition-colors duration-300 ${darkMode ? 'bg-[#11091d]' : 'bg-white'}`
   }, currentTab !== 'AdminPage' ? /*#__PURE__*/React.createElement("div", {
     className: "flex-1 flex flex-col"
   }, /*#__PURE__*/React.createElement("div", {
@@ -3748,7 +3786,7 @@ function App() {
   })))))))), /*#__PURE__*/React.createElement("main", {
     ref: mainScrollRef,
     onScroll: handleMainScroll,
-    className: "flex-1 overflow-y-auto flex flex-col scroll-smooth"
+    className: `flex-1 overflow-y-auto flex flex-col scroll-smooth transition-colors duration-300 ${darkMode ? 'dark-theme bg-[#11091d]' : ''}`
   }, currentTab === 'Home' && banners.length > 0 ? /*#__PURE__*/React.createElement("div", {
     className: "relative w-full h-44 overflow-hidden bg-neutral-900 group"
   }, banners.map((banner, index) => /*#__PURE__*/React.createElement("div", {
@@ -4370,10 +4408,13 @@ function App() {
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-[74px] h-[74px] rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#FFD700] to-[#D4AF37] p-[3px] shadow-lg shadow-black/30"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "w-full h-full rounded-full bg-gradient-to-tr from-[#8e51b8] to-[#703d92] flex items-center justify-center border-2 border-[#2d1242]/40"
+    className: "w-full h-full rounded-full bg-gradient-to-tr from-[#8e51b8] to-[#703d92] flex items-center justify-center border-2 border-[#2d1242]/40 overflow-hidden"
   }, /*#__PURE__*/React.createElement("span", {
-    className: "text-2xl font-black text-[#FFD700] select-none"
-  }, (currentUser.name || 'P').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase()))), /*#__PURE__*/React.createElement("span", {
+    className: "text-[38px] leading-none select-none",
+    style: {
+      transform: 'translateY(2px)'
+    }
+  }, avatarGender === 'wanita' ? '👩🏻' : '👨🏻'))), /*#__PURE__*/React.createElement("span", {
     className: "absolute -bottom-1 -right-1 w-7 h-7 bg-[#2d1242] border-2 border-[#FFD700] rounded-full flex items-center justify-center text-[13px] shadow-md"
   }, loyaltyLevel.emoji)), /*#__PURE__*/React.createElement("div", {
     className: "flex-1 min-w-0"
@@ -4455,43 +4496,111 @@ function App() {
     name: "User",
     size: 10
   }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? `${myReferralsCount} teman sudah bergabung lewat kode Anda ${myReferralsCount > 0 ? '— keren! 🏆' : '— jadilah yang pertama mengajak!'}` : `${myReferralsCount} friends joined via your code ${myReferralsCount > 0 ? '— awesome! 🏆' : '— be the first to invite!'}`)))), /*#__PURE__*/React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm"
-  }, /*#__PURE__*/React.createElement("h4", {
-    className: "font-extrabold text-[#703d92] border-b pb-2 mb-3 flex items-center gap-1.5 uppercase tracking-wider text-[11px]"
+    className: `rounded-2xl border shadow-sm overflow-hidden transition-colors ${darkMode ? 'bg-[#1d1130] border-[#553C9A]/40' : 'bg-white'}`
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setShowProfileSettings(!showProfileSettings),
+    className: "w-full flex items-center justify-between p-4 active:scale-[0.99] transition-all"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: `font-extrabold flex items-center gap-1.5 uppercase tracking-wider text-[11px] ${darkMode ? 'text-[#FFD700]' : 'text-[#703d92]'}`
   }, /*#__PURE__*/React.createElement(LucideIcon, {
-    name: "User",
+    name: "Settings",
     size: 13
-  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Data Profil Saya' : 'My Profile Details')), /*#__PURE__*/React.createElement("form", {
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Pengaturan' : 'Settings')), /*#__PURE__*/React.createElement(LucideIcon, {
+    name: showProfileSettings ? 'ChevronDown' : 'ChevronRight',
+    size: 15,
+    className: darkMode ? 'text-purple-300' : 'text-gray-400'
+  })), showProfileSettings && /*#__PURE__*/React.createElement("div", {
+    className: `px-4 pb-4 space-y-4 animate-fade-in border-t ${darkMode ? 'border-[#553C9A]/40' : 'border-gray-100'}`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pt-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: `block font-bold mb-2 text-[10px] uppercase tracking-wide ${darkMode ? 'text-purple-200' : 'text-gray-500'}`
+  }, "👤 ", lang === 'id' ? 'Pilih Avatar Anda' : 'Choose Your Avatar'), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-2.5"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => handleSetAvatar('pria'),
+    className: `relative flex flex-col items-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${avatarGender === 'pria' ? 'border-[#703d92] bg-purple-50 shadow-md' : darkMode ? 'border-[#553C9A]/40 bg-[#2d1242]' : 'border-gray-200 bg-white'}`
+  }, avatarGender === 'pria' && /*#__PURE__*/React.createElement("span", {
+    className: "absolute top-1.5 right-1.5 w-4 h-4 bg-[#703d92] rounded-full flex items-center justify-center"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Check",
+    size: 10,
+    className: "text-white",
+    strokeWidth: 3.5
+  })), /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl leading-none"
+  }, "👨🏻"), /*#__PURE__*/React.createElement("span", {
+    className: `font-extrabold text-[10px] ${avatarGender === 'pria' ? 'text-[#703d92]' : darkMode ? 'text-purple-200' : 'text-gray-500'}`
+  }, lang === 'id' ? 'Pria' : 'Male')), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => handleSetAvatar('wanita'),
+    className: `relative flex flex-col items-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${avatarGender === 'wanita' ? 'border-pink-400 bg-pink-50 shadow-md' : darkMode ? 'border-[#553C9A]/40 bg-[#2d1242]' : 'border-gray-200 bg-white'}`
+  }, avatarGender === 'wanita' && /*#__PURE__*/React.createElement("span", {
+    className: "absolute top-1.5 right-1.5 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Check",
+    size: 10,
+    className: "text-white",
+    strokeWidth: 3.5
+  })), /*#__PURE__*/React.createElement("span", {
+    className: "text-3xl leading-none"
+  }, "👩🏻"), /*#__PURE__*/React.createElement("span", {
+    className: `font-extrabold text-[10px] ${avatarGender === 'wanita' ? 'text-pink-600' : darkMode ? 'text-purple-200' : 'text-gray-500'}`
+  }, lang === 'id' ? 'Wanita' : 'Female')))), /*#__PURE__*/React.createElement("div", {
+    className: `flex items-center justify-between p-3 rounded-2xl border ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/40' : 'bg-gray-50 border-gray-100'}`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: `w-8 h-8 rounded-full flex items-center justify-center ${darkMode ? 'bg-[#553C9A]' : 'bg-amber-100'}`
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: darkMode ? 'Moon' : 'Sun',
+    size: 15,
+    className: darkMode ? 'text-[#FFD700]' : 'text-amber-500'
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: `block font-extrabold text-[10.5px] ${darkMode ? 'text-white' : 'text-gray-700'}`
+  }, lang === 'id' ? 'Tema Malam' : 'Night Theme'), /*#__PURE__*/React.createElement("span", {
+    className: `text-[8.5px] font-semibold ${darkMode ? 'text-purple-300' : 'text-gray-400'}`
+  }, darkMode ? lang === 'id' ? 'Aktif — nyaman di mata 🌙' : 'On — easy on the eyes 🌙' : lang === 'id' ? 'Nonaktif — tampilan terang ☀️' : 'Off — light mode ☀️'))), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: toggleDarkMode,
+    className: `relative w-12 h-6.5 h-7 rounded-full transition-all duration-300 ${darkMode ? 'bg-gradient-to-r from-[#553C9A] to-[#703d92]' : 'bg-gray-300'}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: `absolute top-0.5 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-[10px] transition-all duration-300 ${darkMode ? 'left-[22px]' : 'left-0.5'}`
+  }, darkMode ? '🌙' : '☀️'))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: `block font-bold mb-2 text-[10px] uppercase tracking-wide ${darkMode ? 'text-purple-200' : 'text-gray-500'}`
+  }, "✏️ ", lang === 'id' ? 'Ubah Data Profil' : 'Edit Profile Data'), /*#__PURE__*/React.createElement("form", {
     onSubmit: handleUpdateCustomerProfile,
     className: "space-y-3"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
-    className: "block text-gray-500 font-bold mb-1"
+    className: `block font-bold mb-1 ${darkMode ? 'text-purple-300' : 'text-gray-500'}`
   }, t('fullName')), /*#__PURE__*/React.createElement("input", {
     type: "text",
     name: "profileName",
     required: true,
     defaultValue: currentUser.name,
-    className: "w-full border rounded-xl p-2.5 font-medium"
+    className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
-    className: "block text-gray-500 font-bold mb-1"
+    className: `block font-bold mb-1 ${darkMode ? 'text-purple-300' : 'text-gray-500'}`
   }, t('phoneLabel')), /*#__PURE__*/React.createElement("input", {
     type: "tel",
     name: "profilePhone",
     required: true,
     defaultValue: currentUser.phone,
-    className: "w-full border rounded-xl p-2.5 font-medium"
+    className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
-    className: "block text-gray-500 font-bold mb-1"
+    className: `block font-bold mb-1 ${darkMode ? 'text-purple-300' : 'text-gray-500'}`
   }, "Alamat Pengiriman Default"), /*#__PURE__*/React.createElement("textarea", {
     name: "profileAddress",
     required: true,
     rows: "2",
     defaultValue: currentUser.address,
-    className: "w-full border rounded-xl p-2.5 font-medium"
+    className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
   })), /*#__PURE__*/React.createElement("button", {
     type: "submit",
     className: "bg-[#703d92] text-white font-bold py-2 px-5 rounded-xl"
-  }, "Simpan Perubahan"))), /*#__PURE__*/React.createElement("div", {
+  }, "Simpan Perubahan"))))), /*#__PURE__*/React.createElement("div", {
     className: "bg-white rounded-2xl p-4 border shadow-sm"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "font-extrabold text-[#703d92] border-b pb-2 mb-3 flex items-center gap-1.5 uppercase tracking-wider text-[11px]"
@@ -5821,5 +5930,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a156cf10ad8daa7f',t:'MTc4MzA5MTM0MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a156f74b1db4a125',t:'MTc4MzA5Mjk4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

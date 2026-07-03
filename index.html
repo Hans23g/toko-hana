@@ -4344,47 +4344,51 @@ function App() {
   React.createElement("div", {
     className: "space-y-4 animate-fade-in"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-gradient-to-tr from-[#703d92] to-[#8e51b8] text-white p-5 rounded-3xl shadow-md text-center relative overflow-hidden"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "absolute -right-10 -top-10 w-28 h-28 bg-white/5 rounded-full"
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "absolute -left-10 -bottom-10 w-28 h-28 bg-white/5 rounded-full"
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "relative w-16 h-16 bg-amber-400 rounded-full mx-auto flex items-center justify-center shadow-lg border-2 border-white/20"
-  }, /*#__PURE__*/React.createElement(LucideIcon, {
-    name: "User",
-    className: "text-[#703d92]",
-    size: 28
-  })), /*#__PURE__*/React.createElement("h3", {
-    className: "font-extrabold text-base mt-2"
-  }, currentUser.name), /*#__PURE__*/React.createElement("p", {
-    className: "text-[10px] text-purple-200 font-black uppercase tracking-wider"
-  }, lang === 'id' ? 'Pelanggan Setia Toko Hana' : 'Toko Hana Loyal Customer')), /*#__PURE__*/React.createElement("div", {
-    className: "bg-gradient-to-br from-[#2d1242] via-[#553C9A] to-[#703d92] rounded-3xl p-4.5 p-5 shadow-lg border border-[#FFD700]/30 relative overflow-hidden"
+    className: "bg-gradient-to-br from-[#2d1242] via-[#553C9A] to-[#703d92] rounded-3xl p-5 shadow-lg border border-[#FFD700]/30 relative overflow-hidden"
   }, /*#__PURE__*/React.createElement("div", {
     className: "absolute -right-8 -top-8 w-24 h-24 bg-[#FFD700]/10 rounded-full"
   }), /*#__PURE__*/React.createElement("div", {
-    className: "absolute right-10 bottom-2 text-[#FFD700]/10 font-black text-5xl select-none"
+    className: "absolute -left-10 -bottom-10 w-28 h-28 bg-white/5 rounded-full"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "absolute right-8 bottom-1 text-[#FFD700]/10 font-black text-5xl select-none"
   }, "⭐"), /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between mb-2"
+    className: "relative flex items-center justify-between mb-3.5"
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center gap-1.5"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "Sparkles",
-    size: 14,
+    size: 13,
     className: "text-[#FFD700]"
   }), /*#__PURE__*/React.createElement("span", {
-    className: "font-black text-[#FFD700] text-[11px] uppercase tracking-widest"
-  }, "HanaPoin")), /*#__PURE__*/React.createElement("span", {
+    className: "font-black text-[#FFD700] text-[10px] uppercase tracking-[0.2em]"
+  }, "Toko Hana Member")), /*#__PURE__*/React.createElement("span", {
     className: "bg-[#FFD700]/20 border border-[#FFD700]/40 text-[#FFD700] font-black text-[9px] px-2.5 py-1 rounded-full"
   }, loyaltyLevel.emoji, " ", loyaltyLevel.name)), /*#__PURE__*/React.createElement("div", {
+    className: "relative flex items-center gap-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex-shrink-0 relative"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-[74px] h-[74px] rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#FFD700] to-[#D4AF37] p-[3px] shadow-lg shadow-black/30"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-full h-full rounded-full bg-gradient-to-tr from-[#8e51b8] to-[#703d92] flex items-center justify-center border-2 border-[#2d1242]/40"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-2xl font-black text-[#FFD700] select-none"
+  }, (currentUser.name || 'P').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase()))), /*#__PURE__*/React.createElement("span", {
+    className: "absolute -bottom-1 -right-1 w-7 h-7 bg-[#2d1242] border-2 border-[#FFD700] rounded-full flex items-center justify-center text-[13px] shadow-md"
+  }, loyaltyLevel.emoji)), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 min-w-0"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-extrabold text-[15px] text-white truncate leading-tight"
+  }, currentUser.name), /*#__PURE__*/React.createElement("p", {
+    className: "text-[8.5px] text-purple-200 font-black uppercase tracking-wider mb-1.5"
+  }, lang === 'id' ? 'Pelanggan Setia Toko Hana' : 'Toko Hana Loyal Customer'), /*#__PURE__*/React.createElement("div", {
     className: "flex items-end gap-1.5"
   }, /*#__PURE__*/React.createElement("span", {
-    className: "text-3xl font-black text-white leading-none"
+    className: "text-[26px] font-black text-[#FFD700] leading-none drop-shadow"
   }, myPoints.toLocaleString('id-ID')), /*#__PURE__*/React.createElement("span", {
-    className: "text-[10px] text-purple-200 font-bold mb-0.5"
-  }, lang === 'id' ? 'poin' : 'pts')), loyaltyLevel.next ? /*#__PURE__*/React.createElement("div", {
-    className: "mt-3"
+    className: "text-[9px] text-purple-200 font-bold mb-0.5"
+  }, "HanaPoin ⭐")))), loyaltyLevel.next ? /*#__PURE__*/React.createElement("div", {
+    className: "relative mt-3.5"
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex justify-between text-[8px] font-bold text-purple-200 mb-1"
   }, /*#__PURE__*/React.createElement("span", null, lang === 'id' ? `Menuju ${loyaltyLevel.next}` : `Towards ${loyaltyLevel.next}`), /*#__PURE__*/React.createElement("span", null, myPoints.toLocaleString('id-ID'), " / ", loyaltyLevel.nextAt.toLocaleString('id-ID'))), /*#__PURE__*/React.createElement("div", {
@@ -4395,9 +4399,9 @@ function App() {
       width: `${Math.min(100, myPoints / loyaltyLevel.nextAt * 100)}%`
     }
   }))) : /*#__PURE__*/React.createElement("div", {
-    className: "mt-3 text-[9px] font-black text-[#FFD700]"
+    className: "relative mt-3.5 text-[9px] font-black text-[#FFD700]"
   }, "💎 ", lang === 'id' ? 'LEVEL TERTINGGI TERCAPAI — Poin 2x setiap belanja!' : 'MAX LEVEL REACHED — 2x points every order!'), /*#__PURE__*/React.createElement("div", {
-    className: "mt-3 grid grid-cols-2 gap-2 text-[8.5px] font-bold"
+    className: "relative mt-3 grid grid-cols-2 gap-2 text-[8.5px] font-bold"
   }, /*#__PURE__*/React.createElement("div", {
     className: "bg-white/10 rounded-lg p-2 text-purple-100"
   }, "⭐ ", lang === 'id' ? `1 poin / Rp 1.000 belanja (x${loyaltyLevel.multiplier} level Anda)` : `1 pt / Rp 1,000 spent (x${loyaltyLevel.multiplier} your level)`), /*#__PURE__*/React.createElement("div", {
@@ -5817,6 +5821,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a156b577b96b585b',t:'MTc4MzA5MDI5Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a156cf10ad8daa7f',t:'MTc4MzA5MTM0MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

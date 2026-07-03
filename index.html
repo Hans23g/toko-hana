@@ -5824,36 +5824,21 @@ function App() {
   }, /*#__PURE__*/React.createElement("div", {
     className: "relative w-full h-16 pointer-events-auto"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "absolute inset-0 z-0 bg-transparent"
-  }, /*#__PURE__*/React.createElement("svg", {
-    className: "w-full h-20 text-[#703d92] drop-shadow-[0_-10px_24px_rgba(0,0,0,0.15)]",
-    viewBox: "0 0 400 64",
-    preserveAspectRatio: "none",
+    className: "absolute inset-0 z-0",
     style: {
-      transform: 'translateY(-16px)'
+      filter: 'drop-shadow(0 -10px 24px rgba(0,0,0,0.15))'
     }
-  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("clipPath", {
-    id: "navCurveClip"
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M 0 16 L 166 16 A 34 34 0 0 0 234 16 L 400 16 L 400 64 L 0 64 Z"
-  }))), /*#__PURE__*/React.createElement("path", {
-    d: "M 0 16 L 166 16 A 34 34 0 0 0 234 16 L 400 16 L 400 64 L 0 64 Z",
-    fill: "currentColor"
-  }), navPatternUrl && /*#__PURE__*/React.createElement("g", {
-    clipPath: "url(#navCurveClip)"
-  }, /*#__PURE__*/React.createElement("image", {
-    href: navPatternUrl,
-    x: "0",
-    y: "0",
-    width: "400",
-    height: "64",
-    preserveAspectRatio: "xMidYMid slice",
-    opacity: "1"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M 0 16 L 166 16 A 34 34 0 0 0 234 16 L 400 16 L 400 64 L 0 64 Z",
-    fill: "#703d92",
-    fillOpacity: "0.72"
-  })))), /*#__PURE__*/React.createElement("nav", {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "absolute inset-0",
+    style: {
+      backgroundColor: '#703d92',
+      backgroundImage: navPatternUrl ? `linear-gradient(rgba(112,61,146,0.72), rgba(112,61,146,0.72)), url(${navPatternUrl})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      WebkitMask: 'radial-gradient(circle at 50% 0px, transparent 34px, #000 35px)',
+      mask: 'radial-gradient(circle at 50% 0px, transparent 34px, #000 35px)'
+    }
+  })), /*#__PURE__*/React.createElement("nav", {
     className: "relative z-10 flex items-center justify-around h-full pb-1 px-1"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => {
@@ -6130,5 +6115,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1588752bce12652',t:'MTc4MzEwOTM3Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a158aae9ba8df90a',t:'MTc4MzExMDgzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

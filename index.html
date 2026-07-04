@@ -2003,6 +2003,42 @@ function App() {
     };
   }, []);
 
+  // 🏮 LAMPU WARUNG — Status Buka/Tutup real-time (jam operasional 05.00–22.00)
+  const WARUNG_OPEN_HOUR = 5;
+  const WARUNG_CLOSE_HOUR = 22;
+  // 🕰️ Alamat warung fisik (bisa diubah admin di Branding, tersimpan di DB)
+  const [warungAddress, setWarungAddress] = useState(() => {
+    return safeStorage.getItem('toko_hana_warung_address') || 'Bogor, Jawa Barat, Indonesia';
+  });
+  const [clockTick, setClockTick] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setClockTick(Date.now()), 60000); // cek tiap menit
+    return () => clearInterval(t);
+  }, []);
+  const warungStatus = useMemo(() => {
+    const h = new Date().getHours();
+    const isOpen = h >= WARUNG_OPEN_HOUR && h < WARUNG_CLOSE_HOUR;
+    return {
+      isOpen,
+      label: isOpen ? lang === 'id' ? `WARUNG BUKA • Tutup ${WARUNG_CLOSE_HOUR}.00` : `STORE OPEN • Closes ${WARUNG_CLOSE_HOUR}.00` : lang === 'id' ? `WARUNG TUTUP • Buka ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.00` : `STORE CLOSED • Opens ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.00`
+    };
+  }, [clockTick, lang]);
+
+  // 🗣️ SAPAAN JURAGAN — salam hangat khas warung sesuai waktu
+  const juraganGreeting = useMemo(() => {
+    const h = new Date().getHours();
+    if (lang === 'id') {
+      if (h >= 4 && h < 11) return '☀️ Pagi Juragan! Mau belanja apa hari ini?';
+      if (h >= 11 && h < 15) return '🌤️ Siang Juragan! Silakan dipilih-pilih~';
+      if (h >= 15 && h < 19) return '🌇 Sore Juragan! Warung masih lengkap nih!';
+      return '🌙 Malam Juragan! Belanja santai dari rumah~';
+    }
+    if (h >= 4 && h < 11) return '☀️ Morning, Boss! What are we shopping today?';
+    if (h >= 11 && h < 15) return '🌤️ Good day, Boss! Take your pick~';
+    if (h >= 15 && h < 19) return '🌇 Evening, Boss! Still fully stocked!';
+    return '🌙 Night, Boss! Shop comfily from home~';
+  }, [clockTick, lang]);
+
   // 🧶 Ornamen khas: pola GIGI BALANG (segitiga anyaman emas) — signature Toko Hana!
   const gigiBalangPattern = `url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="28" height="10" viewBox="0 0 28 10"><path d="M0 10 L7 0 L14 10 Z" fill="#FFD700" fill-opacity="0.9"/><path d="M14 10 L21 0 L28 10 Z" fill="#D4AF37" fill-opacity="0.75"/></svg>')}")`;
   const handleSetAvatar = gender => {
@@ -2161,6 +2197,10 @@ function App() {
         if (map.agent_wa !== undefined) {
           setAgentWaNumber(map.agent_wa || '');
           safeStorage.setItem('toko_hana_agent_wa', map.agent_wa || '');
+        }
+        if (map.warung_address) {
+          setWarungAddress(map.warung_address);
+          safeStorage.setItem('toko_hana_warung_address', map.warung_address);
         }
         if (map.nav_pattern !== undefined) {
           // Kosong di DB = pakai batik signature default
@@ -2544,7 +2584,7 @@ function App() {
         quantity: qty
       }];
     });
-    showToast(`🛒 ${product.name} dimasukkan ke keranjang!`);
+    showToast(`🛒 Siap Juragan! ${product.name} masuk keranjang~`);
   };
   const handleUpdateCartQty = (productId, change) => {
     setCart(prevCart => {
@@ -2992,7 +3032,7 @@ function App() {
     await supabaseService.signOut();
     setCurrentTab('Home');
     window.location.hash = '#';
-    showToast('🔓 Keluar dari sesi dengan aman.');
+    showToast(lang === 'id' ? '🙏 Matur nuwun, Juragan! Sampai jumpa lagi~' : '🙏 Thank you, Boss! See you again~');
   };
 
   // Save Customer Edited Profile Details
@@ -3456,6 +3496,20 @@ function App() {
     showToast('🖼️ Pattern Header diperbarui!');
   };
 
+  // 🕰️ Simpan alamat warung fisik (untuk Kartu Jam Warung & tombol Maps)
+  const handleSaveWarungAddress = e => {
+    e.preventDefault();
+    const addr = e.target.elements.warungAddr.value.trim();
+    if (!addr) {
+      alert(lang === 'id' ? 'Alamat warung tidak boleh kosong!' : 'Store address cannot be empty!');
+      return;
+    }
+    setWarungAddress(addr);
+    safeStorage.setItem('toko_hana_warung_address', addr);
+    persistSettingToDb('warung_address', addr);
+    showToast(lang === 'id' ? '🏪 Alamat warung diperbarui, Juragan!' : '🏪 Store address updated, Boss!');
+  };
+
   // 🎨 Simpan pattern NAVBAR bawah (state + localStorage + database)
   const handleSaveNavPattern = e => {
     e.preventDefault();
@@ -3802,6 +3856,14 @@ function App() {
   }, headerPatternUrl && /*#__PURE__*/React.createElement("div", {
     className: "absolute inset-0 bg-[#703d92]/80 z-0"
   }), /*#__PURE__*/React.createElement("div", {
+    className: "relative z-10 flex items-center justify-between gap-2 mb-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px] font-bold text-purple-100 truncate"
+  }, juraganGreeting), /*#__PURE__*/React.createElement("span", {
+    className: `flex items-center gap-1.5 flex-shrink-0 px-2.5 py-1 rounded-full border text-[8px] font-black uppercase tracking-wider ${warungStatus.isOpen ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-200' : 'bg-red-500/25 border-red-300/40 text-red-200'}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: `w-2 h-2 rounded-full ${warungStatus.isOpen ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]' : 'bg-red-400'}`
+  }), /*#__PURE__*/React.createElement("span", null, warungStatus.label))), /*#__PURE__*/React.createElement("div", {
     className: "relative z-10 flex items-center justify-between gap-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "relative flex-1"
@@ -4045,6 +4107,86 @@ function App() {
   }, /*#__PURE__*/React.createElement("h4", {
     className: "font-bold text-sm text-gray-700"
   }, "Produk Tidak Ditemukan"))), currentTab === 'Home' && /*#__PURE__*/React.createElement("div", {
+    className: "mx-4 mt-5 rounded-3xl overflow-hidden border border-[#FFD700]/30 shadow-md relative"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "absolute inset-0",
+    style: {
+      backgroundImage: BRAND_BATIK_DATA_URI ? `url(${BRAND_BATIK_DATA_URI})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundColor: '#2d1242'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "absolute inset-0 bg-gradient-to-br from-[#2d1242]/93 via-[#553C9A]/88 to-[#2d1242]/93"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "relative p-4.5 p-5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-9 h-9 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-xl flex items-center justify-center shadow-md"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Store",
+    size: 17,
+    className: "text-[#2d1242]"
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
+    className: "font-black text-white text-[13px] leading-tight"
+  }, lang === 'id' ? 'Warung Fisik Kami' : 'Our Physical Store'), /*#__PURE__*/React.createElement("span", {
+    className: "text-[8.5px] text-purple-200 font-bold uppercase tracking-wider"
+  }, lang === 'id' ? 'Asli, Nyata & Melayani Setiap Hari' : 'Authentic, Real & Serving Daily'))), /*#__PURE__*/React.createElement("span", {
+    className: `flex items-center gap-1 px-2 py-1 rounded-full border text-[7.5px] font-black uppercase ${warungStatus.isOpen ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-200' : 'bg-red-500/25 border-red-300/40 text-red-200'}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: `w-1.5 h-1.5 rounded-full ${warungStatus.isOpen ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`
+  }), warungStatus.isOpen ? lang === 'id' ? 'BUKA' : 'OPEN' : lang === 'id' ? 'TUTUP' : 'CLOSED')), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-2 mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 rounded-xl p-2.5 border border-white/10"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5 mb-0.5"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Clock",
+    size: 11,
+    className: "text-[#FFD700]"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[8px] text-purple-200 font-black uppercase tracking-wide"
+  }, lang === 'id' ? 'Jam Operasional' : 'Opening Hours')), /*#__PURE__*/React.createElement("span", {
+    className: "text-white font-extrabold text-[11px]"
+  }, "05.00 – 22.00 WIB"), /*#__PURE__*/React.createElement("span", {
+    className: "block text-[8px] text-purple-300 font-semibold"
+  }, lang === 'id' ? 'Setiap Hari • Online 24 Jam' : 'Every Day • Online 24h')), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 rounded-xl p-2.5 border border-white/10"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5 mb-0.5"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "MapPin",
+    size: 11,
+    className: "text-[#FFD700]"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[8px] text-purple-200 font-black uppercase tracking-wide"
+  }, lang === 'id' ? 'Lokasi Warung' : 'Store Location')), /*#__PURE__*/React.createElement("span", {
+    className: "text-white font-extrabold text-[10px] leading-tight block"
+  }, warungAddress))), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2"
+  }, /*#__PURE__*/React.createElement("a", {
+    href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Toko Hana ' + warungAddress)}`,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    className: "flex-1 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#2d1242] font-black text-[10px] py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Navigation",
+    size: 12,
+    strokeWidth: 2.5
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Kunjungi Warung Kami' : 'Visit Our Store')), /*#__PURE__*/React.createElement("a", {
+    href: `https://wa.me/${merchantWaNumber}?text=${encodeURIComponent(lang === 'id' ? 'Halo Toko Hana! Saya mau tanya-tanya dulu ya 😊' : 'Hello Toko Hana! I have a few questions 😊')}`,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    className: "flex-1 bg-white/10 border border-white/20 text-white font-black text-[10px] py-2.5 rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-all hover:bg-white/15"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Phone",
+    size: 12,
+    strokeWidth: 2.5
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Chat Juragan' : 'Chat the Owner'))))), currentTab === 'Home' && /*#__PURE__*/React.createElement("div", {
     className: "bg-[#2d1242] text-white mt-6 text-center flex-shrink-0 animate-fade-in relative z-10"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-full h-[8px]",
@@ -5562,6 +5704,25 @@ function App() {
   }, "Terapkan Pattern Header")), /*#__PURE__*/React.createElement("div", {
     className: "border-t border-gray-100 pt-3 mt-3"
   }), /*#__PURE__*/React.createElement("form", {
+    onSubmit: handleSaveWarungAddress,
+    className: "space-y-3"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
+    className: "block font-semibold text-gray-600 mb-1"
+  }, lang === 'id' ? '🏪 Alamat Warung Fisik (tampil di Kartu Jam Warung + tombol Maps)' : '🏪 Physical Store Address (shown on Store Hours Card + Maps button)'), /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    name: "warungAddr",
+    defaultValue: warungAddress,
+    placeholder: "Contoh: Jl. Raya Pajajaran No. 10, Bogor",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-[#703d92] font-semibold",
+    required: true
+  }), /*#__PURE__*/React.createElement("p", {
+    className: "text-[9px] text-gray-400 mt-0.5"
+  }, lang === 'id' ? 'Alamat ini dipakai tombol "Kunjungi Warung Kami" untuk membuka Google Maps.' : 'Used by the "Visit Our Store" button to open Google Maps.')), /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    className: "bg-[#703d92] text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm"
+  }, lang === 'id' ? '🏪 Simpan Alamat Warung' : '🏪 Save Store Address')), /*#__PURE__*/React.createElement("div", {
+    className: "border-t border-gray-100 pt-3 mt-3"
+  }), /*#__PURE__*/React.createElement("form", {
     onSubmit: handleSaveNavPattern,
     className: "space-y-3"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
@@ -6117,6 +6278,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a158f8e92bde45df',t:'MTc4MzExNDAyNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a15f2e820bd5fd71',t:'MTc4MzE3OTEzNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

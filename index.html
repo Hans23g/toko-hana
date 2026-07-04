@@ -5302,21 +5302,29 @@ function App() {
   React.createElement("div", {
     className: "flex-1 flex flex-col bg-[#F5F3F7] animate-fade-in text-xs"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-gradient-to-r from-[#703d92] to-[#553C9A] text-white px-4 py-3 flex items-center justify-between shadow-md flex-shrink-0"
+    className: "relative text-white px-4 pb-3 pt-[calc(env(safe-area-inset-top,20px)+10px)] flex items-end justify-between shadow-md flex-shrink-0 overflow-hidden",
+    style: {
+      backgroundImage: BRAND_BATIK_DATA_URI ? `url(${BRAND_BATIK_DATA_URI})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundColor: '#703d92'
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center space-x-2"
+    className: "absolute inset-0 bg-gradient-to-r from-[#703d92]/90 to-[#553C9A]/88"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "relative flex items-center space-x-2"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "w-8 h-8 bg-white p-1 rounded-lg"
+    className: "w-8 h-8 bg-white p-1 rounded-lg shadow-md"
   }, /*#__PURE__*/React.createElement("img", {
     src: BRAND_LOGO_DATA_URI,
-    alt: "Tas Ungu H",
+    alt: "Koin Toko Hana",
     className: "w-full h-full object-contain"
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
     className: "font-extrabold"
   }, "Backoffice Toko Hana"), /*#__PURE__*/React.createElement("p", {
     className: "text-[8px] text-purple-200"
   }, "CTO Dashboard v1.0"))), /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center space-x-2"
+    className: "relative flex items-center space-x-2"
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setCurrentTab('Home');
@@ -5333,6 +5341,13 @@ function App() {
     name: "LogOut",
     size: 12
   }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Keluar' : 'Logout')))), /*#__PURE__*/React.createElement("div", {
+    className: "w-full h-[8px] flex-shrink-0",
+    style: {
+      backgroundImage: gigiBalangPattern,
+      backgroundRepeat: 'repeat-x',
+      backgroundSize: '22px 8px'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
     className: "grid grid-cols-3 gap-2 p-3.5 bg-white border-b shadow-sm text-center flex-shrink-0"
   }, /*#__PURE__*/React.createElement("div", {
     className: "bg-purple-50 rounded-xl p-2 border border-purple-100"
@@ -6629,5 +6644,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1613f2c6ab6fe01',t:'MTc4MzIwMDc5MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a16162768baf289f',t:'MTc4MzIwMjIzNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

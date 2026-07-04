@@ -2008,7 +2008,7 @@ function App() {
   const WARUNG_CLOSE_HOUR = 22;
   // 🕰️ Alamat warung fisik (bisa diubah admin di Branding, tersimpan di DB)
   const [warungAddress, setWarungAddress] = useState(() => {
-    return safeStorage.getItem('toko_hana_warung_address') || 'Jl. Cilendek Timur No.12, RT.2/RW.5, Cilendek Timur, Kec. Bogor Barat, Kota Bogor, Jawa Barat 16112';
+    return safeStorage.getItem('toko_hana_warung_address') || 'Jl. Cilendek Timur No.12, RT.2/RW.5, Bogor Barat';
   });
   const [clockTick, setClockTick] = useState(Date.now());
   useEffect(() => {
@@ -3982,50 +3982,54 @@ function App() {
   }), /*#__PURE__*/React.createElement("div", {
     className: "absolute inset-0 bg-gradient-to-br from-[#2d1242]/93 via-[#553C9A]/88 to-[#2d1242]/93"
   }), /*#__PURE__*/React.createElement("div", {
-    className: "relative px-4 pt-3.5 pb-4"
+    className: "relative px-3 pt-3 pb-3.5"
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between gap-2 mb-2"
   }, /*#__PURE__*/React.createElement("span", {
     className: "text-[13px] font-extrabold text-white truncate"
   }, juraganGreeting), /*#__PURE__*/React.createElement("span", {
-    className: "flex items-center gap-1 flex-shrink-0 px-2 py-1 rounded-full bg-[#FFD700]/15 border border-[#FFD700]/40 text-[8px] font-black uppercase tracking-wider text-[#FFD700]"
+    className: "flex items-center gap-1 flex-shrink-0 px-2 py-1 rounded-full bg-[#FFD700]/15 border border-[#FFD700]/40 text-[8px] font-black uppercase tracking-wide text-[#FFD700]"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "Globe",
     size: 9,
     strokeWidth: 2.5
   }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Online 24 Jam' : 'Online 24h'))), /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between gap-2 mb-3"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "flex items-center gap-1.5 text-[9.5px] text-purple-200 font-bold"
-  }, /*#__PURE__*/React.createElement(LucideIcon, {
-    name: "Clock",
-    size: 10,
-    className: "text-[#FFD700]"
-  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Toko Fisik Buka 05.00 – 22.00 WIB' : 'Physical Store Open 05.00 – 22.00')), /*#__PURE__*/React.createElement("span", {
-    className: `flex items-center gap-1.5 flex-shrink-0 px-2.5 py-1 rounded-full border text-[8px] font-black uppercase tracking-wider ${warungStatus.isOpen ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-200' : 'bg-red-500/25 border-red-300/40 text-red-200'}`
-  }, /*#__PURE__*/React.createElement("span", {
-    className: `w-2 h-2 rounded-full ${warungStatus.isOpen ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]' : 'bg-red-400'}`
-  }), /*#__PURE__*/React.createElement("span", null, warungStatus.isOpen ? lang === 'id' ? `Buka • Tutup ${WARUNG_CLOSE_HOUR}.00` : `Open • Closes ${WARUNG_CLOSE_HOUR}.00` : lang === 'id' ? `Tutup • Buka kembali ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.00` : `Closed • Reopens ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.00`))), /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center gap-2 mb-2"
+    className: "flex items-center justify-between gap-2 mb-1.5"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "w-9 h-9 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-xl flex items-center justify-center shadow-md flex-shrink-0"
+    className: "flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-8 h-8 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-lg flex items-center justify-center shadow-md flex-shrink-0"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "Store",
-    size: 17,
+    size: 15,
     className: "text-[#2d1242]"
   })), /*#__PURE__*/React.createElement("h4", {
-    className: "font-black text-white text-[13px]"
-  }, lang === 'id' ? 'Alamat Toko Kami' : 'Our Store Address')), /*#__PURE__*/React.createElement("div", {
-    className: "bg-white/10 rounded-xl p-2.5 border border-white/10 mb-3"
+    className: "font-black text-white text-[12.5px]"
+  }, lang === 'id' ? 'Alamat Toko Kami' : 'Our Store Address')), /*#__PURE__*/React.createElement("span", {
+    className: `flex items-center gap-1.5 flex-shrink-0 px-2.5 py-1 rounded-full border text-[8px] font-black uppercase tracking-wide ${warungStatus.isOpen ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-200' : 'bg-red-500/25 border-red-300/40 text-red-200'}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: `w-2 h-2 rounded-full ${warungStatus.isOpen ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]' : 'bg-red-400'}`
+  }), /*#__PURE__*/React.createElement("span", null, warungStatus.isOpen ? lang === 'id' ? `Buka - Tutup ${WARUNG_CLOSE_HOUR}.00 WIB` : `Open - Closes ${WARUNG_CLOSE_HOUR}.00` : lang === 'id' ? `Tutup - Buka ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.00 WIB` : `Closed - Opens ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.00`))), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-2 mb-2.5"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-start gap-1.5"
+    className: "bg-white/10 rounded-xl px-2.5 py-2 border border-white/10 flex items-start gap-1.5"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "MapPin",
     size: 12,
     className: "text-[#FFD700] flex-shrink-0 mt-0.5"
   }), /*#__PURE__*/React.createElement("span", {
-    className: "text-white font-bold text-[10px] leading-relaxed"
-  }, warungAddress))), /*#__PURE__*/React.createElement("div", {
+    className: "text-white font-bold text-[10px] leading-snug"
+  }, warungAddress)), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 rounded-xl px-2.5 py-2 border border-white/10 flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Clock",
+    size: 14,
+    className: "text-[#FFD700] flex-shrink-0"
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "block text-[8px] text-purple-200 font-black uppercase tracking-wide"
+  }, lang === 'id' ? 'Toko Buka' : 'Open Hours'), /*#__PURE__*/React.createElement("span", {
+    className: "text-white font-extrabold text-[11px]"
+  }, "05.00 – 22.00 WIB")))), /*#__PURE__*/React.createElement("div", {
     className: "flex gap-2"
   }, /*#__PURE__*/React.createElement("a", {
     href: "https://maps.app.goo.gl/m7FtnRqNpos99oCz5",
@@ -6266,5 +6270,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1601b444fa9d738',t:'MTc4MzE4ODgzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

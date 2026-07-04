@@ -3856,14 +3856,6 @@ function App() {
   }, headerPatternUrl && /*#__PURE__*/React.createElement("div", {
     className: "absolute inset-0 bg-[#703d92]/80 z-0"
   }), /*#__PURE__*/React.createElement("div", {
-    className: "relative z-10 flex items-center justify-between gap-2 mb-2"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "text-[10px] font-bold text-purple-100 truncate"
-  }, juraganGreeting), /*#__PURE__*/React.createElement("span", {
-    className: `flex items-center gap-1.5 flex-shrink-0 px-2.5 py-1 rounded-full border text-[8px] font-black uppercase tracking-wider ${warungStatus.isOpen ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-200' : 'bg-red-500/25 border-red-300/40 text-red-200'}`
-  }, /*#__PURE__*/React.createElement("span", {
-    className: `w-2 h-2 rounded-full ${warungStatus.isOpen ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]' : 'bg-red-400'}`
-  }), /*#__PURE__*/React.createElement("span", null, warungStatus.label))), /*#__PURE__*/React.createElement("div", {
     className: "relative z-10 flex items-center justify-between gap-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "relative flex-1"
@@ -3977,7 +3969,87 @@ function App() {
     ref: mainScrollRef,
     onScroll: handleMainScroll,
     className: `flex-1 overflow-y-auto flex flex-col scroll-smooth transition-colors duration-300 ${darkMode ? 'dark-theme bg-[#11091d]' : 'bg-white'}`
-  }, currentTab === 'Home' && banners.length > 0 ? /*#__PURE__*/React.createElement("div", {
+  }, currentTab === 'Home' && /*#__PURE__*/React.createElement("div", {
+    className: "relative w-full overflow-hidden border-b border-[#FFD700]/25"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "absolute inset-0",
+    style: {
+      backgroundImage: BRAND_BATIK_DATA_URI ? `url(${BRAND_BATIK_DATA_URI})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundColor: '#2d1242'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "absolute inset-0 bg-gradient-to-br from-[#2d1242]/93 via-[#553C9A]/88 to-[#2d1242]/93"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "relative px-4 pt-3.5 pb-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between gap-2 mb-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-[10.5px] font-bold text-purple-100 truncate"
+  }, juraganGreeting), /*#__PURE__*/React.createElement("span", {
+    className: `flex items-center gap-1.5 flex-shrink-0 px-2.5 py-1 rounded-full border text-[8px] font-black uppercase tracking-wider ${warungStatus.isOpen ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-200' : 'bg-red-500/25 border-red-300/40 text-red-200'}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: `w-2 h-2 rounded-full ${warungStatus.isOpen ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]' : 'bg-red-400'}`
+  }), /*#__PURE__*/React.createElement("span", null, warungStatus.label))), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-9 h-9 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-xl flex items-center justify-center shadow-md flex-shrink-0"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Store",
+    size: 17,
+    className: "text-[#2d1242]"
+  })), /*#__PURE__*/React.createElement("h4", {
+    className: "font-black text-white text-[13px]"
+  }, lang === 'id' ? 'Warung Fisik Kami' : 'Our Physical Store')), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 gap-2 mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 rounded-xl p-2.5 border border-white/10"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5 mb-0.5"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Clock",
+    size: 11,
+    className: "text-[#FFD700]"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[8px] text-purple-200 font-black uppercase tracking-wide"
+  }, lang === 'id' ? 'Jam Operasional' : 'Opening Hours')), /*#__PURE__*/React.createElement("span", {
+    className: "text-white font-extrabold text-[11px]"
+  }, "05.00 – 22.00 WIB"), /*#__PURE__*/React.createElement("span", {
+    className: "block text-[8px] text-purple-300 font-semibold"
+  }, lang === 'id' ? 'Setiap Hari • Online 24 Jam' : 'Every Day • Online 24h')), /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/10 rounded-xl p-2.5 border border-white/10"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5 mb-0.5"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "MapPin",
+    size: 11,
+    className: "text-[#FFD700]"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[8px] text-purple-200 font-black uppercase tracking-wide"
+  }, lang === 'id' ? 'Lokasi Warung' : 'Store Location')), /*#__PURE__*/React.createElement("span", {
+    className: "text-white font-extrabold text-[10px] leading-tight block"
+  }, warungAddress))), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2"
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "https://maps.app.goo.gl/m7FtnRqNpos99oCz5",
+    target: "_blank",
+    rel: "noopener noreferrer",
+    className: "flex-1 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#2d1242] font-black text-[10px] py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Navigation",
+    size: 12,
+    strokeWidth: 2.5
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Kunjungi Warung Kami' : 'Visit Our Store')), /*#__PURE__*/React.createElement("a", {
+    href: `https://wa.me/${merchantWaNumber}?text=${encodeURIComponent(lang === 'id' ? 'Halo Toko Hana! Saya mau tanya-tanya dulu ya 😊' : 'Hello Toko Hana! I have a few questions 😊')}`,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    className: "flex-1 bg-white/10 border border-white/20 text-white font-black text-[10px] py-2.5 rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-all hover:bg-white/15"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Phone",
+    size: 12,
+    strokeWidth: 2.5
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Chat Juragan' : 'Chat the Owner'))))), false && currentTab === 'Home' && banners.length > 0 ? /*#__PURE__*/React.createElement("div", {
     className: "relative w-full h-44 overflow-hidden bg-neutral-900 group",
     style: BRAND_BATIK_DATA_URI ? {
       backgroundImage: `url(${BRAND_BATIK_DATA_URI})`,
@@ -4107,86 +4179,6 @@ function App() {
   }, /*#__PURE__*/React.createElement("h4", {
     className: "font-bold text-sm text-gray-700"
   }, "Produk Tidak Ditemukan"))), currentTab === 'Home' && /*#__PURE__*/React.createElement("div", {
-    className: "mx-4 mt-5 rounded-3xl overflow-hidden border border-[#FFD700]/30 shadow-md relative"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "absolute inset-0",
-    style: {
-      backgroundImage: BRAND_BATIK_DATA_URI ? `url(${BRAND_BATIK_DATA_URI})` : 'none',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundColor: '#2d1242'
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "absolute inset-0 bg-gradient-to-br from-[#2d1242]/93 via-[#553C9A]/88 to-[#2d1242]/93"
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "relative p-4.5 p-5"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center gap-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "w-9 h-9 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-xl flex items-center justify-center shadow-md"
-  }, /*#__PURE__*/React.createElement(LucideIcon, {
-    name: "Store",
-    size: 17,
-    className: "text-[#2d1242]"
-  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
-    className: "font-black text-white text-[13px] leading-tight"
-  }, lang === 'id' ? 'Warung Fisik Kami' : 'Our Physical Store'), /*#__PURE__*/React.createElement("span", {
-    className: "text-[8.5px] text-purple-200 font-bold uppercase tracking-wider"
-  }, lang === 'id' ? 'Asli, Nyata & Melayani Setiap Hari' : 'Authentic, Real & Serving Daily'))), /*#__PURE__*/React.createElement("span", {
-    className: `flex items-center gap-1 px-2 py-1 rounded-full border text-[7.5px] font-black uppercase ${warungStatus.isOpen ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-200' : 'bg-red-500/25 border-red-300/40 text-red-200'}`
-  }, /*#__PURE__*/React.createElement("span", {
-    className: `w-1.5 h-1.5 rounded-full ${warungStatus.isOpen ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`
-  }), warungStatus.isOpen ? lang === 'id' ? 'BUKA' : 'OPEN' : lang === 'id' ? 'TUTUP' : 'CLOSED')), /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-2 gap-2 mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-white/10 rounded-xl p-2.5 border border-white/10"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center gap-1.5 mb-0.5"
-  }, /*#__PURE__*/React.createElement(LucideIcon, {
-    name: "Clock",
-    size: 11,
-    className: "text-[#FFD700]"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "text-[8px] text-purple-200 font-black uppercase tracking-wide"
-  }, lang === 'id' ? 'Jam Operasional' : 'Opening Hours')), /*#__PURE__*/React.createElement("span", {
-    className: "text-white font-extrabold text-[11px]"
-  }, "05.00 – 22.00 WIB"), /*#__PURE__*/React.createElement("span", {
-    className: "block text-[8px] text-purple-300 font-semibold"
-  }, lang === 'id' ? 'Setiap Hari • Online 24 Jam' : 'Every Day • Online 24h')), /*#__PURE__*/React.createElement("div", {
-    className: "bg-white/10 rounded-xl p-2.5 border border-white/10"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center gap-1.5 mb-0.5"
-  }, /*#__PURE__*/React.createElement(LucideIcon, {
-    name: "MapPin",
-    size: 11,
-    className: "text-[#FFD700]"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "text-[8px] text-purple-200 font-black uppercase tracking-wide"
-  }, lang === 'id' ? 'Lokasi Warung' : 'Store Location')), /*#__PURE__*/React.createElement("span", {
-    className: "text-white font-extrabold text-[10px] leading-tight block"
-  }, warungAddress))), /*#__PURE__*/React.createElement("div", {
-    className: "flex gap-2"
-  }, /*#__PURE__*/React.createElement("a", {
-    href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Toko Hana ' + warungAddress)}`,
-    target: "_blank",
-    rel: "noopener noreferrer",
-    className: "flex-1 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#2d1242] font-black text-[10px] py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all"
-  }, /*#__PURE__*/React.createElement(LucideIcon, {
-    name: "Navigation",
-    size: 12,
-    strokeWidth: 2.5
-  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Kunjungi Warung Kami' : 'Visit Our Store')), /*#__PURE__*/React.createElement("a", {
-    href: `https://wa.me/${merchantWaNumber}?text=${encodeURIComponent(lang === 'id' ? 'Halo Toko Hana! Saya mau tanya-tanya dulu ya 😊' : 'Hello Toko Hana! I have a few questions 😊')}`,
-    target: "_blank",
-    rel: "noopener noreferrer",
-    className: "flex-1 bg-white/10 border border-white/20 text-white font-black text-[10px] py-2.5 rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-all hover:bg-white/15"
-  }, /*#__PURE__*/React.createElement(LucideIcon, {
-    name: "Phone",
-    size: 12,
-    strokeWidth: 2.5
-  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Chat Juragan' : 'Chat the Owner'))))), currentTab === 'Home' && /*#__PURE__*/React.createElement("div", {
     className: "bg-[#2d1242] text-white mt-6 text-center flex-shrink-0 animate-fade-in relative z-10"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-full h-[8px]",
@@ -6278,5 +6270,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a15f2e820bd5fd71',t:'MTc4MzE3OTEzNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a15f5a1c5c26ef6a',t:'MTc4MzE4MDkyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

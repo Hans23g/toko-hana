@@ -6319,9 +6319,9 @@ function App() {
     className: "absolute inset-0",
     style: {
       backgroundColor: '#703d92',
-      backgroundImage: navPatternUrl ? `linear-gradient(rgba(112,61,146,0.80), rgba(85,60,154,0.76)), url(${navPatternUrl})` : 'none',
-      backgroundSize: 'auto 180px',
-      /* skala motif disamakan dgn header — bukan cover yg ke-zoom raksasa! */
+      backgroundImage: navPatternUrl ? `linear-gradient(to right, rgba(112,61,146,0.55), rgba(85,60,154,0.50)), url(${navPatternUrl})` : 'none',
+      backgroundSize: '100% 100%, auto 180px',
+      /* kabut full-bleed, motif skala header */
       backgroundPosition: 'center',
       WebkitMask: 'radial-gradient(circle at 50% 13px, transparent 31px, #000 32px)',
       mask: 'radial-gradient(circle at 50% 13px, transparent 31px, #000 32px)'
@@ -6599,5 +6599,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a161c2f17cd0a8d3',t:'MTc4MzIwNjE4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a161da93886e252c',t:'MTc4MzIwNzE1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

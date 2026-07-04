@@ -4208,7 +4208,69 @@ function App() {
     }
   }), /*#__PURE__*/React.createElement("span", {
     className: "absolute top-2.5 left-2.5 bg-[#703d92]/80 backdrop-blur-md text-white font-bold text-[8px] uppercase px-2 py-0.5 rounded-md"
-  }, product.category.toUpperCase())), /*#__PURE__*/React.createElement("div", {
+  }, product.category.toUpperCase()), product.original_price && product.original_price > product.price && /*#__PURE__*/React.createElement("div", {
+    className: "absolute top-1.5 right-1.5 w-12 h-12 flex items-center justify-center pointer-events-none select-none",
+    style: {
+      transform: 'rotate(-14deg)',
+      opacity: 0.88,
+      mixBlendMode: 'multiply'
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 60 60",
+    className: "w-full h-full drop-shadow-sm"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "30",
+    cy: "30",
+    r: "28",
+    fill: "none",
+    stroke: "#D32F2F",
+    strokeWidth: "2.5",
+    strokeDasharray: "2.5 1.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "30",
+    cy: "30",
+    r: "22.5",
+    fill: "rgba(211,47,47,0.07)",
+    stroke: "#D32F2F",
+    strokeWidth: "1.2"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "7",
+    y: "33.5",
+    fontSize: "7",
+    fill: "#D32F2F",
+    fontWeight: "bold"
+  }, "★"), /*#__PURE__*/React.createElement("text", {
+    x: "46.5",
+    y: "33.5",
+    fontSize: "7",
+    fill: "#D32F2F",
+    fontWeight: "bold"
+  }, "★"), /*#__PURE__*/React.createElement("text", {
+    x: "30",
+    y: "34.5",
+    textAnchor: "middle",
+    fontSize: "12.5",
+    fill: "#D32F2F",
+    fontWeight: "900",
+    fontFamily: "Arial Black, sans-serif",
+    letterSpacing: "0.5"
+  }, "PROMO"), /*#__PURE__*/React.createElement("text", {
+    x: "30",
+    y: "14.5",
+    textAnchor: "middle",
+    fontSize: "5.5",
+    fill: "#D32F2F",
+    fontWeight: "bold",
+    letterSpacing: "1"
+  }, "TOKO HANA"), /*#__PURE__*/React.createElement("text", {
+    x: "30",
+    y: "50",
+    textAnchor: "middle",
+    fontSize: "5.5",
+    fill: "#D32F2F",
+    fontWeight: "bold",
+    letterSpacing: "1"
+  }, "HARGA HEMAT")))), /*#__PURE__*/React.createElement("div", {
     className: "p-3.5 flex-1 flex flex-col justify-between"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
     className: "text-sm font-medium text-gray-800 leading-tight truncate"
@@ -4222,9 +4284,7 @@ function App() {
     className: "flex items-center gap-1.5"
   }, /*#__PURE__*/React.createElement("span", {
     className: "text-[10px] text-gray-400 line-through"
-  }, "Rp ", product.original_price.toLocaleString('id-ID')), /*#__PURE__*/React.createElement("span", {
-    className: "bg-red-500 text-white font-black text-[7.5px] uppercase px-1.5 py-[1px] rounded shadow-sm"
-  }, "PROMO")), /*#__PURE__*/React.createElement("div", {
+  }, "Rp ", product.original_price.toLocaleString('id-ID'))), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between"
   }, /*#__PURE__*/React.createElement("span", {
     className: "relative inline-block bg-[#FFF8E1] border border-[#E8D9A0] rounded-sm px-2 py-0.5 shadow-[1px_1.5px_2px_rgba(0,0,0,0.12)] -rotate-1"
@@ -6376,5 +6436,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a160c879fd366017',t:'MTc4MzE5NTkyOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a160e47c1aa25cec',t:'MTc4MzE5NzA3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

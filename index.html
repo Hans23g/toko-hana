@@ -3984,22 +3984,28 @@ function App() {
   }), /*#__PURE__*/React.createElement("div", {
     className: "relative px-4 pt-3.5 pb-4"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between gap-2 mb-1.5"
+    className: "flex items-center justify-between gap-2 mb-2"
   }, /*#__PURE__*/React.createElement("span", {
-    className: "text-[10.5px] font-bold text-purple-100 truncate"
+    className: "text-[13px] font-extrabold text-white truncate"
   }, juraganGreeting), /*#__PURE__*/React.createElement("span", {
-    className: `flex items-center gap-1.5 flex-shrink-0 px-2.5 py-1 rounded-full border text-[8px] font-black uppercase tracking-wider ${warungStatus.isOpen ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-200' : 'bg-red-500/25 border-red-300/40 text-red-200'}`
+    className: "flex items-center gap-1 flex-shrink-0 px-2 py-1 rounded-full bg-[#FFD700]/15 border border-[#FFD700]/40 text-[8px] font-black uppercase tracking-wider text-[#FFD700]"
+  }, /*#__PURE__*/React.createElement(LucideIcon, {
+    name: "Globe",
+    size: 9,
+    strokeWidth: 2.5
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Online 24 Jam' : 'Online 24h'))), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between gap-2 mb-3"
   }, /*#__PURE__*/React.createElement("span", {
-    className: `w-2 h-2 rounded-full ${warungStatus.isOpen ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]' : 'bg-red-400'}`
-  }), /*#__PURE__*/React.createElement("span", null, warungStatus.isOpen ? lang === 'id' ? 'BUKA' : 'OPEN' : lang === 'id' ? 'TUTUP' : 'CLOSED'))), /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-end gap-1.5 mb-2.5"
+    className: "flex items-center gap-1.5 text-[9.5px] text-purple-200 font-bold"
   }, /*#__PURE__*/React.createElement(LucideIcon, {
     name: "Clock",
     size: 10,
     className: "text-[#FFD700]"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "text-[9px] text-purple-200 font-bold"
-  }, "05.00 – 22.00 WIB • ", lang === 'id' ? 'Setiap Hari • Online 24 Jam' : 'Every Day • Online 24h')), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Toko Fisik Buka 05.00 – 22.00 WIB' : 'Physical Store Open 05.00 – 22.00')), /*#__PURE__*/React.createElement("span", {
+    className: `flex items-center gap-1.5 flex-shrink-0 px-2.5 py-1 rounded-full border text-[8px] font-black uppercase tracking-wider ${warungStatus.isOpen ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-200' : 'bg-red-500/25 border-red-300/40 text-red-200'}`
+  }, /*#__PURE__*/React.createElement("span", {
+    className: `w-2 h-2 rounded-full ${warungStatus.isOpen ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]' : 'bg-red-400'}`
+  }), /*#__PURE__*/React.createElement("span", null, warungStatus.isOpen ? lang === 'id' ? `Buka • Tutup ${WARUNG_CLOSE_HOUR}.00` : `Open • Closes ${WARUNG_CLOSE_HOUR}.00` : lang === 'id' ? `Tutup • Buka kembali ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.00` : `Closed • Reopens ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.00`))), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center gap-2 mb-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-9 h-9 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-xl flex items-center justify-center shadow-md flex-shrink-0"
@@ -6260,5 +6266,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a15f8b305903135a',t:'MTc4MzE4MjkzMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

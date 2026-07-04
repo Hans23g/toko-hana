@@ -507,6 +507,14 @@ var supabase=function(e){function t(e,t){var r={};for(var s in e)Object.prototyp
     @keyframes splashRise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
     .animate-splash-rise { animation: splashRise 0.6s ease-out 0.35s both; }
     .animate-splash-rise-2 { animation: splashRise 0.6s ease-out 0.6s both; }
+    /* 🐖 Animasi koin jatuh masuk celengan HanaPoin */
+    @keyframes coinDrop {
+      0%   { opacity: 0; transform: translate(-50%, -8px) scale(0.6) rotate(-15deg); }
+      35%  { opacity: 1; transform: translate(-50%, -2px) scale(1) rotate(0deg); }
+      70%  { opacity: 1; transform: translate(-50%, 4px) scale(0.9) rotate(10deg); }
+      100% { opacity: 0; transform: translate(-50%, 10px) scale(0.5) rotate(20deg); }
+    }
+    .animate-coin-drop { animation: coinDrop 2.2s ease-in infinite; }
     html { background: #2d1242; }
     body {
       /* 🌌 Senada persis dengan gradien splash — status bar menyatu tanpa strip hitam! */
@@ -4716,12 +4724,26 @@ function App() {
   }, currentUser.name), /*#__PURE__*/React.createElement("p", {
     className: "text-[8.5px] text-purple-200 font-black uppercase tracking-wider mb-1.5"
   }, lang === 'id' ? '🤝 Mitra Resmi Toko Hana' : '🤝 Toko Hana Official Partner'), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "relative flex-shrink-0"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "leading-none select-none block",
+    style: {
+      fontSize: `${26 + (loyaltyLevel.name === 'Pi Pioneer' ? 14 : loyaltyLevel.name === 'Gold' ? 10 : loyaltyLevel.name === 'Silver' ? 5 : 0)}px`
+    },
+    title: lang === 'id' ? 'Celengan HanaPoin Anda' : 'Your HanaPoint Piggy Bank'
+  }, "🐖"), /*#__PURE__*/React.createElement("span", {
+    className: "absolute -top-3 left-1/2 -translate-x-1/2 text-[11px] animate-coin-drop select-none"
+  }, "🪙")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "flex items-end gap-1.5"
   }, /*#__PURE__*/React.createElement("span", {
-    className: "text-[26px] font-black text-[#FFD700] leading-none drop-shadow"
+    className: "text-[24px] font-black text-[#FFD700] leading-none drop-shadow"
   }, myPoints.toLocaleString('id-ID')), /*#__PURE__*/React.createElement("span", {
     className: "text-[9px] text-purple-200 font-bold mb-0.5"
-  }, "HanaPoin ⭐")))), loyaltyLevel.next ? /*#__PURE__*/React.createElement("div", {
+  }, "HanaPoin ⭐")), /*#__PURE__*/React.createElement("span", {
+    className: "text-[7.5px] text-purple-300 font-bold block mt-0.5"
+  }, lang === 'id' ? loyaltyLevel.next ? `Celengan makin gemuk di level ${loyaltyLevel.next}! 🐷` : 'Celengan segemuk-gemuknya! Level MAX 💎' : loyaltyLevel.next ? `Piggy gets fatter at ${loyaltyLevel.next}! 🐷` : 'Fattest piggy possible! MAX level 💎'))))), loyaltyLevel.next ? /*#__PURE__*/React.createElement("div", {
     className: "relative mt-3.5"
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex justify-between text-[8px] font-bold text-purple-200 mb-1"
@@ -6278,5 +6300,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1603e837e08cded',t:'MTc4MzE5MDI3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1605b64cb3ffdfa',t:'MTc4MzE5MTQ2MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -4125,17 +4125,12 @@ function App() {
     onScroll: handleMainScroll,
     className: `flex-1 overflow-y-auto flex flex-col scroll-smooth transition-colors duration-300 ${darkMode ? 'dark-theme bg-[#11091d]' : 'bg-white'}`
   }, currentTab === 'Home' && /*#__PURE__*/React.createElement("div", {
-    className: "relative w-full overflow-hidden border-t-2 border-b border-t-[#FFD700]/50 border-b-[#FFD700]/25"
+    className: "relative w-full overflow-hidden shadow-[inset_0_10px_14px_-8px_rgba(0,0,0,0.5)]"
   }, /*#__PURE__*/React.createElement("div", {
     className: "absolute inset-0",
     style: {
-      backgroundImage: BRAND_BATIK_DATA_URI ? `url(${BRAND_BATIK_DATA_URI})` : 'none',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundColor: '#2d1242'
+      background: 'linear-gradient(135deg, #4a2472 0%, #553C9A 55%, #4a2472 100%)'
     }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "absolute inset-0 bg-gradient-to-r from-[#703d92]/88 to-[#553C9A]/85"
   }), /*#__PURE__*/React.createElement("div", {
     className: "relative px-3 pt-3 pb-3.5"
   }, /*#__PURE__*/React.createElement("div", {
@@ -6324,8 +6319,9 @@ function App() {
     className: "absolute inset-0",
     style: {
       backgroundColor: '#703d92',
-      backgroundImage: navPatternUrl ? `linear-gradient(rgba(112,61,146,0.88), rgba(85,60,154,0.85)), url(${navPatternUrl})` : 'none',
-      backgroundSize: 'cover',
+      backgroundImage: navPatternUrl ? `linear-gradient(rgba(112,61,146,0.80), rgba(85,60,154,0.76)), url(${navPatternUrl})` : 'none',
+      backgroundSize: 'auto 180px',
+      /* skala motif disamakan dgn header — bukan cover yg ke-zoom raksasa! */
       backgroundPosition: 'center',
       WebkitMask: 'radial-gradient(circle at 50% 13px, transparent 31px, #000 32px)',
       mask: 'radial-gradient(circle at 50% 13px, transparent 31px, #000 32px)'
@@ -6603,5 +6599,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1619c4b4cf1a24f',t:'MTc4MzIwNDYwNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a161c2f17cd0a8d3',t:'MTc4MzIwNjE4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

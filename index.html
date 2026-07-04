@@ -4191,13 +4191,28 @@ function App() {
   }), /*#__PURE__*/React.createElement("div", {
     className: "h-3 bg-amber-50 rounded-md w-1/4"
   }))))) : filteredProducts.length > 0 ? /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-2 gap-2.5 px-3 pb-8"
+    className: "grid grid-cols-2 gap-x-3 gap-y-5 px-3.5 pt-3 pb-8"
   }, filteredProducts.map(product => /*#__PURE__*/React.createElement("div", {
     key: product.id,
     onClick: () => setSelectedProductDetail(product) // Click whole card opens details!
     ,
-    className: "bg-white rounded-2xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col hover:shadow-md transition-all group relative cursor-pointer border border-gray-100/50 animate-fade-in"
+    className: "poster-card bg-[#FFFDF6] overflow-visible flex flex-col hover:shadow-lg transition-all group relative cursor-pointer animate-fade-in",
+    style: {
+      border: '1px solid #eee4c8',
+      borderRadius: '4px',
+      boxShadow: '0 3px 10px rgba(45,18,66,0.10), 0 1px 3px rgba(45,18,66,0.08)',
+      transform: `rotate(${product.id % 3 === 0 ? -0.8 : product.id % 2 === 0 ? 0.7 : -0.4}deg)`
+    }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "absolute -top-2 left-1/2 -translate-x-1/2 w-14 h-4 z-30 pointer-events-none",
+    style: {
+      background: 'linear-gradient(90deg, rgba(212,175,55,0.55), rgba(255,215,0,0.7), rgba(212,175,55,0.55))',
+      transform: `translateX(-50%) rotate(${product.id % 2 === 0 ? 2 : -2}deg)`,
+      boxShadow: '0 1px 2px rgba(0,0,0,0.12)',
+      borderLeft: '1px dashed rgba(255,255,255,0.5)',
+      borderRight: '1px dashed rgba(255,255,255,0.5)'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
     className: "relative h-40 bg-gray-50 overflow-hidden"
   }, /*#__PURE__*/React.createElement("img", {
     src: product.image,
@@ -6503,5 +6518,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a160febddc52a24f',t:'MTc4MzE5ODE1MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1611e3069ad9f7a',t:'MTc4MzE5OTQzOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

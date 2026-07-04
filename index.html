@@ -4125,7 +4125,7 @@ function App() {
     onScroll: handleMainScroll,
     className: `flex-1 overflow-y-auto flex flex-col scroll-smooth transition-colors duration-300 ${darkMode ? 'dark-theme bg-[#11091d]' : 'bg-white'}`
   }, currentTab === 'Home' && /*#__PURE__*/React.createElement("div", {
-    className: "relative w-full overflow-hidden border-b border-[#FFD700]/25"
+    className: "relative w-full overflow-hidden border-t-2 border-b border-t-[#FFD700]/50 border-b-[#FFD700]/25"
   }, /*#__PURE__*/React.createElement("div", {
     className: "absolute inset-0",
     style: {
@@ -4138,6 +4138,8 @@ function App() {
     className: "absolute inset-0 bg-gradient-to-r from-[#703d92]/88 to-[#553C9A]/85"
   }), /*#__PURE__*/React.createElement("div", {
     className: "relative px-3 pt-3 pb-3.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white/12 backdrop-blur-[2px] border border-white/15 rounded-2xl p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between gap-2 mb-2"
   }, /*#__PURE__*/React.createElement("span", {
@@ -4204,7 +4206,7 @@ function App() {
     name: "Phone",
     size: 12,
     strokeWidth: 2.5
-  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Chat Juragan' : 'Chat the Owner'))))), false && currentTab === 'Home' && banners.length > 0 ? /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Chat Juragan' : 'Chat the Owner')))))), false && currentTab === 'Home' && banners.length > 0 ? /*#__PURE__*/React.createElement("div", {
     className: "relative w-full h-44 overflow-hidden bg-neutral-900 group",
     style: BRAND_BATIK_DATA_URI ? {
       backgroundImage: `url(${BRAND_BATIK_DATA_URI})`,
@@ -6322,7 +6324,7 @@ function App() {
     className: "absolute inset-0",
     style: {
       backgroundColor: '#703d92',
-      backgroundImage: navPatternUrl ? `linear-gradient(rgba(112,61,146,0.72), rgba(112,61,146,0.72)), url(${navPatternUrl})` : 'none',
+      backgroundImage: navPatternUrl ? `linear-gradient(rgba(112,61,146,0.88), rgba(85,60,154,0.85)), url(${navPatternUrl})` : 'none',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       WebkitMask: 'radial-gradient(circle at 50% 13px, transparent 31px, #000 32px)',
@@ -6601,5 +6603,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a16182026c4ddfc6',t:'MTc4MzIwMzUyOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1619c4b4cf1a24f',t:'MTc4MzIwNDYwNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

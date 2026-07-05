@@ -2584,6 +2584,19 @@ function App() {
           };
           setCurrentUser(custSession);
           safeStorage.setItem('toko_hana_active_user', JSON.stringify(custSession));
+          // 🛡️ Pelanggan biasa TIDAK boleh bawa bendera admin — cabut jika ada!
+          setAdminLoggedIn(false);
+          safeStorage.setItem('toko_hana_admin', 'false');
+        }
+      } else {
+        // 🛡️ ANTI-TIKUS-CONSOLE: tidak ada sesi server = bendera admin lokal HANGUS!
+        // (Tikus yang set localStorage 'toko_hana_admin=true' manual langsung ketendang)
+        if (safeStorage.getItem('toko_hana_admin') === 'true') {
+          console.warn('🛡️ Bendera admin lokal tanpa sesi server terdeteksi — dicabut paksa!');
+          setAdminLoggedIn(false);
+          safeStorage.setItem('toko_hana_admin', 'false');
+          setCurrentUser(null);
+          safeStorage.removeItem('toko_hana_active_user');
         }
       }
     };
@@ -3048,7 +3061,21 @@ function App() {
     }
 
     // 1. ADMIN CHECK
-    if (authEmail === 'admin_70666@web-library.net' && authPassword === 'hana123') {
+    // 1. ADMIN CHECK — 🛡️ BENTENG MODE: verifikasi ke SERVER Supabase Auth!
+    // Tidak ada lagi password telanjang di kode — buzzer view-source gigit jari! wkwk
+    if (authEmail === 'admin_70666@web-library.net') {
+      showToast('🔐 Memverifikasi kredensial Admin ke server...');
+      const {
+        data: adminData,
+        error: adminErr
+      } = await supabaseService.signIn(authEmail, authPassword);
+      if (adminErr || !adminData || !adminData.user) {
+        setAuthPassword('');
+        alert(lang === 'id' ? '🚫 Kredensial Admin DITOLAK server!\n\nPassword salah atau akun tidak valid. Percobaan ini tidak membuka akses apapun.' : '🚫 Admin credentials REJECTED by server!\n\nWrong password or invalid account. This attempt grants no access.');
+        return;
+      }
+
+      // Server mengonfirmasi — baru buka gerbang Backoffice!
       setAdminLoggedIn(true);
       safeStorage.setItem('toko_hana_admin', 'true');
       const adminSession = {
@@ -3057,9 +3084,6 @@ function App() {
         role: 'admin'
       };
       setCurrentUser(adminSession);
-      showToast('🔐 Menghubungkan ke Supabase Auth...');
-      // Sync with Supabase Auth
-      await supabaseService.signIn(authEmail, authPassword);
       showToast('⚡ Selamat Datang Admin Toko Hana!');
       setCurrentTab('AdminPage');
       window.location.hash = '#/admin';
@@ -6665,5 +6689,6 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a16339283ce6db9c',t:'MTc4MzIyMTUxNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1650627abb381f2',t:'MTc4MzI0MDM5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

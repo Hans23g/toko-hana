@@ -4178,32 +4178,18 @@ function App() {
   }, /*#__PURE__*/React.createElement("div", {
     className: "absolute inset-0",
     style: {
-      background: 'linear-gradient(135deg, #4a2472 0%, #553C9A 55%, #4a2472 100%)'
+      backgroundImage: BRAND_BATIK_DATA_URI ? `url(${BRAND_BATIK_DATA_URI})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundColor: '#4a2472'
     }
   }), /*#__PURE__*/React.createElement("div", {
-    className: "absolute left-1 top-1/2 -translate-y-1/2 pointer-events-none select-none"
-  }, /*#__PURE__*/React.createElement(KujangIcon, {
-    size: 30,
-    opacity: 0.22
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none select-none"
-  }, /*#__PURE__*/React.createElement(KujangIcon, {
-    size: 30,
-    opacity: 0.22,
-    flip: true
-  })), /*#__PURE__*/React.createElement("div", {
+    className: "absolute inset-0",
+    style: {
+      background: 'linear-gradient(to right, rgba(112,61,146,0.55), rgba(85,60,154,0.50))'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
     className: "relative px-3 pt-3 pb-3.5"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "relative rounded-2xl p-[2px]",
-    style: {
-      background: 'linear-gradient(135deg, #D4AF37 0%, #FFD700 25%, #B8860B 50%, #FFD700 75%, #D4AF37 100%)',
-      boxShadow: '0 3px 12px rgba(255,215,0,0.25)'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-white/10 backdrop-blur-[2px] rounded-[14px] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]",
-    style: {
-      background: 'linear-gradient(160deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.06) 60%, rgba(255,215,0,0.08) 100%)'
-    }
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between gap-2 mb-2"
   }, /*#__PURE__*/React.createElement("span", {
@@ -4270,7 +4256,7 @@ function App() {
     name: "Phone",
     size: 12,
     strokeWidth: 2.5
-  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Chat Juragan' : 'Chat the Owner'))))))), false && currentTab === 'Home' && banners.length > 0 ? /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("span", null, lang === 'id' ? 'Chat Juragan' : 'Chat the Owner'))))), false && currentTab === 'Home' && banners.length > 0 ? /*#__PURE__*/React.createElement("div", {
     className: "relative w-full h-44 overflow-hidden bg-neutral-900 group",
     style: BRAND_BATIK_DATA_URI ? {
       backgroundImage: `url(${BRAND_BATIK_DATA_URI})`,
@@ -6671,5 +6657,5 @@ const root = ReactDOM.createRoot(container);
 root.render(React.createElement(App));
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1622c840a461184',t:'MTc4MzIxMDUxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a162702faaf7f8fa',t:'MTc4MzIxMzI4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

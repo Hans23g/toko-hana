@@ -5451,7 +5451,7 @@ function App() {
   }, "Sukses"), React.createElement("span", {
     className: "text-xs font-extrabold text-blue-700"
   }, financeRecap?.totalTransactions || 0, " Order"))), React.createElement("div", {
-    className: "flex overflow-x-auto bg-white p-1.5 gap-1.5 no-scrollbar border-b flex-shrink-0"
+    className: "grid grid-cols-3 bg-white p-2 gap-1.5 border-b flex-shrink-0"
   }, [{
     id: 'produk',
     label: 'Produk',
@@ -5462,7 +5462,7 @@ function App() {
     icon: 'Tag'
   }, {
     id: 'restok',
-    label: 'POS Restok',
+    label: 'Restok',
     icon: 'ClipboardList',
     badge: lowStockProducts.length
   }, {
@@ -5479,7 +5479,7 @@ function App() {
     icon: 'ShoppingCart'
   }, {
     id: 'pengiriman',
-    label: 'Pengiriman',
+    label: 'Kirim',
     icon: 'Truck'
   }, {
     id: 'keuangan',
@@ -5492,13 +5492,13 @@ function App() {
   }].map(tab => React.createElement("button", {
     key: tab.id,
     onClick: () => setAdminActiveSubMenu(tab.id),
-    className: `px-3 py-2 rounded-xl text-[10px] font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border ${adminActiveSubMenu === tab.id ? 'bg-[#703d92] text-white border-[#703d92] shadow-sm' : 'bg-[#F5F3F7] text-gray-600 border-transparent'}`
+    className: `relative px-2 py-2 rounded-xl text-[9px] font-extrabold transition-all flex flex-col items-center justify-center gap-1 border min-h-[54px] ${adminActiveSubMenu === tab.id ? 'bg-[#703d92] text-white border-[#703d92] shadow-sm' : 'bg-[#F5F3F7] text-gray-600 border-transparent'}`
   }, React.createElement(LucideIcon, {
     name: tab.icon,
     size: 11,
     className: adminActiveSubMenu === tab.id ? 'text-amber-300' : 'text-[#703d92]'
   }), React.createElement("span", null, tab.label), tab.badge > 0 && React.createElement("span", {
-    className: "bg-red-500 text-white font-black text-[8px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center animate-pulse"
+    className: "absolute top-1 right-1 bg-red-500 text-white font-black text-[8px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center animate-pulse"
   }, tab.badge)))), React.createElement("div", {
     className: "flex-1 min-h-0 p-3 overflow-y-auto pb-28"
   }, adminActiveSubMenu === 'produk' && React.createElement("div", {
@@ -7005,5 +7005,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18884835d4b34c9',t:'MTc4MzYxMjU3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a188ad08cc04fdc3',t:'MTc4MzYxNDIzNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

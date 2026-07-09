@@ -1922,6 +1922,7 @@ function App() {
   const [editingBanner, setEditingBanner] = useState(null);
   const [bannerForm, setBannerForm] = useState({
     title: '',
+    desc: '',
     image: '',
     productId: ''
   });
@@ -3885,12 +3886,14 @@ function App() {
       const updatedBanner = {
         id: editingBanner.id,
         title: bannerForm.title,
+        desc: bannerForm.desc,
         image: bannerForm.image,
         productId: linkedProdId
       };
       setBanners(prev => prev.map(b => b.id === editingBanner.id ? {
         ...b,
         title: bannerForm.title,
+        desc: bannerForm.desc,
         image: bannerForm.image,
         productId: linkedProdId
       } : b));
@@ -3901,6 +3904,7 @@ function App() {
       const newBanner = {
         id: newId,
         title: bannerForm.title,
+        desc: bannerForm.desc,
         image: bannerForm.image,
         productId: linkedProdId
       };
@@ -3910,6 +3914,7 @@ function App() {
     }
     setBannerForm({
       title: '',
+      desc: '',
       image: '',
       productId: ''
     });
@@ -4587,20 +4592,10 @@ function App() {
     className: "-mx-4"
   }, React.createElement(GununganDivider, {
     title: lang === 'id' ? 'Promo Warung' : 'Store Promos'
-  })), React.createElement("div", {
-    className: "flex items-center space-x-2 mb-4 bg-gradient-to-r from-red-50 to-orange-50 border border-red-100 p-3 rounded-2xl"
-  }, React.createElement(LucideIcon, {
-    name: "Tag",
-    className: "text-red-500 animate-pulse",
-    size: 20
-  }), React.createElement("div", null, React.createElement("h3", {
-    className: "font-bold text-sm text-red-600"
-  }, "Promo Spesial Diskon Gila"), React.createElement("p", {
-    className: "text-[10px] text-gray-500"
-  }, "Hemat uang jajan belanja digital & harian warung!"))), banners && banners.length > 0 && React.createElement("div", {
-    className: "mb-5 overflow-hidden rounded-2xl border border-amber-100 bg-white shadow-sm"
+  })), banners && banners.length > 0 && React.createElement("div", {
+    className: "-mx-4 mb-5 overflow-hidden border-y border-amber-100 bg-white shadow-sm"
   }, React.createElement("div", {
-    className: "px-3 pt-3 pb-2 flex items-center justify-between"
+    className: "px-4 pt-3 pb-2 flex items-center justify-between"
   }, React.createElement("div", null, React.createElement("h4", {
     className: "font-extrabold text-[11px] text-[#703d92] uppercase tracking-wider"
   }, "Etalase Banner Promo"), React.createElement("p", {
@@ -4610,28 +4605,32 @@ function App() {
   }, banners.length, " banner")), React.createElement("div", {
     className: "relative overflow-hidden pb-3"
   }, React.createElement("div", {
-    className: "flex gap-2 px-3 hana-banner-marquee"
-  }, [...(banners || []), ...(banners || [])].map((banner, idx) => React.createElement("button", {
-    key: `${banner.id}-${idx}`,
-    type: "button",
-    onClick: () => handlePromoBannerClick(banner.productId),
-    className: "relative flex-[0_0_calc(50%-4px)] h-20 rounded-xl overflow-hidden border border-amber-100 bg-[#2d1242] text-left shadow-sm"
-  }, React.createElement("img", {
-    src: banner.image,
-    alt: banner.title,
-    className: "absolute inset-0 w-full h-full object-cover opacity-90",
-    onError: e => {
-      e.currentTarget.src = getBannerPlaceholder(banner.title);
-    }
-  }), React.createElement("div", {
-    className: "absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"
-  }), React.createElement("div", {
-    className: "absolute left-2 right-2 bottom-2"
-  }, React.createElement("span", {
-    className: "inline-block text-[7px] font-black text-[#2d1242] bg-[#FFD700] px-1.5 py-0.5 rounded-full mb-1"
-  }, "PROMO"), React.createElement("h5", {
-    className: "font-black text-white text-[10px] leading-tight line-clamp-2 drop-shadow"
-  }, banner.title))))))), filteredProducts.length > 0 ? React.createElement("div", {
+    className: "flex gap-2 px-4 hana-banner-marquee"
+  }, [...(banners || []), ...(banners || [])].map((banner, idx) => {
+    const linkedProduct = products.find(p => p.id === parseInt(banner.productId));
+    const bannerDesc = banner.desc || linkedProduct?.desc || 'Promo pilihan Toko Hana untuk juragan.';
+    return React.createElement("button", {
+      key: `${banner.id}-${idx}`,
+      type: "button",
+      onClick: () => handlePromoBannerClick(banner.productId),
+      className: "relative w-[calc((min(100vw,430px)-40px)/2)] flex-shrink-0 h-24 rounded-xl overflow-hidden border border-amber-100 bg-[#2d1242] text-left shadow-sm"
+    }, React.createElement("img", {
+      src: banner.image,
+      alt: banner.title,
+      className: "absolute inset-0 w-full h-full object-cover opacity-90",
+      onError: e => {
+        e.currentTarget.src = getBannerPlaceholder(banner.title);
+      }
+    }), React.createElement("div", {
+      className: "absolute inset-0 bg-gradient-to-t from-black/82 via-black/35 to-transparent"
+    }), React.createElement("div", {
+      className: "absolute left-2 right-2 bottom-2"
+    }, React.createElement("h5", {
+      className: "font-black text-white text-[10.5px] leading-tight line-clamp-1 drop-shadow"
+    }, banner.title), React.createElement("p", {
+      className: "text-[8px] text-white/85 font-semibold leading-tight line-clamp-2 mt-0.5"
+    }, bannerDesc)));
+  })))), filteredProducts.length > 0 ? React.createElement("div", {
     className: "grid grid-cols-2 gap-x-3 gap-y-5 -mx-4 px-3.5 pt-3 pb-20"
   }, filteredProducts.map(product => React.createElement("div", {
     key: product.id,
@@ -5900,6 +5899,17 @@ function App() {
     required: true
   })), React.createElement("div", null, React.createElement("label", {
     className: "block text-gray-500 font-bold mb-0.5"
+  }, lang === 'id' ? 'Deskripsi Banner' : 'Banner Description'), React.createElement("input", {
+    type: "text",
+    value: bannerForm.desc,
+    onChange: e => setBannerForm({
+      ...bannerForm,
+      desc: e.target.value
+    }),
+    placeholder: lang === 'id' ? 'Contoh: Promo beras dan minyak minggu ini' : 'e.g. Weekly rice and cooking oil promo',
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white focus:outline-none focus:border-[#703d92]"
+  })), React.createElement("div", null, React.createElement("label", {
+    className: "block text-gray-500 font-bold mb-0.5"
   }, lang === 'id' ? 'URL Gambar Banner' : 'Banner Image URL'), React.createElement("div", {
     className: "flex gap-1.5"
   }, React.createElement("input", {
@@ -5941,6 +5951,7 @@ function App() {
       setEditingBanner(null);
       setBannerForm({
         title: '',
+        desc: '',
         image: '',
         productId: ''
       });
@@ -7048,5 +7059,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18ad07e4e33b2df',t:'MTc4MzYzNjY1OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18b211ebbc6ad69',t:'MTc4MzYzOTk2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

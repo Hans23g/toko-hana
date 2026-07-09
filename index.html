@@ -4279,41 +4279,43 @@ function App() {
     onClick: () => setActiveBannerIndex(idx),
     className: `w-2 h-2 rounded-full transition-all duration-300 ${idx === activeBannerIndex ? 'bg-amber-400 w-4' : 'bg-white/45'}`
   })))) : null, currentTab === 'Home' && React.createElement("div", {
-    className: "sticky top-0 z-20 bg-gradient-to-b from-white via-white to-[#fff8ec] border-b border-amber-100 flex flex-col py-2.5 shadow-sm"
+    className: "sticky top-0 z-20 bg-gradient-to-b from-white via-white to-[#fff8ec] border-b border-amber-100 flex flex-col py-2 shadow-sm"
   }, React.createElement("div", {
-    className: "px-3 pb-2 flex items-center justify-between"
+    className: "px-3 pb-1.5 flex items-center justify-between"
   }, React.createElement("div", {
-    className: "flex items-center gap-2"
+    className: "flex items-center gap-2 min-w-0"
   }, React.createElement("span", {
-    className: "w-7 h-7 rounded-xl bg-[#703d92] text-[#FFD700] flex items-center justify-center text-sm shadow-sm"
+    className: "w-7 h-7 rounded-xl bg-[#703d92] text-[#FFD700] flex items-center justify-center text-sm shadow-sm flex-shrink-0"
   }, "🏪"), React.createElement("div", {
-    className: "leading-tight"
+    className: "leading-tight min-w-0"
   }, React.createElement("span", {
     className: "block text-[10px] font-black text-[#703d92] uppercase tracking-wider"
   }, "Rak Warung Hana"), React.createElement("span", {
-    className: "block text-[8px] font-bold text-amber-600"
+    className: "block text-[8px] font-bold text-amber-600 truncate"
   }, "Obat rindu warung dekat rumah ☕️"))), React.createElement("button", {
-    onClick: () => setShowCategorySheet(true),
-    className: "text-[9px] font-extrabold text-[#703d92] bg-purple-50 border border-purple-100 px-2.5 py-1.5 rounded-full active:scale-95"
+    onClick: () => {
+      setSelectedCategory('Semua');
+      setShowCategorySheet(true);
+    },
+    className: "text-[9px] font-extrabold text-[#703d92] bg-purple-50 border border-purple-100 px-2.5 py-1.5 rounded-full active:scale-95 whitespace-nowrap"
   }, "Semua Rak")), React.createElement("div", {
-    className: "flex overflow-x-auto px-3 gap-2.5 no-scrollbar scroll-smooth"
-  }, (categories || []).map((cat, idx) => {
+    className: "flex overflow-x-auto px-3 gap-2 no-scrollbar scroll-smooth"
+  }, (categories || []).filter(cat => cat.name !== 'Semua').map((cat, idx) => {
     const isActive = selectedCategory === cat.name;
-    const isSemua = cat.name === 'Semua';
     const meta = getWarungCategoryMeta(cat.name);
     return React.createElement("button", {
       key: cat.name + '-' + idx,
-      onClick: () => isSemua ? setShowCategorySheet(true) : setSelectedCategory(cat.name),
-      className: `relative min-w-[78px] flex-shrink-0 rounded-2xl border-2 px-2.5 py-2 text-left transition-all active:scale-95 ${isActive ? `${meta.border} bg-white shadow-md shadow-purple-100 -translate-y-0.5` : 'border-gray-100 bg-white/85 shadow-sm'}`
-    }, isActive && React.createElement("span", {
-      className: "absolute -top-1.5 -right-1.5 bg-[#FFD700] text-[#2d1242] text-[8px] font-black px-1.5 py-0.5 rounded-full border border-white"
-    }, "✓"), React.createElement("div", {
-      className: `w-9 h-9 rounded-2xl bg-gradient-to-br ${meta.tone} flex items-center justify-center text-lg shadow-sm mb-1.5`
+      onClick: () => setSelectedCategory(cat.name),
+      className: `relative min-w-[67px] flex-shrink-0 rounded-xl border px-2 py-1.5 text-left transition-all active:scale-95 overflow-hidden ${isActive ? 'border-[#FFD700] bg-gradient-to-b from-amber-50 to-white shadow-sm ring-1 ring-[#FFD700]/50' : 'border-gray-100 bg-white/85 shadow-sm'}`
+    }, React.createElement("div", {
+      className: `w-8 h-8 rounded-xl bg-gradient-to-br ${meta.tone} flex items-center justify-center text-base shadow-sm mb-1`
     }, React.createElement("span", null, meta.emoji)), React.createElement("span", {
-      className: `block text-[9.5px] font-black leading-tight ${isActive ? meta.text : 'text-gray-700'}`
+      className: `block text-[8.5px] font-black leading-tight truncate ${isActive ? 'text-[#703d92]' : 'text-gray-700'}`
     }, translateCategory(cat.name)), React.createElement("span", {
-      className: "block text-[7.5px] font-bold text-gray-400 leading-tight mt-0.5"
-    }, meta.shelf));
+      className: "block text-[7px] font-bold text-gray-400 leading-tight mt-0.5 truncate"
+    }, meta.shelf), isActive && React.createElement("span", {
+      className: "absolute left-2 right-2 bottom-0 h-0.5 rounded-full bg-[#FFD700]"
+    }));
   }))), currentTab === 'Home' && React.createElement("div", null, React.createElement(GununganDivider, {
     title: lang === 'id' ? 'Produk Warung' : 'Our Products'
   }), loading ? React.createElement("div", {
@@ -6793,6 +6795,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a183d3de8fb8fdcb',t:'MTc4MzU2MzM5Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1840bc84d1516e8',t:'MTc4MzU2NTY4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

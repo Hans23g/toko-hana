@@ -4534,7 +4534,7 @@ function App() {
   }, "Promo Spesial Diskon Gila"), React.createElement("p", {
     className: "text-[10px] text-gray-500"
   }, "Hemat uang jajan belanja digital & harian warung!"))), filteredProducts.length > 0 ? React.createElement("div", {
-    className: "grid grid-cols-2 gap-x-3 gap-y-5 px-0.5 pt-2 pb-14"
+    className: "grid grid-cols-2 gap-x-3 gap-y-5 -mx-4 px-3.5 pt-3 pb-20"
   }, filteredProducts.map(product => React.createElement("div", {
     key: product.id,
     onClick: () => setSelectedProductDetail(product),
@@ -4649,11 +4649,11 @@ function App() {
   }, React.createElement("span", {
     className: "text-[10px] text-gray-400 line-through"
   }, "Rp ", product.original_price.toLocaleString('id-ID'))), React.createElement("div", {
-    className: "flex items-center justify-between"
+    className: "flex items-center justify-between gap-1 min-w-0"
   }, React.createElement("span", {
-    className: "relative inline-block bg-[#FFF8E1] border border-[#E8D9A0] rounded-sm px-2 py-0.5 shadow-[1px_1.5px_2px_rgba(0,0,0,0.12)] -rotate-1"
+    className: "relative inline-block bg-[#FFF8E1] border border-[#E8D9A0] rounded-sm px-1.5 py-0.5 shadow-[1px_1.5px_2px_rgba(0,0,0,0.12)] -rotate-1 max-w-[98px] overflow-hidden"
   }, React.createElement("span", {
-    className: "font-black text-red-500 text-[11.5px] tracking-tight",
+    className: "block font-black text-red-500 text-[10.5px] tracking-[-0.04em] whitespace-nowrap",
     style: {
       fontFamily: "'Courier New', monospace"
     }
@@ -4663,17 +4663,17 @@ function App() {
       filter: 'drop-shadow(-1px 1px 1px rgba(0,0,0,0.08))'
     }
   })), React.createElement("span", {
-    className: "text-[9px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200"
+    className: "text-[8.5px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 shrink-0"
   }, convertRpToPi(product.price).toFixed(4), " π"))) : React.createElement("div", {
     className: "flex flex-col"
   }, React.createElement("div", {
     className: "h-2"
   }), React.createElement("div", {
-    className: "flex items-center justify-between"
+    className: "flex items-center justify-between gap-1 min-w-0"
   }, React.createElement("span", {
-    className: "relative inline-block bg-[#FFF8E1] border border-[#E8D9A0] rounded-sm px-2 py-0.5 shadow-[1px_1.5px_2px_rgba(0,0,0,0.12)] -rotate-1"
+    className: "relative inline-block bg-[#FFF8E1] border border-[#E8D9A0] rounded-sm px-1.5 py-0.5 shadow-[1px_1.5px_2px_rgba(0,0,0,0.12)] -rotate-1 max-w-[98px] overflow-hidden"
   }, React.createElement("span", {
-    className: "font-black text-[#703d92] text-[11.5px] tracking-tight",
+    className: "block font-black text-[#703d92] text-[10.5px] tracking-[-0.04em] whitespace-nowrap",
     style: {
       fontFamily: "'Courier New', monospace"
     }
@@ -4683,7 +4683,7 @@ function App() {
       filter: 'drop-shadow(-1px 1px 1px rgba(0,0,0,0.08))'
     }
   })), React.createElement("span", {
-    className: "text-[9px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200"
+    className: "text-[8.5px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 shrink-0"
   }, convertRpToPi(product.price).toFixed(4), " π"))), React.createElement("span", {
     className: "text-[9px] text-gray-400 font-semibold mt-1"
   }, "Terjual: ", product.sold || 0, " | Stok: ", product.stock || 0)))))) : React.createElement("div", {
@@ -6859,6 +6859,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1876d264fb2fdf3',t:'MTc4MzYwMTEzMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

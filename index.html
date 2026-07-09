@@ -13,6 +13,9 @@
     @keyframes slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}.animate-slide-up{animation:slide-up .25s ease-out}
     @keyframes scale-up{from{transform:scale(.96);opacity:.6}to{transform:scale(1);opacity:1}}.animate-scale-up{animation:scale-up .2s ease-out}
     @keyframes coin-drop{0%,100%{transform:translate(-50%,-2px)}50%{transform:translate(-50%,3px)}}.animate-coin-drop{animation:coin-drop 1.4s ease-in-out infinite}
+    @keyframes hana-banner-marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .hana-banner-marquee{width:max-content;will-change:transform;animation:hana-banner-marquee 18s linear infinite;}
+    .hana-banner-marquee:hover{animation-play-state:paused;}
     .cq-error{white-space:pre-wrap;background:#fee2e2;color:#7f1d1d;padding:16px;border-radius:16px;margin:16px;font-family:monospace;font-size:12px;text-align:left}
     input, select, textarea{font-size:16px!important;font-weight:400!important;letter-spacing:-0.02em;}
     input::placeholder, textarea::placeholder{font-weight:400;color:rgba(107,114,128,.62)!important;}
@@ -7059,5 +7062,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18b211ebbc6ad69',t:'MTc4MzYzOTk2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

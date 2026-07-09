@@ -1688,6 +1688,109 @@ function App() {
     };
     return t(catKeyMap[catName] || catName);
   };
+  const getWarungCategoryMeta = catName => {
+    const meta = {
+      'Semua': {
+        emoji: '🏪',
+        shelf: 'Etalase',
+        note: 'Semua rak',
+        tone: 'from-[#703d92] to-[#553C9A]',
+        bg: 'bg-purple-50',
+        border: 'border-[#703d92]',
+        text: 'text-[#703d92]'
+      },
+      'Digital': {
+        emoji: '📱',
+        shelf: 'Konter',
+        note: 'Pulsa & token',
+        tone: 'from-red-500 to-rose-500',
+        bg: 'bg-red-50',
+        border: 'border-red-400',
+        text: 'text-red-600'
+      },
+      'Sembako': {
+        emoji: '🌾',
+        shelf: 'Rak Beras',
+        note: 'Kebutuhan pokok',
+        tone: 'from-amber-500 to-yellow-500',
+        bg: 'bg-amber-50',
+        border: 'border-amber-400',
+        text: 'text-amber-700'
+      },
+      'Minuman': {
+        emoji: '🥤',
+        shelf: 'Kulkas',
+        note: 'Segar dingin',
+        tone: 'from-sky-500 to-cyan-500',
+        bg: 'bg-sky-50',
+        border: 'border-sky-400',
+        text: 'text-sky-700'
+      },
+      'Snack': {
+        emoji: '🍪',
+        shelf: 'Toples',
+        note: 'Jajanan ringan',
+        tone: 'from-orange-500 to-amber-500',
+        bg: 'bg-orange-50',
+        border: 'border-orange-400',
+        text: 'text-orange-700'
+      },
+      'Kosmetik': {
+        emoji: '✨',
+        shelf: 'Meja Cantik',
+        note: 'Rawat diri',
+        tone: 'from-pink-500 to-fuchsia-500',
+        bg: 'bg-pink-50',
+        border: 'border-pink-400',
+        text: 'text-pink-700'
+      },
+      'Makanan Instan': {
+        emoji: '🍜',
+        shelf: 'Rak Mie',
+        note: 'Cepat saji',
+        tone: 'from-emerald-500 to-lime-500',
+        bg: 'bg-emerald-50',
+        border: 'border-emerald-400',
+        text: 'text-emerald-700'
+      },
+      'Bumbu Dapur': {
+        emoji: '🧂',
+        shelf: 'Dapur',
+        note: 'Racikan masak',
+        tone: 'from-orange-600 to-red-500',
+        bg: 'bg-orange-50',
+        border: 'border-orange-500',
+        text: 'text-orange-700'
+      },
+      'Rumah Tangga': {
+        emoji: '🧼',
+        shelf: 'Gudang',
+        note: 'Bersih-bersih',
+        tone: 'from-teal-500 to-emerald-500',
+        bg: 'bg-teal-50',
+        border: 'border-teal-400',
+        text: 'text-teal-700'
+      },
+      'Rokok 18+': {
+        emoji: '🔞',
+        shelf: 'Khusus',
+        note: 'Verifikasi umur',
+        tone: 'from-gray-700 to-slate-500',
+        bg: 'bg-gray-50',
+        border: 'border-gray-500',
+        text: 'text-gray-700'
+      }
+    };
+    return meta[catName] || {
+      emoji: '📦',
+      shelf: 'Rak',
+      note: 'Pilihan warung',
+      tone: 'from-[#703d92] to-[#553C9A]',
+      bg: 'bg-purple-50',
+      border: 'border-[#703d92]',
+      text: 'text-[#703d92]'
+    };
+  };
   const [products, setProducts] = useState(() => {
     try {
       const local = safeStorage.getItem('toko_hana_products');
@@ -3066,6 +3169,7 @@ function App() {
       const name = raw.name;
       const price = parseInt((raw.price || '').replace(/[^0-9]/g, '')) || 0;
       const originalPrice = raw.original_price ? parseInt(raw.original_price.replace(/[^0-9]/g, '')) || null : null;
+      const costPrice = raw.cost_price ? parseInt(raw.cost_price.replace(/[^0-9]/g, '')) || null : null;
       const stock = parseInt((raw.stock || '0').replace(/[^0-9-]/g, '')) || 0;
       const sold = parseInt((raw.sold || '0').replace(/[^0-9-]/g, '')) || 0;
       const category = raw.category_id || raw.category || 'Sembako';
@@ -3084,6 +3188,7 @@ function App() {
         name,
         price,
         original_price: originalPrice,
+        cost_price: costPrice,
         category,
         image: imageUrl,
         desc,
@@ -3110,8 +3215,33 @@ function App() {
       e.target.value = '';
     }
   };
+  const validateBulkProductRow = row => {
+    const validCategories = new Set((categories || []).map(c => c.name).filter(Boolean));
+    const errors = [];
+    if (!row.name) errors.push('nama kosong');
+    if (!row.price || row.price < 0) errors.push('harga tidak valid');
+    if ((row.stock || 0) < 0) errors.push('stok tidak boleh minus');
+    if (row.category && validCategories.size && !validCategories.has(row.category)) errors.push(`kategori "${row.category}" belum ada`);
+    return errors;
+  };
+  const updateBulkImportRow = (idx, patch) => {
+    setBulkImportRows(prev => prev.map((row, i) => {
+      if (i !== idx) return row;
+      const next = {
+        ...row,
+        ...patch
+      };
+      if ('price' in patch) next.price = parseInt(String(patch.price).replace(/[^0-9]/g, '')) || 0;
+      if ('original_price' in patch) next.original_price = patch.original_price === '' || patch.original_price === null ? null : parseInt(String(patch.original_price).replace(/[^0-9]/g, '')) || null;
+      if ('cost_price' in patch) next.cost_price = patch.cost_price === '' || patch.cost_price === null ? null : parseInt(String(patch.cost_price).replace(/[^0-9]/g, '')) || null;
+      if ('stock' in patch) next.stock = parseInt(String(patch.stock).replace(/[^0-9-]/g, '')) || 0;
+      if ('sold' in patch) next.sold = parseInt(String(patch.sold).replace(/[^0-9-]/g, '')) || 0;
+      next.errors = validateBulkProductRow(next);
+      return next;
+    }));
+  };
   const downloadProductCsvTemplate = () => {
-    const csv = ['id,name,price,original_price,category_id,stock,sold,image_url,desc', ',Indomie Goreng,3500,,Makanan Instan,100,0,https://example.com/indomie.jpg,"Mi goreng instan isi 85g, rasa gurih klasik favorit keluarga."', ',Minyak Goreng 1L,15000,18000,Sembako,50,0,https://example.com/minyak.jpg,"Minyak goreng kemasan 1 liter untuk kebutuhan harian."', ',Aqua 600ml,4000,,Minuman,120,0,https://example.com/aqua.jpg,"Air mineral botol 600ml, segar diminum dingin."'].join('\n');
+    const csv = ['id,name,price,original_price,cost_price,category_id,stock,sold,image_url,desc', ',Indomie Goreng,3500,,3000,Makanan Instan,100,0,https://example.com/indomie.jpg,"Mi goreng instan isi 85g, rasa gurih klasik favorit keluarga."', ',Minyak Goreng 1L,15000,18000,13500,Sembako,50,0,https://example.com/minyak.jpg,"Minyak goreng kemasan 1 liter untuk kebutuhan harian."', ',Aqua 600ml,4000,,3200,Minuman,120,0,https://example.com/aqua.jpg,"Air mineral botol 600ml, segar diminum dingin."'].join('\n');
     const blob = new Blob([csv], {
       type: 'text/csv;charset=utf-8'
     });
@@ -3138,6 +3268,7 @@ function App() {
         name: row.name,
         price: row.price,
         original_price: row.original_price,
+        cost_price: row.cost_price,
         category_id: row.category,
         image_url: row.image,
         desc: row.desc,
@@ -3162,6 +3293,7 @@ function App() {
           name: row.name,
           price: row.price,
           original_price: row.original_price,
+          cost_price: row.cost_price,
           category: row.category,
           image: row.image,
           desc: row.desc,
@@ -4147,25 +4279,41 @@ function App() {
     onClick: () => setActiveBannerIndex(idx),
     className: `w-2 h-2 rounded-full transition-all duration-300 ${idx === activeBannerIndex ? 'bg-amber-400 w-4' : 'bg-white/45'}`
   })))) : null, currentTab === 'Home' && React.createElement("div", {
-    className: "sticky top-0 z-20 bg-white border-b border-gray-100 flex flex-col py-1.5 shadow-sm"
+    className: "sticky top-0 z-20 bg-gradient-to-b from-white via-white to-[#fff8ec] border-b border-amber-100 flex flex-col py-2.5 shadow-sm"
   }, React.createElement("div", {
-    className: "flex overflow-x-auto px-3 gap-3 no-scrollbar scroll-smooth"
+    className: "px-3 pb-2 flex items-center justify-between"
+  }, React.createElement("div", {
+    className: "flex items-center gap-2"
+  }, React.createElement("span", {
+    className: "w-7 h-7 rounded-xl bg-[#703d92] text-[#FFD700] flex items-center justify-center text-sm shadow-sm"
+  }, "🏪"), React.createElement("div", {
+    className: "leading-tight"
+  }, React.createElement("span", {
+    className: "block text-[10px] font-black text-[#703d92] uppercase tracking-wider"
+  }, "Rak Warung Hana"), React.createElement("span", {
+    className: "block text-[8px] font-bold text-amber-600"
+  }, "Obat rindu warung dekat rumah ☕️"))), React.createElement("button", {
+    onClick: () => setShowCategorySheet(true),
+    className: "text-[9px] font-extrabold text-[#703d92] bg-purple-50 border border-purple-100 px-2.5 py-1.5 rounded-full active:scale-95"
+  }, "Semua Rak")), React.createElement("div", {
+    className: "flex overflow-x-auto px-3 gap-2.5 no-scrollbar scroll-smooth"
   }, (categories || []).map((cat, idx) => {
     const isActive = selectedCategory === cat.name;
     const isSemua = cat.name === 'Semua';
+    const meta = getWarungCategoryMeta(cat.name);
     return React.createElement("button", {
       key: cat.name + '-' + idx,
       onClick: () => isSemua ? setShowCategorySheet(true) : setSelectedCategory(cat.name),
-      className: "flex flex-col items-center flex-shrink-0 space-y-1 focus:outline-none"
-    }, React.createElement("div", {
-      className: `w-11 h-11 rounded-full flex items-center justify-center transition-all border ${isActive ? 'bg-[#703d92] text-white border-[#703d92]' : 'bg-white border-gray-200 text-gray-400'}`
-    }, React.createElement(LucideIcon, {
-      name: cat.icon,
-      size: 18,
-      className: isActive ? 'text-white' : 'text-gray-400'
-    })), React.createElement("span", {
-      className: `text-[10px] tracking-tight font-bold ${isActive ? 'text-[#703d92]' : 'text-gray-500'}`
-    }, translateCategory(cat.name)));
+      className: `relative min-w-[78px] flex-shrink-0 rounded-2xl border-2 px-2.5 py-2 text-left transition-all active:scale-95 ${isActive ? `${meta.border} bg-white shadow-md shadow-purple-100 -translate-y-0.5` : 'border-gray-100 bg-white/85 shadow-sm'}`
+    }, isActive && React.createElement("span", {
+      className: "absolute -top-1.5 -right-1.5 bg-[#FFD700] text-[#2d1242] text-[8px] font-black px-1.5 py-0.5 rounded-full border border-white"
+    }, "✓"), React.createElement("div", {
+      className: `w-9 h-9 rounded-2xl bg-gradient-to-br ${meta.tone} flex items-center justify-center text-lg shadow-sm mb-1.5`
+    }, React.createElement("span", null, meta.emoji)), React.createElement("span", {
+      className: `block text-[9.5px] font-black leading-tight ${isActive ? meta.text : 'text-gray-700'}`
+    }, translateCategory(cat.name)), React.createElement("span", {
+      className: "block text-[7.5px] font-bold text-gray-400 leading-tight mt-0.5"
+    }, meta.shelf));
   }))), currentTab === 'Home' && React.createElement("div", null, React.createElement(GununganDivider, {
     title: lang === 'id' ? 'Produk Warung' : 'Our Products'
   }), loading ? React.createElement("div", {
@@ -5300,7 +5448,7 @@ function App() {
     className: "block font-extrabold text-[#703d92]"
   }, "Pilih File CSV Produk"), React.createElement("span", {
     className: "block text-[9px] text-gray-400 mt-1"
-  }, "Kolom wajib: name, price, category_id, stock. Kolom desc disarankan agar pembeli tidak bingung.")), bulkImportError && React.createElement("div", {
+  }, "Kolom wajib: name, price, category_id, stock. cost_price untuk laporan laba; desc membantu pembeli.")), bulkImportError && React.createElement("div", {
     className: "mt-3 bg-red-50 border border-red-100 text-red-600 rounded-xl p-2.5 font-bold text-[10px]"
   }, "⚠️ ", bulkImportError), bulkImportRows.length > 0 && React.createElement("div", {
     className: "mt-3 space-y-2"
@@ -5311,23 +5459,95 @@ function App() {
   }, "Preview ", bulkImportRows.length, " baris"), React.createElement("span", {
     className: "text-[9px] font-bold text-gray-400"
   }, "Valid: ", bulkImportRows.filter(r => !r.errors.length).length)), React.createElement("div", {
-    className: "max-h-44 overflow-y-auto no-scrollbar space-y-1.5"
-  }, bulkImportRows.slice(0, 12).map((row, idx) => React.createElement("div", {
+    className: "max-h-72 overflow-y-auto no-scrollbar space-y-2"
+  }, bulkImportRows.map((row, idx) => React.createElement("div", {
     key: idx,
-    className: `p-2 rounded-xl border ${row.errors.length ? 'bg-red-50 border-red-100' : 'bg-white border-gray-100'}`
+    className: `p-2.5 rounded-xl border ${row.errors.length ? 'bg-red-50 border-red-100' : 'bg-white border-gray-100'}`
   }, React.createElement("div", {
-    className: "flex justify-between gap-2"
+    className: "flex items-center justify-between gap-2 mb-2"
   }, React.createElement("span", {
-    className: "font-bold text-gray-700 truncate"
-  }, row.name || `(Baris ${row.rowNo})`), React.createElement("span", {
-    className: "font-extrabold text-[#703d92] whitespace-nowrap"
-  }, "Rp ", row.price.toLocaleString('id-ID'))), React.createElement("div", {
-    className: "text-[9px] text-gray-400 font-semibold mt-0.5 truncate"
-  }, row.category, " • Stok ", row.stock, " • ", row.desc), row.errors.length > 0 && React.createElement("div", {
+    className: "text-[8px] font-black uppercase tracking-wider text-gray-400"
+  }, "Baris ", row.rowNo), React.createElement("span", {
+    className: `text-[8px] font-black px-2 py-0.5 rounded-full ${row.errors.length ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-700'}`
+  }, row.errors.length ? 'Perlu Koreksi' : 'Valid')), React.createElement("input", {
+    value: row.name,
+    onChange: e => updateBulkImportRow(idx, {
+      name: e.target.value
+    }),
+    placeholder: "Nama produk",
+    className: "w-full border rounded-lg p-2 text-[10px] font-bold mb-1.5"
+  }), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5 mb-1.5"
+  }, React.createElement("select", {
+    value: row.category,
+    onChange: e => updateBulkImportRow(idx, {
+      category: e.target.value
+    }),
+    className: "w-full border rounded-lg p-2 text-[10px] font-bold bg-white"
+  }, categories.slice(1).map(c => React.createElement("option", {
+    key: c.name,
+    value: c.name
+  }, c.name))), React.createElement("input", {
+    type: "number",
+    value: row.price,
+    onChange: e => updateBulkImportRow(idx, {
+      price: e.target.value
+    }),
+    placeholder: "Harga",
+    className: "w-full border rounded-lg p-2 text-[10px] font-bold"
+  })), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5 mb-1.5"
+  }, React.createElement("input", {
+    type: "number",
+    value: row.original_price || '',
+    onChange: e => updateBulkImportRow(idx, {
+      original_price: e.target.value
+    }),
+    placeholder: "Harga coret/promo",
+    className: "w-full border rounded-lg p-2 text-[10px] font-bold"
+  }), React.createElement("input", {
+    type: "number",
+    value: row.cost_price || '',
+    onChange: e => updateBulkImportRow(idx, {
+      cost_price: e.target.value
+    }),
+    placeholder: "Harga modal",
+    className: "w-full border rounded-lg p-2 text-[10px] font-bold"
+  })), React.createElement("input", {
+    value: row.image || '',
+    onChange: e => updateBulkImportRow(idx, {
+      image: e.target.value
+    }),
+    placeholder: "URL gambar produk",
+    className: "w-full border rounded-lg p-2 text-[10px] font-semibold mb-1.5"
+  }), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5 mb-1.5"
+  }, React.createElement("input", {
+    type: "number",
+    value: row.stock,
+    onChange: e => updateBulkImportRow(idx, {
+      stock: e.target.value
+    }),
+    placeholder: "Stok",
+    className: "w-full border rounded-lg p-2 text-[10px] font-bold"
+  }), React.createElement("input", {
+    type: "number",
+    value: row.sold,
+    onChange: e => updateBulkImportRow(idx, {
+      sold: e.target.value
+    }),
+    placeholder: "Terjual",
+    className: "w-full border rounded-lg p-2 text-[10px] font-bold"
+  })), React.createElement("textarea", {
+    value: row.desc,
+    onChange: e => updateBulkImportRow(idx, {
+      desc: e.target.value
+    }),
+    placeholder: "Catatan/deskripsi untuk pembeli",
+    className: "w-full border rounded-lg p-2 text-[10px] font-semibold min-h-[48px]"
+  }), row.errors.length > 0 && React.createElement("div", {
     className: "text-[9px] text-red-500 font-bold mt-1"
-  }, row.errors.join(', ')))), bulkImportRows.length > 12 && React.createElement("div", {
-    className: "text-center text-[9px] text-gray-400 font-bold py-1"
-  }, "+ ", bulkImportRows.length - 12, " baris lain siap dicek saat import")), React.createElement("div", {
+  }, row.errors.join(', '))))), React.createElement("div", {
     className: "grid grid-cols-2 gap-2 pt-1"
   }, React.createElement("button", {
     type: "button",
@@ -6379,12 +6599,13 @@ function App() {
     className: "w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4"
   }), React.createElement("div", {
     className: "flex items-center justify-between border-b border-gray-100 pb-3 mb-4"
-  }, React.createElement("h4", {
+  }, React.createElement("div", null, React.createElement("h4", {
     className: "font-extrabold text-sm text-[#703d92] flex items-center gap-1.5"
-  }, React.createElement(LucideIcon, {
-    name: "LayoutGrid",
-    size: 15
-  }), React.createElement("span", null, "Daftar Semua Kategori Warung")), React.createElement("button", {
+  }, React.createElement("span", {
+    className: "text-base"
+  }, "🏪"), React.createElement("span", null, "Etalase Warung Toko Hana")), React.createElement("p", {
+    className: "text-[9px] text-amber-600 font-bold mt-0.5"
+  }, "Pilih raknya pelan-pelan, kayak mampir ke warung langganan.")), React.createElement("button", {
     onClick: () => setShowCategorySheet(false),
     className: "p-1 bg-gray-100 rounded-full text-gray-500"
   }, React.createElement(LucideIcon, {
@@ -6394,6 +6615,7 @@ function App() {
     className: "grid grid-cols-4 gap-3 pb-6"
   }, (categories || []).map((cat, idx) => {
     const isSelected = selectedCategory === cat.name;
+    const meta = getWarungCategoryMeta(cat.name);
     return React.createElement("button", {
       key: cat.name + '-sheet-' + idx,
       onClick: () => {
@@ -6401,16 +6623,16 @@ function App() {
         setShowCategorySheet(false);
         if (currentTab !== 'Home') setCurrentTab('Home');
       },
-      className: `p-3 rounded-2xl flex flex-col items-center justify-center text-center gap-2 border transition-all ${isSelected ? 'bg-purple-50 border-[#703d92] text-[#703d92] font-bold shadow-sm' : 'bg-[#F5F3F7] border-transparent text-gray-600'}`
-    }, React.createElement("div", {
-      className: "w-10 h-10 rounded-full flex items-center justify-center border bg-white shadow-sm"
-    }, React.createElement(LucideIcon, {
-      name: cat.icon,
-      size: 16,
-      className: "text-[#703d92]"
-    })), React.createElement("span", {
+      className: `relative p-2.5 rounded-2xl flex flex-col items-center justify-center text-center gap-1.5 border-2 transition-all active:scale-95 ${isSelected ? `${meta.bg} ${meta.border} ${meta.text} font-bold shadow-sm` : 'bg-[#F5F3F7] border-transparent text-gray-600'}`
+    }, isSelected && React.createElement("span", {
+      className: "absolute top-1 right-1 text-[8px] bg-[#FFD700] text-[#2d1242] rounded-full px-1 font-black"
+    }, "✓"), React.createElement("div", {
+      className: `w-11 h-11 rounded-2xl flex items-center justify-center bg-gradient-to-br ${meta.tone} shadow-sm text-xl`
+    }, React.createElement("span", null, meta.emoji)), React.createElement("span", {
       className: "text-[9px] leading-tight font-extrabold truncate w-full"
-    }, translateCategory(cat.name)));
+    }, translateCategory(cat.name)), React.createElement("span", {
+      className: "text-[7.5px] leading-tight font-bold text-gray-400 truncate w-full"
+    }, meta.note));
   })))), showQrisModal && (() => {
     const payTab = qrisModalStartTab;
     const setPayTab = setQrisModalStartTab;
@@ -6571,6 +6793,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a17ff9b89b72ce82',t:'MTc4MzUyMzAwNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a183d3de8fb8fdcb',t:'MTc4MzU2MzM5Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

@@ -1982,6 +1982,12 @@ function App() {
   const [warungAddress, setWarungAddress] = useState(() => {
     return safeStorage.getItem('toko_hana_warung_address') || 'Jl. Cilendek Timur No.12, RT.2/RW.5, Bogor Barat';
   });
+  const [warungStatusMode, setWarungStatusMode] = useState(() => {
+    return safeStorage.getItem('toko_hana_status_mode') || 'auto';
+  });
+  const [warungStatusNote, setWarungStatusNote] = useState(() => {
+    return safeStorage.getItem('toko_hana_status_note') || '';
+  });
   const [clockTick, setClockTick] = useState(Date.now());
   useEffect(() => {
     const t = setInterval(() => setClockTick(Date.now()), 60000);
@@ -1989,12 +1995,50 @@ function App() {
   }, []);
   const warungStatus = useMemo(() => {
     const h = new Date().getHours();
-    const isOpen = h >= WARUNG_OPEN_HOUR && h < WARUNG_CLOSE_HOUR;
+    const autoOpen = h >= WARUNG_OPEN_HOUR && h < WARUNG_CLOSE_HOUR;
+    const openTime = `${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.${String(WARUNG_OPEN_MINUTE).padStart(2, '0')}`;
+    const note = warungStatusNote?.trim();
+    if (warungStatusMode === 'open') {
+      return {
+        isOpen: true,
+        shortText: note || `Buka | Akan tutup ${WARUNG_CLOSE_HOUR}.00 WIB`,
+        label: note || 'WARUNG BUKA MANUAL'
+      };
+    }
+    if (warungStatusMode === 'closed') {
+      return {
+        isOpen: false,
+        shortText: note || `Tutup | Buka kembali ${openTime} WIB`,
+        label: note || 'WARUNG TUTUP MANUAL'
+      };
+    }
+    if (warungStatusMode === 'holiday') {
+      return {
+        isOpen: false,
+        shortText: note || 'Libur | Buka menyusul',
+        label: note || 'WARUNG LIBUR'
+      };
+    }
+    if (warungStatusMode === 'restock') {
+      return {
+        isOpen: false,
+        shortText: note || 'Tutup | Sedang restok',
+        label: note || 'SEDANG RESTOK'
+      };
+    }
+    if (warungStatusMode === 'online_only') {
+      return {
+        isOpen: true,
+        shortText: note || 'Online | Toko fisik tutup',
+        label: note || 'ONLINE SAJA'
+      };
+    }
     return {
-      isOpen,
-      label: isOpen ? lang === 'id' ? `WARUNG BUKA • Tutup ${WARUNG_CLOSE_HOUR}.00` : `STORE OPEN • Closes ${WARUNG_CLOSE_HOUR}.00` : lang === 'id' ? `WARUNG TUTUP • Buka ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.00` : `STORE CLOSED • Opens ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.00`
+      isOpen: autoOpen,
+      shortText: autoOpen ? lang === 'id' ? `Buka | Akan tutup ${WARUNG_CLOSE_HOUR}.00 WIB` : `Open | Closes ${WARUNG_CLOSE_HOUR}.00` : lang === 'id' ? `Tutup | Buka kembali ${openTime} WIB` : `Closed | Reopens ${openTime}`,
+      label: autoOpen ? lang === 'id' ? `WARUNG BUKA • Tutup ${WARUNG_CLOSE_HOUR}.00` : `STORE OPEN • Closes ${WARUNG_CLOSE_HOUR}.00` : lang === 'id' ? `WARUNG TUTUP • Buka ${openTime}` : `STORE CLOSED • Opens ${openTime}`
     };
-  }, [clockTick, lang]);
+  }, [clockTick, lang, warungStatusMode, warungStatusNote]);
   const juraganGreeting = useMemo(() => {
     const h = new Date().getHours();
     if (lang === 'id') {
@@ -4228,7 +4272,7 @@ function App() {
     className: `flex items-center gap-1 flex-shrink-0 px-2.5 py-1 rounded-full border text-[9px] font-black tracking-[-0.02em] whitespace-nowrap overflow-hidden ${warungStatus.isOpen ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-200' : 'bg-red-500/25 border-red-300/40 text-red-200'}`
   }, React.createElement("span", {
     className: `w-2 h-2 rounded-full ${warungStatus.isOpen ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]' : 'bg-red-400'}`
-  }), React.createElement("span", null, warungStatus.isOpen ? lang === 'id' ? `Buka | Akan tutup ${WARUNG_CLOSE_HOUR}.00 WIB` : `Open | Closes ${WARUNG_CLOSE_HOUR}.00` : lang === 'id' ? `Tutup | Buka kembali ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.${String(WARUNG_OPEN_MINUTE).padStart(2, '0')} WIB` : `Closed | Reopens ${String(WARUNG_OPEN_HOUR).padStart(2, '0')}.${String(WARUNG_OPEN_MINUTE).padStart(2, '0')}`))), React.createElement("div", {
+  }), React.createElement("span", null, warungStatus.shortText))), React.createElement("div", {
     className: "grid grid-cols-2 gap-2 mb-2.5"
   }, React.createElement("div", {
     className: "bg-white/10 rounded-xl px-2.5 py-2 border border-white/10 flex items-start gap-1.5"
@@ -5486,6 +5530,10 @@ function App() {
     label: 'Keuangan',
     icon: 'TrendingUp'
   }, {
+    id: 'status',
+    label: 'Status',
+    icon: 'Store'
+  }, {
     id: 'branding',
     label: 'Branding',
     icon: 'Cpu'
@@ -6403,7 +6451,72 @@ function App() {
     className: "text-[9px] text-gray-400"
   }, o.date, " | ", o.payment_method)), React.createElement("span", {
     className: "font-bold text-emerald-600 text-xs"
-  }, "+ Rp ", (o.total || 0).toLocaleString('id-ID'))))))), adminActiveSubMenu === 'branding' && React.createElement("div", {
+  }, "+ Rp ", (o.total || 0).toLocaleString('id-ID'))))))), adminActiveSubMenu === 'status' && React.createElement("div", {
+    className: "space-y-4 text-xs"
+  }, React.createElement("div", {
+    className: "bg-gradient-to-br from-purple-50 via-white to-amber-50 rounded-2xl p-4 border border-purple-100 shadow-sm"
+  }, React.createElement("h4", {
+    className: "font-extrabold text-sm text-[#703d92] flex items-center gap-2"
+  }, React.createElement("span", null, "🏪"), React.createElement("span", null, "Status Warung")), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1"
+  }, "Atur status tampilan toko tanpa ubah kode. Cocok untuk libur, restok, atau buka/tutup manual.")), React.createElement("div", {
+    className: "bg-white rounded-2xl p-4 border shadow-sm space-y-3"
+  }, React.createElement("label", {
+    className: "block font-bold text-gray-600"
+  }, "Mode Status"), React.createElement("select", {
+    value: warungStatusMode,
+    onChange: e => setWarungStatusMode(e.target.value),
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white focus:outline-none focus:border-[#703d92]"
+  }, React.createElement("option", {
+    value: "auto"
+  }, "Otomatis sesuai jam buka"), React.createElement("option", {
+    value: "open"
+  }, "Paksa Buka"), React.createElement("option", {
+    value: "closed"
+  }, "Paksa Tutup"), React.createElement("option", {
+    value: "holiday"
+  }, "Libur"), React.createElement("option", {
+    value: "restock"
+  }, "Sedang Restok"), React.createElement("option", {
+    value: "online_only"
+  }, "Online saja, toko fisik tutup")), React.createElement("div", null, React.createElement("label", {
+    className: "block font-bold text-gray-600 mb-1"
+  }, "Catatan Status (opsional)"), React.createElement("input", {
+    value: warungStatusNote,
+    onChange: e => setWarungStatusNote(e.target.value),
+    placeholder: "Contoh: Libur Lebaran | Buka kembali 12 April",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-[#703d92]"
+  }), React.createElement("p", {
+    className: "text-[9px] text-gray-400 mt-1"
+  }, "Jika diisi, catatan ini akan menggantikan teks status otomatis di kartu sapaan.")), React.createElement("div", {
+    className: "bg-[#F5F3F7] border border-purple-100 rounded-2xl p-3"
+  }, React.createElement("span", {
+    className: "block text-[9px] font-black uppercase tracking-wider text-gray-400 mb-1"
+  }, "Preview"), React.createElement("div", {
+    className: `inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[9px] font-black ${warungStatus.isOpen ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-red-50 border-red-200 text-red-700'}`
+  }, React.createElement("span", {
+    className: `w-2 h-2 rounded-full ${warungStatus.isOpen ? 'bg-emerald-500' : 'bg-red-500'}`
+  }), React.createElement("span", null, warungStatus.shortText))), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("button", {
+    type: "button",
+    onClick: () => {
+      setWarungStatusMode('auto');
+      setWarungStatusNote('');
+      safeStorage.removeItem('toko_hana_status_mode');
+      safeStorage.removeItem('toko_hana_status_note');
+      showToast('Status warung kembali otomatis.');
+    },
+    className: "bg-gray-100 text-gray-600 font-bold py-2.5 rounded-xl"
+  }, "Reset Auto"), React.createElement("button", {
+    type: "button",
+    onClick: () => {
+      safeStorage.setItem('toko_hana_status_mode', warungStatusMode);
+      safeStorage.setItem('toko_hana_status_note', warungStatusNote);
+      showToast('Status warung tersimpan.');
+    },
+    className: "bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
+  }, "Simpan Status")))), adminActiveSubMenu === 'branding' && React.createElement("div", {
     className: "space-y-4 text-xs"
   }, React.createElement("div", {
     className: "bg-white rounded-2xl p-4 border shadow-sm space-y-4"
@@ -7004,6 +7117,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18a31afe99755fc',t:'MTc4MzYzMDE1NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18a71efcf763e25',t:'MTc4MzYzMjc4NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

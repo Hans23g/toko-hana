@@ -4279,7 +4279,7 @@ function App() {
     onClick: () => setActiveBannerIndex(idx),
     className: `w-2 h-2 rounded-full transition-all duration-300 ${idx === activeBannerIndex ? 'bg-amber-400 w-4' : 'bg-white/45'}`
   })))) : null, currentTab === 'Home' && React.createElement("div", {
-    className: "sticky top-0 z-20 bg-gradient-to-b from-white via-white to-[#fff8ec] border-b border-amber-100 flex flex-col py-2 shadow-sm"
+    className: "sticky top-0 z-20 bg-white/72 backdrop-blur-md border-b border-white/60 flex flex-col py-2 shadow-[0_8px_22px_rgba(112,61,146,0.07)]"
   }, React.createElement("div", {
     className: "px-3 pb-1.5 flex items-center justify-between"
   }, React.createElement("div", {
@@ -4306,7 +4306,7 @@ function App() {
     return React.createElement("button", {
       key: cat.name + '-' + idx,
       onClick: () => setSelectedCategory(cat.name),
-      className: `relative min-w-[67px] flex-shrink-0 rounded-xl border px-2 py-1.5 text-left transition-all active:scale-95 overflow-hidden ${isActive ? 'border-[#FFD700] bg-gradient-to-b from-amber-50 to-white shadow-sm ring-1 ring-[#FFD700]/50' : 'border-gray-100 bg-white/85 shadow-sm'}`
+      className: `relative min-w-[67px] flex-shrink-0 rounded-xl border px-2 py-1.5 text-left transition-all active:scale-95 overflow-hidden ${isActive ? 'border-[#FFD700] bg-gradient-to-b from-amber-50 to-white shadow-sm ring-1 ring-[#FFD700]/50' : 'border-white/70 bg-white/78 backdrop-blur-sm shadow-sm'}`
     }, React.createElement("div", {
       className: `w-8 h-8 rounded-xl bg-gradient-to-br ${meta.tone} flex items-center justify-center text-base shadow-sm mb-1`
     }, React.createElement("span", null, meta.emoji)), React.createElement("span", {
@@ -6795,6 +6795,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a186accb5df0aecd',t:'MTc4MzU5MzI1Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a186d4c08d72f8ef',t:'MTc4MzU5NDg5MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

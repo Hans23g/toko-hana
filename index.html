@@ -4071,7 +4071,12 @@ function App() {
       setSearchQuery(e.target.value);
       if (currentTab !== 'Home' && currentTab !== 'Promo') setCurrentTab('Home');
     },
-    className: "w-full bg-white/58 backdrop-blur-sm text-gray-900 placeholder-gray-600 pl-10 pr-9 py-2.5 rounded-full text-xs border-[2px] border-[#FFD700]/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_6px_18px_rgba(45,18,66,0.12)] focus:bg-white/82 focus:shadow-[0_0_15px_rgba(255,215,0,0.45)] focus:outline-none transition-all font-semibold"
+    className: "w-full bg-transparent text-gray-900 placeholder-gray-700 pl-10 pr-9 py-2.5 rounded-full text-xs border-[2px] border-[#FFD700]/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.45),0_6px_18px_rgba(255,215,0,0.14)] focus:shadow-[0_0_15px_rgba(255,215,0,0.45)] focus:outline-none transition-all font-semibold",
+    style: {
+      backgroundColor: 'rgba(255,255,255,0.38)',
+      WebkitBackdropFilter: 'blur(1px)',
+      backdropFilter: 'blur(1px)'
+    }
   }), React.createElement("div", {
     className: "absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B8860B] drop-shadow-sm"
   }, React.createElement(LucideIcon, {
@@ -6859,6 +6864,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a187ba93ef2d6141',t:'MTc4MzYwNDMwMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a187d04be8a6ce8a',t:'MTc4MzYwNTE5Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

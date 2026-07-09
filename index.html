@@ -4563,7 +4563,16 @@ function App() {
     onError: e => {
       e.currentTarget.src = getPlaceholderImage(product.name, product.category);
     }
-  }), React.createElement("div", {
+  }), React.createElement("span", {
+    className: "absolute top-2.5 left-2.5 inline-block bg-[#FFF8E1]/95 border border-[#E8D9A0] rounded-sm px-1.5 py-[1.5px] shadow-[1px_1.5px_2px_rgba(0,0,0,0.15)] rotate-[-1.5deg]"
+  }, React.createElement("span", {
+    className: "font-black text-[#703d92] text-[7.5px] uppercase tracking-wide",
+    style: {
+      fontFamily: "'Courier New', monospace"
+    }
+  }, product.category.toUpperCase()), React.createElement("span", {
+    className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[5px] border-l-[5px] border-t-[#d9c98f] border-l-transparent"
+  })), React.createElement("div", {
     className: "absolute top-1.5 right-1.5 w-12 h-12 flex items-center justify-center pointer-events-none select-none z-20",
     style: {
       transform: 'rotate(-14deg)',
@@ -4625,24 +4634,58 @@ function App() {
     fill: "#D32F2F",
     fontWeight: "bold",
     letterSpacing: "1"
-  }, "PROMO")))), React.createElement("div", {
-    className: "p-3 flex-1 flex flex-col justify-between bg-[#FFFDF6]"
+  }, "HARGA HEMAT")))), React.createElement("div", {
+    className: "p-3.5 flex-1 flex flex-col justify-between bg-[#FFFDF6]"
   }, React.createElement("div", null, React.createElement("h4", {
-    className: "font-extrabold text-[12px] text-gray-800 leading-tight line-clamp-2 min-h-[30px]"
-  }, product.name), React.createElement("span", {
-    className: "inline-block mt-1 text-[8px] font-black text-red-600 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded"
-  }, "Promo Warung")), React.createElement("div", {
+    className: "text-sm font-medium text-gray-800 leading-tight truncate"
+  }, product.name), React.createElement("p", {
+    className: "text-[10px] text-gray-400 mt-1 truncate block"
+  }, product.desc || 'Promo pilihan Toko Hana')), React.createElement("div", {
     className: "mt-2 flex flex-col justify-end"
-  }, product.original_price && product.original_price > product.price && React.createElement("span", {
-    className: "text-[9px] text-gray-400 line-through"
-  }, "Rp ", product.original_price.toLocaleString('id-ID')), React.createElement("div", {
-    className: "flex items-end justify-between gap-1"
+  }, product.original_price && product.original_price > product.price ? React.createElement("div", {
+    className: "flex flex-col"
+  }, React.createElement("div", {
+    className: "flex items-center gap-1.5"
   }, React.createElement("span", {
-    className: "font-black text-red-600 text-[13px] leading-tight"
+    className: "text-[10px] text-gray-400 line-through"
+  }, "Rp ", product.original_price.toLocaleString('id-ID'))), React.createElement("div", {
+    className: "flex items-center justify-between"
+  }, React.createElement("span", {
+    className: "relative inline-block bg-[#FFF8E1] border border-[#E8D9A0] rounded-sm px-2 py-0.5 shadow-[1px_1.5px_2px_rgba(0,0,0,0.12)] -rotate-1"
+  }, React.createElement("span", {
+    className: "font-black text-red-500 text-[11.5px] tracking-tight",
+    style: {
+      fontFamily: "'Courier New', monospace"
+    }
   }, "Rp ", product.price.toLocaleString('id-ID')), React.createElement("span", {
-    className: "text-[8.5px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 whitespace-nowrap"
-  }, convertRpToPi(product.price).toFixed(4), " π")), React.createElement("span", {
-    className: "text-[8.5px] text-gray-400 font-semibold mt-1"
+    className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[7px] border-l-[7px] border-t-[#d9c98f] border-l-transparent",
+    style: {
+      filter: 'drop-shadow(-1px 1px 1px rgba(0,0,0,0.08))'
+    }
+  })), React.createElement("span", {
+    className: "text-[9px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200"
+  }, convertRpToPi(product.price).toFixed(4), " π"))) : React.createElement("div", {
+    className: "flex flex-col"
+  }, React.createElement("div", {
+    className: "h-2"
+  }), React.createElement("div", {
+    className: "flex items-center justify-between"
+  }, React.createElement("span", {
+    className: "relative inline-block bg-[#FFF8E1] border border-[#E8D9A0] rounded-sm px-2 py-0.5 shadow-[1px_1.5px_2px_rgba(0,0,0,0.12)] -rotate-1"
+  }, React.createElement("span", {
+    className: "font-black text-[#703d92] text-[11.5px] tracking-tight",
+    style: {
+      fontFamily: "'Courier New', monospace"
+    }
+  }, "Rp ", product.price.toLocaleString('id-ID')), React.createElement("span", {
+    className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[7px] border-l-[7px] border-t-[#d9c98f] border-l-transparent",
+    style: {
+      filter: 'drop-shadow(-1px 1px 1px rgba(0,0,0,0.08))'
+    }
+  })), React.createElement("span", {
+    className: "text-[9px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200"
+  }, convertRpToPi(product.price).toFixed(4), " π"))), React.createElement("span", {
+    className: "text-[9px] text-gray-400 font-semibold mt-1"
   }, "Terjual: ", product.sold || 0, " | Stok: ", product.stock || 0)))))) : React.createElement("div", {
     className: "text-center p-8 bg-white rounded-2xl"
   }, "Tidak ada promo aktif.")), currentTab === 'Cart' && React.createElement("div", {

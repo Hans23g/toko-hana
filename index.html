@@ -4803,8 +4803,43 @@ function App() {
   }, lang === 'id' ? 'Belanjaan Juragan' : 'Your Shopping Basket'), React.createElement("p", {
     className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-0.5"
   }, lang === 'id' ? 'Cek lagi isi keranjang sebelum bayar, biar laci kasir dan hati sama-sama tenang.' : 'Review your cart before checkout, keeping the counter and heart at ease.'))), cart.length === 0 ? React.createElement("div", {
-    className: "bg-white rounded-2xl p-8 text-center border"
-  }, t('cartEmpty')) : React.createElement("div", {
+    className: "bg-white rounded-2xl p-5 text-center border border-purple-50 shadow-sm"
+  }, React.createElement("div", {
+    className: "w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-[#703d92] to-[#553C9A] text-[#FFD700] flex items-center justify-center text-2xl shadow-md mb-3"
+  }, "🛒"), React.createElement("h4", {
+    className: "font-black text-[#703d92] text-sm"
+  }, t('cartEmpty')), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1.5 max-w-[280px] mx-auto"
+  }, lang === 'id' ? 'Belanjaan masih kosong, Juragan. Mungkin ada kebutuhan warung yang terlupa? Yuk mampir ke rak pilihan Toko Hana.' : 'Your basket is still empty. Maybe something from the store shelves slipped your mind?'), React.createElement("div", {
+    className: "mt-4 text-left"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between mb-2"
+  }, React.createElement("span", {
+    className: "text-[9px] font-black uppercase tracking-wider text-[#703d92]"
+  }, lang === 'id' ? 'Rak yang mungkin dicari' : 'Shelves to explore'), React.createElement("span", {
+    className: "text-[8px] font-bold text-amber-600"
+  }, lang === 'id' ? 'pilih rak' : 'pick shelf')), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, (categories || []).filter(cat => cat.name !== 'Semua').map((cat, idx) => {
+    const meta = getWarungCategoryMeta(cat.name);
+    return React.createElement("button", {
+      key: 'empty-cart-cat-' + cat.name + '-' + idx,
+      type: "button",
+      onClick: () => {
+        setSelectedCategory(cat.name);
+        setCurrentTab('Home');
+      },
+      className: `flex items-center gap-2 p-2 rounded-2xl border ${meta.bg} border-gray-100 active:scale-95 transition-all text-left`
+    }, React.createElement("span", {
+      className: `w-8 h-8 rounded-xl bg-gradient-to-br ${meta.tone} flex items-center justify-center text-base flex-shrink-0 shadow-sm`
+    }, meta.emoji), React.createElement("span", {
+      className: "min-w-0"
+    }, React.createElement("span", {
+      className: `block text-[10px] font-black leading-tight truncate ${meta.text}`
+    }, translateCategory(cat.name)), React.createElement("span", {
+      className: "block text-[8px] text-gray-400 font-bold truncate"
+    }, meta.shelf)));
+  })))) : React.createElement("div", {
     className: "space-y-4"
   }, cart.map(item => React.createElement("div", {
     key: item.product.id,
@@ -7061,6 +7096,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18bf956a8e081b6',t:'MTc4MzY0ODgxNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18c5bc65d7d3d37',t:'MTc4MzY1Mjg0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

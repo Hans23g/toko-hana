@@ -4120,7 +4120,7 @@ function App() {
   }, React.createElement("div", {
     className: "sticky top-0 z-50 bg-[#703d92] flex flex-col w-full shadow-md"
   }, React.createElement("header", {
-    className: "relative text-white px-4 pb-4 pt-[calc(env(safe-area-inset-top,20px)+12px)] shadow-md overflow-hidden bg-[#703d92]",
+    className: "relative text-white px-3.5 pb-2.5 pt-[calc(env(safe-area-inset-top,20px)+8px)] shadow-md overflow-hidden bg-[#703d92]",
     style: {
       backgroundImage: headerPatternUrl ? `url(${headerPatternUrl})` : 'none',
       backgroundSize: 'cover',
@@ -4132,7 +4132,7 @@ function App() {
       background: 'linear-gradient(to right, rgba(112,61,146,0.55), rgba(85,60,154,0.50))'
     }
   }), React.createElement("div", {
-    className: "relative z-10 flex items-center justify-between gap-3"
+    className: "relative z-10 flex items-center justify-between gap-2.5"
   }, React.createElement("div", {
     className: "relative flex-1"
   }, React.createElement("input", {
@@ -4143,42 +4143,42 @@ function App() {
       setSearchQuery(e.target.value);
       if (currentTab !== 'Home' && currentTab !== 'Promo') setCurrentTab('Home');
     },
-    className: "w-full bg-white/58 backdrop-blur-sm text-gray-800 placeholder-gray-400 pl-10 pr-9 py-2 rounded-full text-[16px] leading-none border-[2px] border-[#FFD700]/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_6px_18px_rgba(45,18,66,0.12)] focus:bg-white/82 focus:shadow-[0_0_15px_rgba(255,215,0,0.45)] focus:outline-none transition-all font-normal tracking-[-0.02em]"
+    className: "w-full bg-white/58 backdrop-blur-sm text-gray-800 placeholder-gray-400 pl-9 pr-8 py-1.5 rounded-full text-[16px] leading-none border-[2px] border-[#FFD700]/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_6px_18px_rgba(45,18,66,0.12)] focus:bg-white/82 focus:shadow-[0_0_15px_rgba(255,215,0,0.45)] focus:outline-none transition-all font-normal tracking-[-0.02em]"
   }), React.createElement("div", {
-    className: "absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B8860B] drop-shadow-sm"
+    className: "absolute left-3 top-1/2 -translate-y-1/2 text-[#B8860B] drop-shadow-sm"
   }, React.createElement(LucideIcon, {
     name: "Search",
     size: 14,
     className: "stroke-[2.5]"
   })), React.createElement("button", {
     onClick: triggerVoiceSearch,
-    className: `absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full transition-all ${voiceSearching ? 'bg-red-100 text-red-600 animate-pulse' : 'text-[#B8860B] hover:text-[#FFD700] drop-shadow-sm'}`,
+    className: `absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full transition-all ${voiceSearching ? 'bg-red-100 text-red-600 animate-pulse' : 'text-[#B8860B] hover:text-[#FFD700] drop-shadow-sm'}`,
     title: "Pencarian Suara"
   }, React.createElement(LucideIcon, {
     name: "Mic",
     size: 14
   }))), React.createElement("div", {
-    className: "flex items-center space-x-2 flex-shrink-0"
+    className: "flex items-center space-x-1.5 flex-shrink-0"
   }, React.createElement("button", {
     onClick: () => {
       setShowNotifPanel(!showNotifPanel);
       if (!showNotifPanel) markAllNotifsRead();
     },
-    className: "w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors relative",
+    className: "w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors relative",
     title: "Notifikasi"
   }, React.createElement(LucideIcon, {
     name: "Bell",
-    size: 18,
+    size: 16,
     className: "text-white"
   }), unreadNotifCount > 0 && React.createElement("span", {
     className: "absolute -top-0.5 -right-0.5 bg-red-500 text-white font-black text-[8px] min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center border-2 border-[#703d92] animate-pulse"
   }, unreadNotifCount > 9 ? '9+' : unreadNotifCount)), React.createElement("button", {
     onClick: () => setLang(lang === 'id' ? 'en' : 'id'),
-    className: "w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex flex-col items-center justify-center transition-all border border-white/20 cursor-pointer active:scale-95",
+    className: "w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 flex flex-col items-center justify-center transition-all border border-white/20 cursor-pointer active:scale-95",
     title: lang === 'id' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia'
   }, React.createElement(LucideIcon, {
     name: "Globe",
-    size: 15,
+    size: 14,
     className: "text-white",
     strokeWidth: 2
   }), React.createElement("span", {
@@ -7096,6 +7096,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18c5bc65d7d3d37',t:'MTc4MzY1Mjg0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18e98d20b40fd15',t:'MTc4MzY3NjMyMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

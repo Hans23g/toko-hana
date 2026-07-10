@@ -991,6 +991,7 @@ const getPlaceholderImage = (name, category = 'Sembako') => {
     'Sembako': '#f3e8ff',
     'Minuman': '#e0f2fe',
     'Snack': '#fef3c7',
+    'Jajanan': '#fef3c7',
     'Digital': '#fee2e2',
     'Kosmetik': '#fce7f3',
     'Makanan Instan': '#dcfce7',
@@ -1002,6 +1003,7 @@ const getPlaceholderImage = (name, category = 'Sembako') => {
     'Sembako': '#703d92',
     'Minuman': '#0284c7',
     'Snack': '#d97706',
+    'Jajanan': '#d97706',
     'Digital': '#dc2626',
     'Kosmetik': '#db2777',
     'Makanan Instan': '#16a34a',
@@ -1016,7 +1018,7 @@ const getPlaceholderImage = (name, category = 'Sembako') => {
     <g transform="translate(150, 70)">
       <rect x="0" y="0" width="100" height="100" rx="15" fill="${strokeColor}" opacity="0.15"/>
       ${category === 'Minuman' ? `<path d="M35 25 L65 25 L60 80 L40 80 Z" fill="none" stroke="${strokeColor}" stroke-width="6" stroke-linejoin="round"/>
-           <line x1="30" y1="25" x2="70" y2="25" stroke="${strokeColor}" stroke-width="6" stroke-linecap="round"/>` : category === 'Snack' ? `<circle cx="50" cy="50" r="30" fill="none" stroke="${strokeColor}" stroke-width="6"/>
+           <line x1="30" y1="25" x2="70" y2="25" stroke="${strokeColor}" stroke-width="6" stroke-linecap="round"/>` : category === 'Snack' || category === 'Jajanan' ? `<circle cx="50" cy="50" r="30" fill="none" stroke="${strokeColor}" stroke-width="6"/>
            <circle cx="40" cy="40" r="4" fill="${strokeColor}"/>
            <circle cx="60" cy="45" r="4" fill="${strokeColor}"/>` : category === 'Digital' ? `<rect x="30" y="25" width="40" height="60" rx="8" fill="none" stroke="${strokeColor}" stroke-width="6"/>
            <circle cx="50" cy="70" r="6" fill="${strokeColor}"/>` : category === 'Kosmetik' ? `<circle cx="50" cy="40" r="20" fill="none" stroke="${strokeColor}" stroke-width="6"/>
@@ -1155,7 +1157,7 @@ const defaultProducts = [{
   id: 5,
   name: "BengBeng Chocolate Wafer",
   price: 2500,
-  category: "Snack",
+  category: "Jajanan",
   image: "https://images.unsplash.com/photo-1604152135912-04a022e23696?auto=format&fit=crop&w=500&q=80",
   desc: "4 Kelezatan wafer cokelat & karamel, 20g",
   stock: 150,
@@ -1248,7 +1250,7 @@ const defaultProducts = [{
   name: "Chitato Sapi Panggang 68g",
   price: 11500,
   original_price: 13000,
-  category: "Snack",
+  category: "Jajanan",
   image: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=500&q=80",
   desc: "Keripik kentang bergelombang rasa sapi panggang asli",
   stock: 75,
@@ -1302,7 +1304,7 @@ const defaultProducts = [{
 }];
 const defaultBanners = [{
   id: 1,
-  title: "Snack Favorit Keluarga",
+  title: "Jajanan Favorit Keluarga",
   image: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=1200&h=400&q=80",
   productId: 5
 }, {
@@ -1329,7 +1331,7 @@ const defaultCategories = [{
   name: 'Minuman',
   icon: 'GlassWater'
 }, {
-  name: 'Snack',
+  name: 'Jajanan',
   icon: 'Cookie'
 }, {
   name: 'Kosmetik',
@@ -1522,7 +1524,7 @@ const translations = {
     catDigital: "Digital",
     catSembako: "Sembako",
     catMinuman: "Minuman",
-    catSnack: "Snack",
+    catSnack: "Jajanan",
     catKosmetik: "Kosmetik",
     catInstant: "Makanan Instan",
     catSpices: "Bumbu Dapur",
@@ -1702,6 +1704,7 @@ function App() {
       'Sembako': 'catSembako',
       'Minuman': 'catMinuman',
       'Snack': 'catSnack',
+      'Jajanan': 'catSnack',
       'Kosmetik': 'catKosmetik',
       'Makanan Instan': 'catInstant',
       'Bumbu Dapur': 'catSpices',
@@ -1752,6 +1755,15 @@ function App() {
         emoji: '🍪',
         shelf: 'Toples',
         note: 'Jajanan ringan',
+        tone: 'from-orange-500 to-amber-500',
+        bg: 'bg-orange-50',
+        border: 'border-orange-400',
+        text: 'text-orange-700'
+      },
+      'Jajanan': {
+        emoji: '🍪',
+        shelf: 'Toples',
+        note: 'Permen, chiki, wafer',
         tone: 'from-orange-500 to-amber-500',
         bg: 'bg-orange-50',
         border: 'border-orange-400',
@@ -1813,13 +1825,40 @@ function App() {
       text: 'text-[#703d92]'
     };
   };
+  const normalizeCategoryName = catName => {
+    if (catName === 'Snack') return 'Jajanan';
+    return catName;
+  };
+  const getDefaultCategoryIcon = catName => {
+    const normalized = normalizeCategoryName(catName);
+    const icons = {
+      'Semua': 'LayoutGrid',
+      'Digital': 'Smartphone',
+      'Sembako': 'ShoppingBag',
+      'Minuman': 'GlassWater',
+      'Jajanan': 'Cookie',
+      'Snack': 'Cookie',
+      'Kosmetik': 'Sparkles',
+      'Makanan Instan': 'Soup',
+      'Bumbu Dapur': 'ChefHat',
+      'Rumah Tangga': 'Home',
+      'Rokok 18+': 'Cigarette',
+      'Obat Warung': 'Cross',
+      'Personal Care': 'Sparkles',
+      'Mainan': 'Gamepad2'
+    };
+    return icons[normalized] || 'Package';
+  };
   const [products, setProducts] = useState(() => {
     try {
       const local = safeStorage.getItem('toko_hana_products');
       const localAdded = JSON.parse(safeStorage.getItem('toko_hana_local_products') || '[]');
       const initial = local ? JSON.parse(local) : defaultProducts;
       const merged = [...localAdded, ...initial.filter(p => !localAdded.some(lp => lp.id === p.id))];
-      return merged;
+      return merged.map(p => ({
+        ...p,
+        category: normalizeCategoryName(p.category)
+      }));
     } catch (e) {
       console.warn('Failed to parse products, falling back to default seeds:', e);
       return defaultProducts;
@@ -1851,7 +1890,13 @@ function App() {
   const [categories, setCategories] = useState(() => {
     try {
       const local = safeStorage.getItem('toko_hana_categories');
-      return local ? JSON.parse(local) : defaultCategories;
+      const parsed = local ? JSON.parse(local) : defaultCategories;
+      const normalized = parsed.map(c => ({
+        ...c,
+        name: normalizeCategoryName(c.name),
+        icon: c.icon || getDefaultCategoryIcon(c.name)
+      }));
+      return normalized.filter((c, idx, arr) => arr.findIndex(x => x.name === c.name) === idx);
     } catch (e) {
       console.warn('Failed to parse categories:', e);
       return defaultCategories;
@@ -2315,7 +2360,7 @@ function App() {
       if (data && data.length > 0) {
         const mapped = data.map(item => {
           let catName = 'Sembako';
-          if (item.category_id === 2 || item.category_id === 'Minuman') catName = 'Minuman';else if (item.category_id === 3 || item.category_id === 'Snack') catName = 'Snack';else if (item.category_id === 4 || item.category_id === 'Digital') catName = 'Digital';else if (item.category_id === 5 || item.category_id === 'Kosmetik') catName = 'Kosmetik';else if (item.category_id === 6 || item.category_id === 'Makanan Instan') catName = 'Makanan Instan';else if (item.category_id === 7 || item.category_id === 'Bumbu Dapur') catName = 'Bumbu Dapur';else if (item.category_id === 8 || item.category_id === 'Rumah Tangga') catName = 'Rumah Tangga';else if (item.category_id === 9 || item.category_id === 'Rokok 18+') catName = 'Rokok 18+';else if (typeof item.category_id === 'string' && item.category_id.trim() !== '') catName = item.category_id;
+          if (item.category_id === 2 || item.category_id === 'Minuman') catName = 'Minuman';else if (item.category_id === 3 || item.category_id === 'Snack' || item.category_id === 'Jajanan') catName = 'Jajanan';else if (item.category_id === 4 || item.category_id === 'Digital') catName = 'Digital';else if (item.category_id === 5 || item.category_id === 'Kosmetik') catName = 'Kosmetik';else if (item.category_id === 6 || item.category_id === 'Makanan Instan') catName = 'Makanan Instan';else if (item.category_id === 7 || item.category_id === 'Bumbu Dapur') catName = 'Bumbu Dapur';else if (item.category_id === 8 || item.category_id === 'Rumah Tangga') catName = 'Rumah Tangga';else if (item.category_id === 9 || item.category_id === 'Rokok 18+') catName = 'Rokok 18+';else if (typeof item.category_id === 'string' && item.category_id.trim() !== '') catName = item.category_id;
           return {
             id: item.id,
             name: item.name,
@@ -2731,7 +2776,7 @@ function App() {
     }
     return list.filter(p => {
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCat = selectedCategory === 'Semua' || p.category === selectedCategory;
+      const matchesCat = selectedCategory === 'Semua' || normalizeCategoryName(p.category) === normalizeCategoryName(selectedCategory);
       return matchesSearch && matchesCat;
     });
   }, [products, searchQuery, selectedCategory, currentTab]);
@@ -3575,10 +3620,11 @@ function App() {
   };
   const handleSaveCategory = e => {
     e.preventDefault();
-    if (!catForm.name || !catForm.icon) {
-      alert('Mohon isi semua data kategori');
+    if (!catForm.name) {
+      alert('Mohon isi nama kategori');
       return;
     }
+    const categoryIcon = catForm.icon || getDefaultCategoryIcon(catForm.name);
     const persistCategoriesToDb = (list, renamedFrom) => {
       const doSave = () => supabaseService.saveCategories(list).then(({
         error
@@ -3599,16 +3645,16 @@ function App() {
     if (editingCategory) {
       const updatedList = categories.map(c => c.name === editingCategory.name ? {
         ...c,
-        name: catForm.name,
-        icon: catForm.icon
+        name: normalizeCategoryName(catForm.name),
+        icon: categoryIcon
       } : c);
       setCategories(updatedList);
       persistCategoriesToDb(updatedList, editingCategory.name !== catForm.name ? editingCategory.name : null);
       showToast(`✏️ Kategori "${catForm.name}" berhasil diubah!`);
     } else {
       const updatedList = [...categories, {
-        name: catForm.name,
-        icon: catForm.icon
+        name: normalizeCategoryName(catForm.name),
+        icon: categoryIcon
       }];
       setCategories(updatedList);
       persistCategoriesToDb(updatedList, null);
@@ -3623,8 +3669,8 @@ function App() {
   const handleEditCategoryClick = c => {
     setEditingCategory(c);
     setCatForm({
-      name: c.name,
-      icon: c.icon
+      name: normalizeCategoryName(c.name),
+      icon: c.icon || getDefaultCategoryIcon(c.name)
     });
   };
   const handleDeleteCategory = catName => {
@@ -4458,7 +4504,7 @@ function App() {
     style: {
       fontFamily: "'Courier New', monospace"
     }
-  }, product.category.toUpperCase()), React.createElement("span", {
+  }, translateCategory(normalizeCategoryName(product.category)).toUpperCase()), React.createElement("span", {
     className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[5px] border-l-[5px] border-t-[#d9c98f] border-l-transparent"
   })), product.original_price && product.original_price > product.price && React.createElement("div", {
     className: "absolute top-1.5 right-1.5 w-12 h-12 flex items-center justify-center pointer-events-none select-none",
@@ -4701,7 +4747,7 @@ function App() {
     style: {
       fontFamily: "'Courier New', monospace"
     }
-  }, product.category.toUpperCase()), React.createElement("span", {
+  }, translateCategory(normalizeCategoryName(product.category)).toUpperCase()), React.createElement("span", {
     className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[5px] border-l-[5px] border-t-[#d9c98f] border-l-transparent"
   })), React.createElement("div", {
     className: "absolute top-1.5 right-1.5 w-12 h-12 flex items-center justify-center pointer-events-none select-none z-20",
@@ -6281,7 +6327,7 @@ function App() {
     value: "GlassWater"
   }, "GlassWater (Minuman)"), React.createElement("option", {
     value: "Cookie"
-  }, "Cookie (Snack)"), React.createElement("option", {
+  }, "Cookie (Jajanan)"), React.createElement("option", {
     value: "Sparkles"
   }, "Sparkles (Kosmetik)"), React.createElement("option", {
     value: "Soup"
@@ -7128,7 +7174,7 @@ function App() {
     style: {
       fontFamily: "'Courier New', monospace"
     }
-  }, selectedProductDetail.category?.toUpperCase()), React.createElement("span", {
+  }, translateCategory(normalizeCategoryName(selectedProductDetail.category)).toUpperCase()), React.createElement("span", {
     className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[5px] border-l-[5px] border-t-[#d9c98f] border-l-transparent"
   })), selectedProductDetail.original_price && selectedProductDetail.original_price > selectedProductDetail.price && React.createElement("div", {
     className: "absolute top-1.5 right-1.5 w-12 h-12 flex items-center justify-center pointer-events-none select-none z-20",
@@ -7244,6 +7290,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1910916fb5b5d17',t:'MTc4MzcwMTg5MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1914114493d445e',t:'MTc4MzcwNDE4NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

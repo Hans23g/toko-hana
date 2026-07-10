@@ -5255,11 +5255,12 @@ function App() {
   }, lang === 'id' ? 'Keluar dari Mode Tamu' : 'Exit Guest Mode')) : React.createElement("div", {
     className: "space-y-4 animate-fade-in"
   }, React.createElement("div", {
-    className: "rounded-[28px] p-3.5 shadow-[0_18px_45px_rgba(45,18,66,0.24)] border border-[#FFD700]/35 relative overflow-hidden",
+    className: "-mx-1 rounded-[20px] p-4 min-h-[174px] border border-[#FFD700]/35 relative overflow-hidden",
     style: {
       backgroundImage: BRAND_BATIK_DATA_URI ? `linear-gradient(135deg, rgba(45,18,66,0.88), rgba(112,61,146,0.80)), url(${BRAND_BATIK_DATA_URI})` : 'linear-gradient(135deg,#2d1242,#553C9A,#703d92)',
       backgroundSize: 'cover',
-      backgroundPosition: 'center'
+      backgroundPosition: 'center',
+      boxShadow: '0 24px 42px rgba(45,18,66,0.34), 0 7px 0 rgba(212,175,55,0.12)'
     }
   }, React.createElement("div", {
     className: "absolute -right-10 -top-10 w-28 h-28 bg-[#FFD700]/12 rounded-full blur-sm"
@@ -5271,33 +5272,33 @@ function App() {
     className: "flex items-center gap-1.5"
   }, React.createElement(LucideIcon, {
     name: "Sparkles",
-    size: 13,
+    size: 14,
     className: "text-[#FFD700]"
   }), React.createElement("span", {
-    className: "font-black text-[#FFD700] text-[9px] uppercase tracking-[0.18em]"
+    className: "font-black text-[#FFD700] text-[12px] uppercase tracking-[0.12em]"
   }, lang === 'id' ? 'Kartu Mitra Toko Hana' : 'Toko Hana Partner Card')), React.createElement("span", {
-    className: "bg-[#FFD700]/18 border border-[#FFD700]/45 text-[#FFD700] font-black text-[8px] px-2 py-0.5 rounded-full backdrop-blur-sm"
+    className: "bg-[#FFD700]/18 border border-[#FFD700]/45 text-[#FFD700] font-black text-[8px] px-2 py-0.5 rounded-md backdrop-blur-sm"
   }, loyaltyLevel.emoji, " ", loyaltyLevel.name)), React.createElement("div", {
     className: "relative flex items-center gap-3"
   }, React.createElement("div", {
     className: "flex-shrink-0 relative"
   }, React.createElement("div", {
-    className: "w-[64px] h-[64px] rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#FFD700] to-[#D4AF37] p-[3px] shadow-lg shadow-black/30"
+    className: "w-[54px] h-[54px] rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#FFD700] to-[#D4AF37] p-[3px] shadow-lg shadow-black/30"
   }, React.createElement("div", {
     className: "w-full h-full rounded-full bg-gradient-to-tr from-[#8e51b8] to-[#703d92] flex items-center justify-center border-2 border-[#2d1242]/40 overflow-hidden"
   }, React.createElement("span", {
-    className: "text-[32px] leading-none select-none",
+    className: "text-[27px] leading-none select-none",
     style: {
       transform: 'translateY(2px)'
     }
   }, avatarGender === 'wanita' ? '👩🏻' : '👨🏻'))), React.createElement("span", {
-    className: "absolute -bottom-1 -right-1 w-6 h-6 bg-[#2d1242] border-2 border-[#FFD700] rounded-full flex items-center justify-center text-[11px] shadow-md"
+    className: "absolute -bottom-1 -right-1 w-5 h-5 bg-[#2d1242] border-2 border-[#FFD700] rounded-full flex items-center justify-center text-[10px] shadow-md"
   }, loyaltyLevel.emoji)), React.createElement("div", {
     className: "flex-1 min-w-0"
   }, React.createElement("h3", {
-    className: "font-black text-[14px] text-white truncate leading-tight drop-shadow-sm"
+    className: "font-semibold text-[12px] text-white/95 truncate leading-tight drop-shadow-sm"
   }, currentUser.name), React.createElement("p", {
-    className: "text-[8px] text-[#FFD700]/85 font-black uppercase tracking-wider mb-1"
+    className: "text-[7.5px] text-[#FFD700]/85 font-bold uppercase tracking-wider mb-1"
   }, lang === 'id' ? '🤝 Mitra Resmi Toko Hana' : '🤝 Toko Hana Official Partner'), React.createElement("div", {
     className: "flex items-center gap-2.5"
   }, React.createElement("div", {
@@ -5313,13 +5314,13 @@ function App() {
   }, "🪙")), React.createElement("div", null, React.createElement("div", {
     className: "flex items-end gap-1.5"
   }, React.createElement("span", {
-    className: "text-[22px] font-black text-[#FFD700] leading-none drop-shadow"
+    className: "text-[21px] font-black text-[#FFD700] leading-none drop-shadow"
   }, myPoints.toLocaleString('id-ID')), React.createElement("span", {
     className: "text-[8.5px] text-purple-100 font-bold mb-0.5"
   }, "HanaPoin ⭐")), React.createElement("span", {
     className: "text-[7.5px] text-purple-100/80 font-semibold block mt-0.5"
   }, lang === 'id' ? loyaltyLevel.next ? `Celengan ayam makin gemuk di level ${loyaltyLevel.next}! 🐓` : 'Celengan ayam segemuk-gemuknya! Level MAX 💎' : loyaltyLevel.next ? `Rooster bank gets fatter at ${loyaltyLevel.next}! 🐓` : 'Fattest rooster bank! MAX level 💎'))))), loyaltyLevel.next ? React.createElement("div", {
-    className: "relative mt-2.5"
+    className: "relative mt-3.5"
   }, React.createElement("div", {
     className: "flex justify-between text-[8px] font-bold text-purple-200 mb-1"
   }, React.createElement("span", null, lang === 'id' ? `Menuju ${loyaltyLevel.next}` : `Towards ${loyaltyLevel.next}`), React.createElement("span", null, myPoints.toLocaleString('id-ID'), " / ", loyaltyLevel.nextAt.toLocaleString('id-ID'))), React.createElement("div", {
@@ -7119,6 +7120,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18f94312e2c3f7a',t:'MTc4MzY4NjYxNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18fc36acf505f93',t:'MTc4MzY4ODU1Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

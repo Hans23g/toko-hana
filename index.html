@@ -2104,7 +2104,7 @@ function App() {
     title,
     rightSlot
   }) => React.createElement("div", {
-    className: "px-4 pt-3 pb-1.5 flex items-center gap-2.5"
+    className: "px-4 pt-3 pb-1.5 flex items-center gap-2"
   }, React.createElement("div", {
     className: "flex-1 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/60 to-[#D4AF37]"
   }), React.createElement("svg", {
@@ -5255,15 +5255,20 @@ function App() {
   }, lang === 'id' ? 'Keluar dari Mode Tamu' : 'Exit Guest Mode')) : React.createElement("div", {
     className: "space-y-4 animate-fade-in"
   }, React.createElement("div", {
-    className: "bg-gradient-to-br from-[#2d1242] via-[#553C9A] to-[#703d92] rounded-3xl p-5 shadow-lg border border-[#FFD700]/30 relative overflow-hidden"
+    className: "rounded-[28px] p-4 shadow-[0_18px_45px_rgba(45,18,66,0.24)] border border-[#FFD700]/35 relative overflow-hidden",
+    style: {
+      backgroundImage: BRAND_BATIK_DATA_URI ? `linear-gradient(135deg, rgba(45,18,66,0.88), rgba(112,61,146,0.80)), url(${BRAND_BATIK_DATA_URI})` : 'linear-gradient(135deg,#2d1242,#553C9A,#703d92)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }
   }, React.createElement("div", {
-    className: "absolute -right-8 -top-8 w-24 h-24 bg-[#FFD700]/10 rounded-full"
+    className: "absolute -right-10 -top-10 w-28 h-28 bg-[#FFD700]/12 rounded-full blur-sm"
   }), React.createElement("div", {
-    className: "absolute -left-10 -bottom-10 w-28 h-28 bg-white/5 rounded-full"
+    className: "absolute -left-12 -bottom-12 w-32 h-32 bg-white/7 rounded-full blur-sm"
   }), React.createElement("div", {
-    className: "absolute right-8 bottom-1 text-[#FFD700]/10 font-black text-5xl select-none"
+    className: "absolute right-5 bottom-1 text-[#FFD700]/12 font-black text-6xl select-none"
   }, "⭐"), React.createElement("div", {
-    className: "relative flex items-center justify-between mb-3.5"
+    className: "relative flex items-center justify-between mb-3"
   }, React.createElement("div", {
     className: "flex items-center gap-1.5"
   }, React.createElement(LucideIcon, {
@@ -5271,30 +5276,30 @@ function App() {
     size: 13,
     className: "text-[#FFD700]"
   }), React.createElement("span", {
-    className: "font-black text-[#FFD700] text-[10px] uppercase tracking-[0.2em]"
+    className: "font-black text-[#FFD700] text-[9px] uppercase tracking-[0.18em]"
   }, lang === 'id' ? 'Kartu Mitra Toko Hana' : 'Toko Hana Partner Card')), React.createElement("span", {
-    className: "bg-[#FFD700]/20 border border-[#FFD700]/40 text-[#FFD700] font-black text-[9px] px-2.5 py-1 rounded-full"
+    className: "bg-[#FFD700]/18 border border-[#FFD700]/45 text-[#FFD700] font-black text-[8px] px-2 py-0.5 rounded-full backdrop-blur-sm"
   }, loyaltyLevel.emoji, " ", loyaltyLevel.name)), React.createElement("div", {
-    className: "relative flex items-center gap-4"
+    className: "relative flex items-center gap-3"
   }, React.createElement("div", {
     className: "flex-shrink-0 relative"
   }, React.createElement("div", {
-    className: "w-[74px] h-[74px] rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#FFD700] to-[#D4AF37] p-[3px] shadow-lg shadow-black/30"
+    className: "w-[64px] h-[64px] rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#FFD700] to-[#D4AF37] p-[3px] shadow-lg shadow-black/30"
   }, React.createElement("div", {
     className: "w-full h-full rounded-full bg-gradient-to-tr from-[#8e51b8] to-[#703d92] flex items-center justify-center border-2 border-[#2d1242]/40 overflow-hidden"
   }, React.createElement("span", {
-    className: "text-[38px] leading-none select-none",
+    className: "text-[32px] leading-none select-none",
     style: {
       transform: 'translateY(2px)'
     }
   }, avatarGender === 'wanita' ? '👩🏻' : '👨🏻'))), React.createElement("span", {
-    className: "absolute -bottom-1 -right-1 w-7 h-7 bg-[#2d1242] border-2 border-[#FFD700] rounded-full flex items-center justify-center text-[13px] shadow-md"
+    className: "absolute -bottom-1 -right-1 w-6 h-6 bg-[#2d1242] border-2 border-[#FFD700] rounded-full flex items-center justify-center text-[11px] shadow-md"
   }, loyaltyLevel.emoji)), React.createElement("div", {
     className: "flex-1 min-w-0"
   }, React.createElement("h3", {
-    className: "font-extrabold text-[15px] text-white truncate leading-tight"
+    className: "font-black text-[14px] text-white truncate leading-tight drop-shadow-sm"
   }, currentUser.name), React.createElement("p", {
-    className: "text-[8.5px] text-purple-200 font-black uppercase tracking-wider mb-1.5"
+    className: "text-[8px] text-[#FFD700]/85 font-black uppercase tracking-wider mb-1"
   }, lang === 'id' ? '🤝 Mitra Resmi Toko Hana' : '🤝 Toko Hana Official Partner'), React.createElement("div", {
     className: "flex items-center gap-2.5"
   }, React.createElement("div", {
@@ -5310,17 +5315,17 @@ function App() {
   }, "🪙")), React.createElement("div", null, React.createElement("div", {
     className: "flex items-end gap-1.5"
   }, React.createElement("span", {
-    className: "text-[24px] font-black text-[#FFD700] leading-none drop-shadow"
+    className: "text-[22px] font-black text-[#FFD700] leading-none drop-shadow"
   }, myPoints.toLocaleString('id-ID')), React.createElement("span", {
-    className: "text-[9px] text-purple-200 font-bold mb-0.5"
+    className: "text-[8.5px] text-purple-100 font-bold mb-0.5"
   }, "HanaPoin ⭐")), React.createElement("span", {
-    className: "text-[7.5px] text-purple-300 font-bold block mt-0.5"
+    className: "text-[7.5px] text-purple-100/80 font-semibold block mt-0.5"
   }, lang === 'id' ? loyaltyLevel.next ? `Celengan ayam makin gemuk di level ${loyaltyLevel.next}! 🐓` : 'Celengan ayam segemuk-gemuknya! Level MAX 💎' : loyaltyLevel.next ? `Rooster bank gets fatter at ${loyaltyLevel.next}! 🐓` : 'Fattest rooster bank! MAX level 💎'))))), loyaltyLevel.next ? React.createElement("div", {
-    className: "relative mt-3.5"
+    className: "relative mt-3"
   }, React.createElement("div", {
     className: "flex justify-between text-[8px] font-bold text-purple-200 mb-1"
   }, React.createElement("span", null, lang === 'id' ? `Menuju ${loyaltyLevel.next}` : `Towards ${loyaltyLevel.next}`), React.createElement("span", null, myPoints.toLocaleString('id-ID'), " / ", loyaltyLevel.nextAt.toLocaleString('id-ID'))), React.createElement("div", {
-    className: "w-full bg-white/10 h-2 rounded-full overflow-hidden"
+    className: "w-full bg-white/15 h-1.5 rounded-full overflow-hidden"
   }, React.createElement("div", {
     className: "bg-gradient-to-r from-[#D4AF37] to-[#FFD700] h-full rounded-full transition-all",
     style: {
@@ -5329,13 +5334,13 @@ function App() {
   }))) : React.createElement("div", {
     className: "relative mt-3.5 text-[9px] font-black text-[#FFD700]"
   }, "💎 ", lang === 'id' ? 'LEVEL TERTINGGI TERCAPAI — Poin 2x setiap belanja!' : 'MAX LEVEL REACHED — 2x points every order!'), React.createElement("div", {
-    className: "relative mt-3 grid grid-cols-2 gap-2 text-[8.5px] font-bold"
+    className: "relative mt-2.5 grid grid-cols-2 gap-1.5 text-[8px] font-semibold"
   }, React.createElement("div", {
-    className: "bg-white/10 rounded-lg p-2 text-purple-100"
+    className: "bg-white/12 backdrop-blur-sm rounded-lg p-1.5 text-purple-50"
   }, "⭐ ", lang === 'id' ? `1 poin / Rp 1.000 belanja (x${loyaltyLevel.multiplier} level Anda)` : `1 pt / Rp 1,000 spent (x${loyaltyLevel.multiplier} your level)`), React.createElement("div", {
-    className: "bg-white/10 rounded-lg p-2 text-purple-100"
+    className: "bg-white/12 backdrop-blur-sm rounded-lg p-1.5 text-purple-50"
   }, "🪙 ", lang === 'id' ? 'Bayar pakai Koin Pi = poin 2x lipat!' : 'Pay with Pi Coin = 2x points!'), React.createElement("div", {
-    className: "bg-white/10 rounded-lg p-2 text-purple-100 col-span-2"
+    className: "bg-white/12 backdrop-blur-sm rounded-lg p-1.5 text-purple-50 col-span-2"
   }, "🎁 ", lang === 'id' ? `Tukar ${REDEEM_UNIT_POINTS} poin = potongan Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} di keranjang belanja!` : `Redeem ${REDEEM_UNIT_POINTS} pts = Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} off in your cart!`))), myCustomerRecord && React.createElement("div", {
     className: "bg-white rounded-2xl p-4 border-2 border-dashed border-amber-300 shadow-sm relative overflow-hidden"
   }, React.createElement("div", {
@@ -7110,6 +7115,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18eff3bae1944bd',t:'MTc4MzY4MDUxNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18f60d1f92e705c',t:'MTc4MzY4NDUxMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

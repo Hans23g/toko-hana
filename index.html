@@ -4522,7 +4522,19 @@ function App() {
     fill: "#D32F2F",
     fontWeight: "bold",
     letterSpacing: "1"
-  }, "HARGA HEMAT")))), React.createElement("div", {
+  }, "HARGA HEMAT"))), React.createElement("button", {
+    type: "button",
+    onClick: e => {
+      e.stopPropagation();
+      handleAddToCart(product);
+    },
+    className: "absolute bottom-2 right-2 z-30 w-8 h-8 rounded-full bg-[#703d92]/95 border-2 border-[#FFD700] text-[#FFD700] flex items-center justify-center shadow-lg active:scale-95 transition-all",
+    title: lang === 'id' ? 'Langsung masukkan keranjang' : 'Quick add to cart'
+  }, React.createElement(LucideIcon, {
+    name: "ShoppingCart",
+    size: 15,
+    strokeWidth: 2.8
+  }))), React.createElement("div", {
     className: "p-3.5 flex-1 flex flex-col justify-between"
   }, React.createElement("div", null, React.createElement("h4", {
     className: "text-sm font-medium text-gray-800 leading-tight truncate"
@@ -4748,7 +4760,19 @@ function App() {
     fill: "#D32F2F",
     fontWeight: "bold",
     letterSpacing: "1"
-  }, "HARGA HEMAT")))), React.createElement("div", {
+  }, "HARGA HEMAT"))), React.createElement("button", {
+    type: "button",
+    onClick: e => {
+      e.stopPropagation();
+      handleAddToCart(product);
+    },
+    className: "absolute bottom-2 right-2 z-30 w-8 h-8 rounded-full bg-[#703d92]/95 border-2 border-[#FFD700] text-[#FFD700] flex items-center justify-center shadow-lg active:scale-95 transition-all",
+    title: lang === 'id' ? 'Langsung masukkan keranjang' : 'Quick add to cart'
+  }, React.createElement(LucideIcon, {
+    name: "ShoppingCart",
+    size: 15,
+    strokeWidth: 2.8
+  }))), React.createElement("div", {
     className: "p-3.5 flex-1 flex flex-col justify-between bg-[#FFFDF6]"
   }, React.createElement("div", null, React.createElement("h4", {
     className: "text-sm font-medium text-gray-800 leading-tight truncate"
@@ -7123,5 +7147,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a190653899213e17',t:'MTc4MzY5NTE3OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

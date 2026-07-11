@@ -4693,23 +4693,46 @@ function App() {
       key: `${banner.id}-${idx}`,
       type: "button",
       onClick: () => handlePromoBannerClick(banner.productId),
-      className: "relative w-[calc((min(100vw,430px)-40px)/2)] flex-shrink-0 h-24 rounded-xl overflow-hidden border border-amber-100 bg-[#2d1242] text-left shadow-sm"
+      className: "relative w-[calc((min(100vw,430px)-40px)/2)] flex-shrink-0 h-24 rounded-xl overflow-visible text-left active:scale-[0.98] transition-all",
+      style: {
+        transform: `rotate(${idx % 2 === 0 ? '-0.6deg' : '0.6deg'})`
+      }
+    }, React.createElement("div", {
+      className: "absolute -top-1.5 left-1/2 -translate-x-1/2 w-10 h-3 z-20 pointer-events-none",
+      style: {
+        background: 'linear-gradient(90deg, rgba(212,175,55,0.45), rgba(255,215,0,0.78), rgba(212,175,55,0.45))',
+        transform: `translateX(-50%) rotate(${idx % 2 === 0 ? '2deg' : '-2deg'})`,
+        boxShadow: '0 1px 2px rgba(0,0,0,0.12)'
+      }
+    }), React.createElement("div", {
+      className: "relative w-full h-full rounded-xl overflow-hidden border border-[#E8D9A0] shadow-[0_4px_14px_rgba(45,18,66,0.18)] bg-[#2d1242]"
     }, React.createElement("img", {
       src: banner.image,
       alt: banner.title,
-      className: "absolute inset-0 w-full h-full object-cover opacity-90",
+      className: "absolute inset-0 w-full h-full object-cover opacity-55",
       onError: e => {
         e.currentTarget.src = getBannerPlaceholder(banner.title);
       }
     }), React.createElement("div", {
-      className: "absolute inset-0 bg-gradient-to-t from-black/82 via-black/35 to-transparent"
+      className: "absolute inset-0",
+      style: {
+        backgroundImage: BRAND_BATIK_DATA_URI ? `linear-gradient(135deg, rgba(45,18,66,0.78), rgba(112,61,146,0.68)), url(${BRAND_BATIK_DATA_URI})` : 'linear-gradient(135deg, rgba(45,18,66,0.88), rgba(112,61,146,0.72))',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }
     }), React.createElement("div", {
-      className: "absolute left-2 right-2 bottom-2"
-    }, React.createElement("h5", {
-      className: "font-black text-white text-[10.5px] leading-tight line-clamp-1 drop-shadow"
+      className: "absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-white/5"
+    }), React.createElement("div", {
+      className: "absolute left-2 right-2 top-2 bottom-2 flex flex-col justify-between"
+    }, React.createElement("div", null, React.createElement("span", {
+      className: "inline-block text-[6.8px] font-black text-[#2d1242] bg-[#FFD700] px-1.5 py-0.5 rounded-sm shadow-sm"
+    }, "Kabar Promo"), React.createElement("h5", {
+      className: "font-black text-white text-[10.5px] leading-tight line-clamp-1 drop-shadow mt-1"
     }, banner.title), React.createElement("p", {
-      className: "text-[8px] text-white/85 font-semibold leading-tight line-clamp-2 mt-0.5"
-    }, bannerDesc)));
+      className: "text-[8px] text-white/88 font-semibold leading-tight line-clamp-2 mt-0.5"
+    }, bannerDesc)), React.createElement("div", {
+      className: "flex items-center justify-end gap-1 text-[#FFD700] font-black text-[7px] uppercase tracking-wider"
+    }, React.createElement("span", null, "Toko Hana"), React.createElement("span", null, "π")))));
   })))), filteredProducts.length > 0 ? React.createElement("div", {
     className: "grid grid-cols-2 gap-x-3 gap-y-5 -mx-4 px-3.5 pt-3 pb-20"
   }, filteredProducts.map(product => React.createElement("div", {
@@ -7290,6 +7313,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1914114493d445e',t:'MTc4MzcwNDE4NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a196792b48885f9f',t:'MTc4Mzc1ODkxMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

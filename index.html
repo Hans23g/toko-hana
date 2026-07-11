@@ -4698,13 +4698,13 @@ function App() {
         transform: `rotate(${idx % 2 === 0 ? '-0.6deg' : '0.6deg'})`
       }
     }, React.createElement("div", {
-      className: "absolute -top-1.5 left-1/2 -translate-x-1/2 w-12 h-3 z-20 pointer-events-none",
+      className: "absolute -top-2.5 left-1/2 -translate-x-1/2 w-14 h-4 z-30 pointer-events-none",
       style: {
-        background: 'linear-gradient(90deg, rgba(212,175,55,0.55), rgba(255,215,0,0.78), rgba(212,175,55,0.55))',
+        background: 'linear-gradient(90deg, rgba(212,175,55,0.50), rgba(255,215,0,0.82), rgba(212,175,55,0.50))',
         transform: `translateX(-50%) rotate(${idx % 2 === 0 ? '2deg' : '-2deg'})`,
-        boxShadow: '0 1px 2px rgba(0,0,0,0.12)',
-        borderLeft: '1px dashed rgba(255,255,255,0.45)',
-        borderRight: '1px dashed rgba(255,255,255,0.45)'
+        boxShadow: '0 2px 4px rgba(0,0,0,0.16)',
+        borderLeft: '1px dashed rgba(255,255,255,0.55)',
+        borderRight: '1px dashed rgba(255,255,255,0.55)'
       }
     }), React.createElement("div", {
       className: "relative w-full h-full overflow-hidden bg-[#FFFDF6]",
@@ -4721,20 +4721,11 @@ function App() {
         e.currentTarget.src = getBannerPlaceholder(banner.title);
       }
     }), React.createElement("div", {
-      className: "absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-black/78 via-black/38 to-transparent"
-    }), React.createElement("span", {
-      className: "absolute top-1.5 left-1.5 inline-block bg-[#FFF8E1]/95 border border-[#E8D9A0] rounded-sm px-1.5 py-[1px] shadow-[1px_1.5px_2px_rgba(0,0,0,0.15)] rotate-[-1.5deg]"
-    }, React.createElement("span", {
-      className: "font-black text-[#703d92] text-[6.8px] uppercase tracking-wide",
-      style: {
-        fontFamily: "'Courier New', monospace"
-      }
-    }, "Kabar")), React.createElement("div", {
-      className: "absolute left-2 right-2 bottom-2"
+      className: "absolute left-2 right-2 bottom-2 rounded-lg bg-white/78 backdrop-blur-sm border border-white/70 px-2 py-1.5 shadow-[0_4px_12px_rgba(45,18,66,0.16)]"
     }, React.createElement("h5", {
-      className: "font-black text-white text-[10.5px] leading-tight line-clamp-1 drop-shadow"
+      className: "font-black text-[#703d92] text-[10px] leading-tight line-clamp-1"
     }, banner.title), React.createElement("p", {
-      className: "text-[8px] text-white/88 font-semibold leading-tight line-clamp-2 mt-0.5"
+      className: "text-[7.8px] text-gray-600 font-semibold leading-tight line-clamp-2 mt-0.5"
     }, bannerDesc))));
   })))), filteredProducts.length > 0 ? React.createElement("div", {
     className: "grid grid-cols-2 gap-x-3 gap-y-5 -mx-4 px-3.5 pt-3 pb-20"
@@ -7317,5 +7308,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a196fcb86a04fde2',t:'MTc4Mzc2NDI5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

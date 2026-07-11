@@ -2785,8 +2785,8 @@ function App() {
     const promoItems = safeProducts.filter(p => p.original_price && p.original_price > p.price).slice(0, 3).map(p => ({
       type: 'promo',
       badge: '🏷️ Promo',
-      tone: 'text-red-700',
-      badgeBg: 'bg-red-50/95 border-red-200',
+      tone: 'text-[#FFD700]',
+      badgeBg: '',
       product: p,
       title: p.name,
       desc: p.desc || 'Harga hemat pilihan Toko Hana.'
@@ -2794,17 +2794,17 @@ function App() {
     const bestSellerItems = [...safeProducts].sort((a, b) => (b.sold || 0) - (a.sold || 0)).slice(0, 3).map(p => ({
       type: 'best',
       badge: '🔥 Terlaris',
-      tone: 'text-orange-700',
-      badgeBg: 'bg-orange-50/95 border-orange-200',
+      tone: 'text-[#FFD700]',
+      badgeBg: '',
       product: p,
       title: p.name,
       desc: p.desc || 'Banyak dicari juragan Toko Hana.'
     }));
     const newestItems = [...safeProducts].sort((a, b) => (b.id || 0) - (a.id || 0)).slice(0, 3).map(p => ({
       type: 'new',
-      badge: '🚚 Baru Datang',
-      tone: 'text-emerald-700',
-      badgeBg: 'bg-emerald-50/95 border-emerald-200',
+      badge: '🚚 Baru',
+      tone: 'text-[#FFD700]',
+      badgeBg: '',
       product: p,
       title: p.name,
       desc: p.desc || 'Barang baru masuk etalase warung.'
@@ -4760,7 +4760,7 @@ function App() {
   }), React.createElement("div", {
     className: "absolute left-1.5 right-1.5 bottom-1.5 rounded-md bg-black/42 px-2 py-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.20)]"
   }, React.createElement("span", {
-    className: `inline-block text-[7px] font-black leading-none mb-0.5 px-1.5 py-0.5 rounded-full border shadow-sm ${item.badgeBg} ${item.tone}`
+    className: `block text-[7px] font-black leading-none mb-0.5 drop-shadow ${item.tone}`
   }, item.badge), React.createElement("h5", {
     className: "font-black text-[#FFD700] text-[9.5px] leading-tight line-clamp-1 drop-shadow"
   }, item.title), React.createElement("p", {
@@ -7346,5 +7346,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a198923e8b0762dc',t:'MTc4Mzc4MDkwOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a198b346ae515ff1',t:'MTc4Mzc4MjI2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

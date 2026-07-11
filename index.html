@@ -4772,7 +4772,10 @@ function App() {
     const sponsor = sponsorBanners[activeSponsorIndex % sponsorBanners.length];
     return React.createElement("button", {
       type: "button",
-      onClick: () => setSelectedSponsor(sponsor),
+      onClick: () => {
+        setSelectedSponsor(sponsor);
+        setCurrentTab('SponsorDetail');
+      },
       className: "relative w-full overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50 p-4 shadow-sm text-left active:scale-[0.99] transition-all"
     }, React.createElement("div", {
       className: "absolute -right-8 -top-8 w-24 h-24 bg-[#FFD700]/20 rounded-full blur-xl"
@@ -5052,7 +5055,44 @@ function App() {
     }
   })))))))) : React.createElement("div", {
     className: "text-center p-8 bg-white rounded-2xl"
-  }, "Tidak ada promo aktif.")), currentTab === 'Cart' && React.createElement("div", {
+  }, "Tidak ada promo aktif.")), currentTab === 'SponsorDetail' && selectedSponsor && React.createElement("div", {
+    className: "animate-fade-in p-4 pb-24"
+  }, React.createElement("div", {
+    className: "-mx-4"
+  }, React.createElement(GununganDivider, {
+    title: lang === 'id' ? 'Cerita Mitra' : 'Partner Story'
+  })), React.createElement("button", {
+    type: "button",
+    onClick: () => {
+      setCurrentTab('Home');
+      setSelectedSponsor(null);
+    },
+    className: "mb-3 text-[10px] font-bold text-[#703d92] bg-purple-50 border border-purple-100 px-3 py-2 rounded-xl"
+  }, "← Kembali ke Home"), React.createElement("article", {
+    className: "bg-white rounded-3xl overflow-hidden border border-amber-100 shadow-sm"
+  }, React.createElement("img", {
+    src: selectedSponsor.image || BRAND_LOGO_DATA_URI,
+    alt: selectedSponsor.title,
+    className: "w-full h-52 object-cover",
+    onError: e => {
+      e.currentTarget.src = BRAND_LOGO_DATA_URI;
+    }
+  }), React.createElement("div", {
+    className: "p-4"
+  }, React.createElement("span", {
+    className: "inline-block text-[8px] font-black text-[#2d1242] bg-[#FFD700] px-2 py-0.5 rounded-full mb-2"
+  }, "MITRA TOKO HANA"), React.createElement("h2", {
+    className: "font-black text-[#703d92] text-xl leading-tight"
+  }, selectedSponsor.title), React.createElement("p", {
+    className: "text-[12px] text-gray-500 font-semibold leading-relaxed mt-2"
+  }, selectedSponsor.desc), React.createElement("div", {
+    className: "mt-4 bg-amber-50/70 rounded-2xl p-3 text-[12px] text-gray-700 leading-relaxed whitespace-pre-wrap"
+  }, selectedSponsor.body || 'Informasi lengkap mitra akan ditampilkan di sini.'), selectedSponsor.link && React.createElement("a", {
+    href: selectedSponsor.link,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    className: "mt-4 block text-center bg-[#703d92] text-white font-bold py-3 rounded-2xl text-xs"
+  }, "Kunjungi Mitra")))), currentTab === 'Cart' && React.createElement("div", {
     className: "animate-fade-in p-4 pb-24"
   }, cart.length === 0 && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
     className: "-mx-4 mb-4 overflow-hidden border-y border-amber-100 bg-white shadow-sm"
@@ -7330,43 +7370,7 @@ function App() {
       onClick: () => setShowQrisModal(false),
       className: "w-full mt-4 bg-gradient-to-r from-[#703d92] to-[#553C9A] text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md active:scale-95"
     }, lang === 'id' ? 'Selesai Pembayaran' : 'Finish Payment')));
-  })(), selectedSponsor && React.createElement("div", {
-    className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center animate-fade-in",
-    onClick: () => setSelectedSponsor(null)
-  }, React.createElement("div", {
-    className: "w-full max-w-md bg-white rounded-t-[28px] p-4 animate-slide-up border-t border-amber-100 shadow-2xl max-h-[86vh] overflow-y-auto no-scrollbar",
-    onClick: e => e.stopPropagation()
-  }, React.createElement("div", {
-    className: "flex items-center justify-between mb-3"
-  }, React.createElement("div", null, React.createElement("span", {
-    className: "block text-[9px] font-black text-[#703d92] uppercase tracking-[0.16em]"
-  }, "Cerita Mitra"), React.createElement("span", {
-    className: "block text-[8px] font-bold text-amber-600"
-  }, "Sahabat warung dan ekosistem Toko Hana")), React.createElement("button", {
-    onClick: () => setSelectedSponsor(null),
-    className: "p-1.5 bg-gray-100 text-gray-500 rounded-full"
-  }, React.createElement(LucideIcon, {
-    name: "X",
-    size: 16
-  }))), React.createElement("img", {
-    src: selectedSponsor.image || BRAND_LOGO_DATA_URI,
-    alt: selectedSponsor.title,
-    className: "w-full h-44 object-cover rounded-2xl border border-amber-100",
-    onError: e => {
-      e.currentTarget.src = BRAND_LOGO_DATA_URI;
-    }
-  }), React.createElement("h3", {
-    className: "font-black text-[#703d92] text-lg mt-4 leading-tight"
-  }, selectedSponsor.title), React.createElement("p", {
-    className: "text-[11px] text-gray-500 font-semibold leading-relaxed mt-1"
-  }, selectedSponsor.desc), React.createElement("div", {
-    className: "mt-4 bg-amber-50/60 border border-amber-100 rounded-2xl p-3 text-[11px] text-gray-700 leading-relaxed whitespace-pre-wrap"
-  }, selectedSponsor.body || 'Informasi lengkap mitra akan ditampilkan di sini.'), selectedSponsor.link && React.createElement("a", {
-    href: selectedSponsor.link,
-    target: "_blank",
-    rel: "noopener noreferrer",
-    className: "mt-4 block text-center bg-[#703d92] text-white font-bold py-3 rounded-2xl text-xs"
-  }, "Kunjungi Mitra"))), selectedProductDetail && React.createElement("div", {
+  })(), selectedProductDetail && React.createElement("div", {
     className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center animate-fade-in",
     onClick: () => setSelectedProductDetail(null)
   }, React.createElement("div", {

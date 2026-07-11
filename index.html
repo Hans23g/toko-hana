@@ -4766,63 +4766,7 @@ function App() {
     className: "text-center pb-2 -mt-4"
   }, React.createElement("span", {
     className: "text-[9px] text-gray-400 font-semibold"
-  }, "— ", filteredProducts.length, " ", lang === 'id' ? 'barang tersedia di warung' : 'items available in store', " —"))), currentTab === 'Home' && sponsorBanners && sponsorBanners.length > 0 && React.createElement("div", {
-    className: "px-4 mt-5 mb-2 animate-fade-in"
-  }, (() => {
-    const sponsor = sponsorBanners[activeSponsorIndex % sponsorBanners.length];
-    return React.createElement("button", {
-      type: "button",
-      onClick: () => {
-        setSelectedSponsor(sponsor);
-        setCurrentTab('SponsorDetail');
-      },
-      className: "relative w-full overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50 p-3 shadow-sm text-left active:scale-[0.99] transition-all"
-    }, React.createElement("div", {
-      className: "absolute -right-8 -top-8 w-24 h-24 bg-[#FFD700]/20 rounded-full blur-xl"
-    }), React.createElement("div", {
-      className: "relative flex items-start gap-2.5"
-    }, React.createElement("img", {
-      src: sponsor.image || BRAND_LOGO_DATA_URI,
-      alt: sponsor.title,
-      className: "w-12 h-12 rounded-xl object-cover border border-amber-100 shadow-sm flex-shrink-0",
-      onError: e => {
-        e.currentTarget.src = BRAND_LOGO_DATA_URI;
-      }
-    }), React.createElement("div", {
-      className: "min-w-0 pt-0.5"
-    }, React.createElement("h4", {
-      className: "font-black text-[#703d92] text-sm leading-tight truncate"
-    }, sponsor.title || 'Ruang Mitra Toko Hana'), React.createElement("p", {
-      className: "text-[10px] text-gray-500 font-semibold leading-snug mt-0.5 line-clamp-2"
-    }, sponsor.desc || 'Tempat dukungan brand lokal dan sahabat warung.'))));
-  })()), currentTab === 'Home' && React.createElement("div", {
-    className: "bg-[#2d1242] text-white mt-6 text-center flex-shrink-0 animate-fade-in relative z-10"
-  }, React.createElement("div", {
-    className: "px-4 pt-4 pb-24 space-y-2"
-  }, React.createElement("div", {
-    className: "flex items-center justify-center gap-2"
-  }, React.createElement("img", {
-    src: BRAND_LOGO_DATA_URI,
-    alt: "Logo Toko Hana",
-    className: "w-7 h-7 object-contain drop-shadow-md"
-  }), React.createElement("h4", {
-    className: "font-extrabold text-[#FFD700] text-sm tracking-widest uppercase"
-  }, "Toko Hana"), React.createElement("div", {
-    className: "w-5 h-5 bg-amber-500/80 text-white font-black text-[10px] rounded-full flex items-center justify-center shadow-sm",
-    title: "Pi Community Education"
-  }, "π")), React.createElement("p", {
-    className: "text-[10px] text-[#FFD700]/90 font-black tracking-wide"
-  }, lang === 'id' ? '"Warungnya Rakyat, Siap Menyambut Ekosistem π"' : '"The People\'s Store, Ready for the π Ecosystem"'), React.createElement("p", {
-    className: "text-[7.5px] text-purple-300/90 font-semibold leading-relaxed text-center px-1"
-  }, "⚖️ ", lang === 'id' ? 'Sesuai UU No. 7/2011, seluruh pembayaran diselesaikan HANYA dalam Rupiah (QRIS, Tunai, COD). Fitur Koin Pi bersifat edukasi & simulasi — bukan alat pembayaran sah. Toko Hana tidak menjual/menukarkan kripto.' : 'Per Law No. 7/2011, all payments are settled ONLY in Rupiah (QRIS, Cash, COD). Pi Coin features are educational simulations — not legal tender. Toko Hana does not sell/exchange crypto.'), React.createElement("div", {
-    className: "text-[8px] text-purple-300 font-bold uppercase tracking-wider pt-1.5 border-t border-purple-800/40"
-  }, "© 2026 Toko Hana v1.0 • Bogor, Indonesia 🇮🇩 • Pi Community Education Program"))), currentTab === 'Promo' && React.createElement("div", {
-    className: "animate-fade-in pb-6 p-4"
-  }, React.createElement("div", {
-    className: "-mx-4"
-  }, React.createElement(GununganDivider, {
-    title: lang === 'id' ? 'Promo Warung' : 'Store Promos'
-  })), dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
+  }, "— ", filteredProducts.length, " ", lang === 'id' ? 'barang tersedia di warung' : 'items available in store', " —"))), currentTab === 'Home' && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
     className: "-mx-4 mb-5 overflow-hidden border-y border-amber-100 bg-white shadow-sm"
   }, React.createElement("div", {
     className: "px-4 pt-3 pb-2 flex items-center justify-between"
@@ -4879,214 +4823,102 @@ function App() {
     className: "font-black text-[#FFD700] text-[9.5px] leading-tight line-clamp-1 drop-shadow"
   }, item.title), React.createElement("p", {
     className: "text-[7.4px] text-white font-semibold leading-tight line-clamp-2 mt-0.5 drop-shadow"
-  }, item.desc)))))))), filteredProducts.length > 0 ? React.createElement("div", {
-    className: "grid grid-cols-2 gap-x-3 gap-y-5 -mx-4 px-3.5 pt-3 pb-20"
-  }, filteredProducts.map(product => React.createElement("div", {
-    key: product.id,
-    onClick: () => setSelectedProductDetail(product),
-    className: "poster-card bg-[#FFFDF6] overflow-visible flex flex-col hover:shadow-lg transition-all group relative cursor-pointer animate-fade-in",
-    style: {
-      border: '1px solid #eee4c8',
-      borderRadius: '4px',
-      boxShadow: '0 3px 10px rgba(45,18,66,0.10), 0 1px 3px rgba(45,18,66,0.08)',
-      transform: `rotate(${product.id % 3 === 0 ? -0.8 : product.id % 2 === 0 ? 0.7 : -0.4}deg)`
-    }
+  }, item.desc)))))))), currentTab === 'Home' && React.createElement("div", {
+    className: "bg-[#2d1242] text-white mt-6 text-center flex-shrink-0 animate-fade-in relative z-10"
   }, React.createElement("div", {
-    className: "absolute -top-2 left-1/2 -translate-x-1/2 w-14 h-4 z-30 pointer-events-none",
-    style: {
-      background: 'linear-gradient(90deg, rgba(212,175,55,0.55), rgba(255,215,0,0.7), rgba(212,175,55,0.55))',
-      transform: `translateX(-50%) rotate(${product.id % 2 === 0 ? 2 : -2}deg)`,
-      boxShadow: '0 1px 2px rgba(0,0,0,0.12)',
-      borderLeft: '1px dashed rgba(255,255,255,0.5)',
-      borderRight: '1px dashed rgba(255,255,255,0.5)'
-    }
-  }), React.createElement("div", {
-    className: "relative h-40 bg-gray-50 overflow-hidden"
+    className: "px-4 pt-4 pb-24 space-y-2"
+  }, React.createElement("div", {
+    className: "flex items-center justify-center gap-2"
   }, React.createElement("img", {
-    src: product.image,
-    alt: product.name,
-    className: "w-full h-full object-cover group-hover:scale-102 transition-transform duration-500",
-    onError: e => {
-      e.currentTarget.src = getPlaceholderImage(product.name, product.category);
-    }
-  }), React.createElement("span", {
-    className: "absolute top-2.5 left-2.5 inline-block bg-[#FFF8E1]/95 border border-[#E8D9A0] rounded-sm px-1.5 py-[1.5px] shadow-[1px_1.5px_2px_rgba(0,0,0,0.15)] rotate-[-1.5deg]"
-  }, React.createElement("span", {
-    className: "font-black text-[#703d92] text-[7.5px] uppercase tracking-wide",
-    style: {
-      fontFamily: "'Courier New', monospace"
-    }
-  }, translateCategory(normalizeCategoryName(product.category)).toUpperCase()), React.createElement("span", {
-    className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[5px] border-l-[5px] border-t-[#d9c98f] border-l-transparent"
-  })), React.createElement("div", {
-    className: "absolute top-1.5 right-1.5 w-12 h-12 flex items-center justify-center pointer-events-none select-none z-20",
-    style: {
-      transform: 'rotate(-14deg)',
-      opacity: 0.88,
-      mixBlendMode: 'multiply'
-    }
-  }, React.createElement("svg", {
-    viewBox: "0 0 60 60",
-    className: "w-full h-full drop-shadow-sm"
-  }, React.createElement("circle", {
-    cx: "30",
-    cy: "30",
-    r: "28",
-    fill: "none",
-    stroke: "#D32F2F",
-    strokeWidth: "2.5",
-    strokeDasharray: "2.5 1.5"
-  }), React.createElement("circle", {
-    cx: "30",
-    cy: "30",
-    r: "22.5",
-    fill: "rgba(211,47,47,0.07)",
-    stroke: "#D32F2F",
-    strokeWidth: "1.2"
-  }), React.createElement("text", {
-    x: "7",
-    y: "33.5",
-    fontSize: "7",
-    fill: "#D32F2F",
-    fontWeight: "bold"
-  }, "★"), React.createElement("text", {
-    x: "46.5",
-    y: "33.5",
-    fontSize: "7",
-    fill: "#D32F2F",
-    fontWeight: "bold"
-  }, "★"), React.createElement("text", {
-    x: "30",
-    y: "34.5",
-    textAnchor: "middle",
-    fontSize: "12",
-    fill: "#D32F2F",
-    fontWeight: "900",
-    fontFamily: "Arial Black, sans-serif",
-    letterSpacing: "0.5"
-  }, "HEMAT"), React.createElement("text", {
-    x: "30",
-    y: "14.5",
-    textAnchor: "middle",
-    fontSize: "5.5",
-    fill: "#D32F2F",
-    fontWeight: "bold",
-    letterSpacing: "1"
-  }, "TOKO HANA"), React.createElement("text", {
-    x: "30",
-    y: "50",
-    textAnchor: "middle",
-    fontSize: "5.5",
-    fill: "#D32F2F",
-    fontWeight: "bold",
-    letterSpacing: "1"
-  }, "HARGA HEMAT")))), React.createElement("div", {
-    className: "p-3.5 flex-1 flex flex-col justify-between bg-[#FFFDF6]"
-  }, React.createElement("div", null, React.createElement("h4", {
-    className: "text-sm font-medium text-gray-800 leading-tight truncate"
-  }, product.name), React.createElement("p", {
-    className: "text-[10px] text-gray-400 mt-1 truncate block"
-  }, product.desc || 'Promo pilihan Toko Hana')), React.createElement("div", {
-    className: "mt-2 flex flex-col justify-end"
-  }, product.original_price && product.original_price > product.price ? React.createElement("div", {
-    className: "flex flex-col"
-  }, React.createElement("div", {
-    className: "flex items-center gap-1.5"
-  }, React.createElement("span", {
-    className: "text-[10px] text-gray-400 line-through"
-  }, "Rp ", product.original_price.toLocaleString('id-ID'))), React.createElement("div", {
-    className: "flex items-center justify-between gap-1 min-w-0"
-  }, React.createElement("span", {
-    className: "relative inline-block bg-[#FFF8E1] border border-[#E8D9A0] rounded-sm px-1.5 py-0.5 shadow-[1px_1.5px_2px_rgba(0,0,0,0.12)] -rotate-1 max-w-[98px] overflow-hidden"
-  }, React.createElement("span", {
-    className: "block font-black text-red-500 text-[10.5px] tracking-[-0.04em] whitespace-nowrap",
-    style: {
-      fontFamily: "'Courier New', monospace"
-    }
-  }, "Rp ", product.price.toLocaleString('id-ID')), React.createElement("span", {
-    className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[7px] border-l-[7px] border-t-[#d9c98f] border-l-transparent",
-    style: {
-      filter: 'drop-shadow(-1px 1px 1px rgba(0,0,0,0.08))'
-    }
-  })), React.createElement("span", {
-    className: "text-[8.5px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 shrink-0"
-  }, convertRpToPi(product.price).toFixed(4), " π"))) : React.createElement("div", {
-    className: "flex flex-col"
-  }, React.createElement("div", {
-    className: "h-2"
-  }), React.createElement("div", {
-    className: "flex items-center justify-between gap-1 min-w-0"
-  }, React.createElement("span", {
-    className: "relative inline-block bg-[#FFF8E1] border border-[#E8D9A0] rounded-sm px-1.5 py-0.5 shadow-[1px_1.5px_2px_rgba(0,0,0,0.12)] -rotate-1 max-w-[98px] overflow-hidden"
-  }, React.createElement("span", {
-    className: "block font-black text-[#703d92] text-[10.5px] tracking-[-0.04em] whitespace-nowrap",
-    style: {
-      fontFamily: "'Courier New', monospace"
-    }
-  }, "Rp ", product.price.toLocaleString('id-ID')), React.createElement("span", {
-    className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[7px] border-l-[7px] border-t-[#d9c98f] border-l-transparent",
-    style: {
-      filter: 'drop-shadow(-1px 1px 1px rgba(0,0,0,0.08))'
-    }
-  })), React.createElement("span", {
-    className: "text-[8.5px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 shrink-0"
-  }, convertRpToPi(product.price).toFixed(4), " π"))), React.createElement("div", {
-    className: "flex items-center justify-between mt-1"
-  }, React.createElement("span", {
-    className: "text-[9px] text-gray-400 font-semibold"
-  }, "Terjual: ", product.sold || 0, " | Stok: ", product.stock || 0), React.createElement("button", {
-    type: "button",
-    onClick: e => {
-      e.stopPropagation();
-      handleAddToCart(product);
-    },
-    className: "w-[26px] h-[26px] rounded-full bg-[#703d92]/95 border-2 border-[#FFD700] text-[#FFD700] flex items-center justify-center shadow-md active:scale-95 transition-all",
-    title: lang === 'id' ? 'Langsung masukkan keranjang' : 'Quick add to cart'
-  }, React.createElement(LucideIcon, {
-    name: "ShoppingCart",
-    size: 12,
-    strokeWidth: 2.8,
-    style: {
-      transform: 'scaleX(-1)'
-    }
-  })))))))) : React.createElement("div", {
-    className: "text-center p-8 bg-white rounded-2xl"
-  }, "Tidak ada promo aktif.")), currentTab === 'SponsorDetail' && selectedSponsor && React.createElement("div", {
+    src: BRAND_LOGO_DATA_URI,
+    alt: "Logo Toko Hana",
+    className: "w-7 h-7 object-contain drop-shadow-md"
+  }), React.createElement("h4", {
+    className: "font-extrabold text-[#FFD700] text-sm tracking-widest uppercase"
+  }, "Toko Hana"), React.createElement("div", {
+    className: "w-5 h-5 bg-amber-500/80 text-white font-black text-[10px] rounded-full flex items-center justify-center shadow-sm",
+    title: "Pi Community Education"
+  }, "π")), React.createElement("p", {
+    className: "text-[10px] text-[#FFD700]/90 font-black tracking-wide"
+  }, lang === 'id' ? '"Warungnya Rakyat, Siap Menyambut Ekosistem π"' : '"The People\'s Store, Ready for the π Ecosystem"'), React.createElement("p", {
+    className: "text-[7.5px] text-purple-300/90 font-semibold leading-relaxed text-center px-1"
+  }, "⚖️ ", lang === 'id' ? 'Sesuai UU No. 7/2011, seluruh pembayaran diselesaikan HANYA dalam Rupiah (QRIS, Tunai, COD). Fitur Koin Pi bersifat edukasi & simulasi — bukan alat pembayaran sah. Toko Hana tidak menjual/menukarkan kripto.' : 'Per Law No. 7/2011, all payments are settled ONLY in Rupiah (QRIS, Cash, COD). Pi Coin features are educational simulations — not legal tender. Toko Hana does not sell/exchange crypto.'), React.createElement("div", {
+    className: "text-[8px] text-purple-300 font-bold uppercase tracking-wider pt-1.5 border-t border-purple-800/40"
+  }, "© 2026 Toko Hana v1.0 • Bogor, Indonesia 🇮🇩 • Pi Community Education Program"))), currentTab === 'Promo' && React.createElement("div", {
     className: "animate-fade-in p-4 pb-24"
   }, React.createElement("div", {
     className: "-mx-4"
   }, React.createElement(GununganDivider, {
-    title: selectedSponsor.title || (lang === 'id' ? 'Cerita Mitra' : 'Partner Story')
-  })), React.createElement("button", {
-    type: "button",
-    onClick: () => {
-      setCurrentTab('Home');
-      setSelectedSponsor(null);
-    },
-    className: "mb-3 text-[10px] font-bold text-[#703d92] bg-purple-50 border border-purple-100 px-3 py-2 rounded-xl"
-  }, "← Kembali ke Home"), React.createElement("article", {
-    className: "bg-white rounded-3xl overflow-hidden border border-amber-100 shadow-sm"
-  }, React.createElement("img", {
-    src: selectedSponsor.image || BRAND_LOGO_DATA_URI,
-    alt: selectedSponsor.title,
-    className: "w-full h-52 object-cover",
-    onError: e => {
-      e.currentTarget.src = BRAND_LOGO_DATA_URI;
-    }
-  }), React.createElement("div", {
-    className: "p-4"
-  }, React.createElement("h2", {
-    className: "font-black text-[#703d92] text-xl leading-tight"
-  }, selectedSponsor.title), React.createElement("p", {
-    className: "text-[12px] text-gray-500 font-semibold leading-relaxed mt-2"
-  }, selectedSponsor.desc), React.createElement("div", {
-    className: "mt-4 bg-amber-50/70 rounded-2xl p-3 text-[12px] text-gray-700 leading-relaxed whitespace-pre-wrap"
-  }, selectedSponsor.body || 'Informasi lengkap mitra akan ditampilkan di sini.'), selectedSponsor.link && React.createElement("a", {
-    href: selectedSponsor.link,
-    target: "_blank",
-    rel: "noopener noreferrer",
-    className: "mt-4 block text-center bg-[#703d92] text-white font-bold py-3 rounded-2xl text-xs"
-  }, "Kunjungi Mitra")))), currentTab === 'Cart' && React.createElement("div", {
+    title: lang === 'id' ? 'Jelajah Toko Hana' : 'Explore Toko Hana'
+  })), sponsorBanners && sponsorBanners.length > 0 && (() => {
+    const sponsor = sponsorBanners[activeSponsorIndex % sponsorBanners.length];
+    return React.createElement("button", {
+      type: "button",
+      onClick: () => {
+        setSelectedSponsor(sponsor);
+        setCurrentTab('SponsorDetail');
+      },
+      className: "relative w-full overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50 p-3 shadow-sm text-left active:scale-[0.99] transition-all mb-4"
+    }, React.createElement("div", {
+      className: "absolute -right-8 -top-8 w-24 h-24 bg-[#FFD700]/20 rounded-full blur-xl"
+    }), React.createElement("div", {
+      className: "relative flex items-start gap-2.5"
+    }, React.createElement("img", {
+      src: sponsor.image || BRAND_LOGO_DATA_URI,
+      alt: sponsor.title,
+      className: "w-14 h-14 rounded-xl object-cover border border-amber-100 shadow-sm flex-shrink-0",
+      onError: e => {
+        e.currentTarget.src = BRAND_LOGO_DATA_URI;
+      }
+    }), React.createElement("div", {
+      className: "min-w-0 pt-0.5"
+    }, React.createElement("span", {
+      className: "inline-block text-[8px] font-black text-[#2d1242] bg-[#FFD700] px-2 py-0.5 rounded-full mb-1"
+    }, "SOROTAN"), React.createElement("h4", {
+      className: "font-black text-[#703d92] text-sm leading-tight truncate"
+    }, sponsor.title || 'Ruang Mitra Toko Hana'), React.createElement("p", {
+      className: "text-[10px] text-gray-500 font-semibold leading-snug mt-0.5 line-clamp-2"
+    }, sponsor.desc || 'Tempat dukungan brand lokal dan sahabat warung.'))));
+  })(), React.createElement("div", {
+    className: "bg-white rounded-2xl p-4 border border-purple-50 shadow-sm mb-4"
+  }, React.createElement("h4", {
+    className: "font-black text-[#703d92] text-sm"
+  }, "Daftar Isi Jelajah"), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold mt-1"
+  }, "Ruang cerita, edukasi, info warga, dan sahabat warung."), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2 mt-3"
+  }, [{
+    icon: '🛒',
+    title: 'Cara Belanja',
+    desc: 'Panduan daftar, pilih barang, dan checkout.'
+  }, {
+    icon: '🤝',
+    title: 'Mitra',
+    desc: 'Cerita sponsor dan sahabat warung.'
+  }, {
+    icon: '📢',
+    title: 'Info Warga',
+    desc: 'Undangan, kabar RT, dan pengumuman.'
+  }, {
+    icon: '📚',
+    title: 'Edukasi',
+    desc: 'Artikel ringan dan ruang berbagi.'
+  }].map((item, idx) => React.createElement("div", {
+    key: idx,
+    className: "rounded-2xl border border-amber-100 bg-gradient-to-br from-white to-amber-50 p-3"
+  }, React.createElement("div", {
+    className: "text-xl mb-1"
+  }, item.icon), React.createElement("h5", {
+    className: "font-black text-[#703d92] text-[11px]"
+  }, item.title), React.createElement("p", {
+    className: "text-[9px] text-gray-500 font-semibold leading-snug mt-0.5"
+  }, item.desc))))), React.createElement("div", {
+    className: "bg-gradient-to-r from-purple-50 to-amber-50 border border-purple-100 rounded-2xl p-3"
+  }, React.createElement("h4", {
+    className: "font-black text-[#703d92] text-sm"
+  }, "Edukasi Toko Hana"), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1"
+  }, "Mulai dari cara mendaftar, menjadi pelanggan, mengumpulkan HanaPoin, sampai memahami pembayaran yang tetap diselesaikan dalam Rupiah."))), currentTab === 'Cart' && React.createElement("div", {
     className: "animate-fade-in p-4 pb-24"
   }, cart.length === 0 && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
     className: "-mx-4 mb-4 overflow-hidden border-y border-amber-100 bg-white shadow-sm"
@@ -7175,7 +7007,7 @@ function App() {
     active: currentTab === 'Promo'
   }), React.createElement("span", {
     className: "text-[9px] tracking-tight mt-1 font-bold text-white/80 active:text-[#FFD700]"
-  }, "Promo")), React.createElement("div", {
+  }, "Jelajah")), React.createElement("div", {
     className: "relative flex flex-col items-center justify-center flex-1 h-full"
   }, React.createElement("button", {
     onClick: () => {
@@ -7517,5 +7349,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19ab1214a29f894',t:'MTc4MzgwMzE0Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

@@ -4776,29 +4776,25 @@ function App() {
         setSelectedSponsor(sponsor);
         setCurrentTab('SponsorDetail');
       },
-      className: "relative w-full overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50 p-4 shadow-sm text-left active:scale-[0.99] transition-all"
+      className: "relative w-full overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50 p-3 shadow-sm text-left active:scale-[0.99] transition-all"
     }, React.createElement("div", {
       className: "absolute -right-8 -top-8 w-24 h-24 bg-[#FFD700]/20 rounded-full blur-xl"
     }), React.createElement("div", {
-      className: "relative flex items-start gap-3"
+      className: "relative flex items-start gap-2.5"
     }, React.createElement("img", {
       src: sponsor.image || BRAND_LOGO_DATA_URI,
       alt: sponsor.title,
-      className: "w-14 h-14 rounded-2xl object-cover border border-amber-100 shadow-sm flex-shrink-0",
+      className: "w-12 h-12 rounded-xl object-cover border border-amber-100 shadow-sm flex-shrink-0",
       onError: e => {
         e.currentTarget.src = BRAND_LOGO_DATA_URI;
       }
     }), React.createElement("div", {
-      className: "min-w-0"
-    }, React.createElement("span", {
-      className: "inline-block text-[8px] font-black text-[#2d1242] bg-[#FFD700] px-2 py-0.5 rounded-full mb-1"
-    }, "MITRA"), React.createElement("h4", {
+      className: "min-w-0 pt-0.5"
+    }, React.createElement("h4", {
       className: "font-black text-[#703d92] text-sm leading-tight truncate"
     }, sponsor.title || 'Ruang Mitra Toko Hana'), React.createElement("p", {
-      className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1 line-clamp-2"
-    }, sponsor.desc || 'Tempat dukungan brand lokal dan sahabat warung.'), React.createElement("p", {
-      className: "text-[8.5px] text-amber-700 font-bold mt-2"
-    }, "Ketuk untuk cerita lengkap mitra."))));
+      className: "text-[10px] text-gray-500 font-semibold leading-snug mt-0.5 line-clamp-2"
+    }, sponsor.desc || 'Tempat dukungan brand lokal dan sahabat warung.'))));
   })()), currentTab === 'Home' && React.createElement("div", {
     className: "bg-[#2d1242] text-white mt-6 text-center flex-shrink-0 animate-fade-in relative z-10"
   }, React.createElement("div", {
@@ -5060,7 +5056,7 @@ function App() {
   }, React.createElement("div", {
     className: "-mx-4"
   }, React.createElement(GununganDivider, {
-    title: lang === 'id' ? 'Cerita Mitra' : 'Partner Story'
+    title: selectedSponsor.title || (lang === 'id' ? 'Cerita Mitra' : 'Partner Story')
   })), React.createElement("button", {
     type: "button",
     onClick: () => {
@@ -5079,9 +5075,7 @@ function App() {
     }
   }), React.createElement("div", {
     className: "p-4"
-  }, React.createElement("span", {
-    className: "inline-block text-[8px] font-black text-[#2d1242] bg-[#FFD700] px-2 py-0.5 rounded-full mb-2"
-  }, "MITRA TOKO HANA"), React.createElement("h2", {
+  }, React.createElement("h2", {
     className: "font-black text-[#703d92] text-xl leading-tight"
   }, selectedSponsor.title), React.createElement("p", {
     className: "text-[12px] text-gray-500 font-semibold leading-relaxed mt-2"
@@ -7523,5 +7517,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19ab1214a29f894',t:'MTc4MzgwMzE0Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

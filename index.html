@@ -1518,7 +1518,7 @@ const translations = {
     searchPlaceholder: "Cari...",
     listening: "Mendengarkan suara...",
     tabHome: "Home",
-    tabPromo: "Promo",
+    tabPromo: "Jelajah",
     tabCart: "Keranjang",
     tabAdmin: "Admin",
     tabProfile: "Profil",
@@ -1594,7 +1594,7 @@ const translations = {
     searchPlaceholder: "Search...",
     listening: "Listening for voice...",
     tabHome: "Home",
-    tabPromo: "Promo",
+    tabPromo: "Explore",
     tabCart: "Cart",
     tabAdmin: "Admin",
     tabProfile: "Profile",
@@ -1886,8 +1886,14 @@ function App() {
   const [sponsorBanners, setSponsorBanners] = useState(() => {
     try {
       const local = safeStorage.getItem('toko_hana_sponsor_banners');
-      return local ? JSON.parse(local) : defaultSponsorBanners;
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      safeStorage.setItem('toko_hana_sponsor_banners', JSON.stringify(defaultSponsorBanners));
+      return defaultSponsorBanners;
     } catch (e) {
+      safeStorage.setItem('toko_hana_sponsor_banners', JSON.stringify(defaultSponsorBanners));
       return defaultSponsorBanners;
     }
   });
@@ -3995,8 +4001,9 @@ function App() {
     }
   };
   const saveSponsorList = list => {
-    setSponsorBanners(list);
-    safeStorage.setItem('toko_hana_sponsor_banners', JSON.stringify(list));
+    const safeList = Array.isArray(list) && list.length > 0 ? list : defaultSponsorBanners;
+    setSponsorBanners(safeList);
+    safeStorage.setItem('toko_hana_sponsor_banners', JSON.stringify(safeList));
   };
   const handleSaveSponsor = e => {
     e.preventDefault();
@@ -4040,9 +4047,10 @@ function App() {
   };
   const handleDeleteSponsor = id => {
     if (!confirm('Hapus banner mitra ini?')) return;
-    saveSponsorList(sponsorBanners.filter(s => s.id !== id));
+    const nextList = sponsorBanners.filter(s => s.id !== id);
+    saveSponsorList(nextList);
     setSelectedSponsor(null);
-    showToast('🗑️ Banner mitra dihapus.');
+    showToast(nextList.length ? '🗑️ Banner mitra dihapus.' : '☕ Jelajah tidak boleh kosong. Postingan pembuka dipasang lagi.');
   };
   const handleSaveBanner = e => {
     e.preventDefault();
@@ -5778,8 +5786,8 @@ function App() {
     icon: 'ShoppingBag'
   }, {
     id: 'promo',
-    label: 'Promo',
-    icon: 'Tag'
+    label: 'Jelajah',
+    icon: 'Compass'
   }, {
     id: 'restok',
     label: 'Restok',
@@ -6114,9 +6122,9 @@ function App() {
     className: "w-10 h-10 rounded-2xl bg-red-500 text-white flex items-center justify-center shadow-sm flex-shrink-0"
   }, "🎏"), React.createElement("div", null, React.createElement("h4", {
     className: "font-extrabold text-sm text-red-600 leading-tight"
-  }, "Pusat Promo Toko Hana"), React.createElement("p", {
+  }, "Pusat Jelajah Toko Hana"), React.createElement("p", {
     className: "text-[10px] text-gray-500 font-semibold mt-1 leading-relaxed"
-  }, "Etalase promo utama sekarang otomatis dari produk: promo, terlaris, dan baru datang. Banner manual lama tidak dipakai untuk halaman Promo.")))), React.createElement("div", {
+  }, "Kelola isi Jelajah: ruang mitra, edukasi, info warga, dan cerita warung. Promo produk otomatis tetap tampil dari data produk di Home.")))), React.createElement("div", {
     className: "bg-white rounded-2xl p-4 border shadow-sm space-y-3"
   }, React.createElement("h5", {
     className: "font-extrabold text-[#703d92] uppercase tracking-wider text-[11px]"
@@ -6961,13 +6969,13 @@ function App() {
     className: "flex-1 min-w-0"
   }, React.createElement("h5", {
     className: "font-extrabold text-red-600 text-[11px] uppercase tracking-wider"
-  }, "Banner pindah ke Tab Promo"), React.createElement("p", {
+  }, "Banner pindah ke Tab Jelajah"), React.createElement("p", {
     className: "text-[9px] text-gray-500 font-semibold mt-0.5 leading-relaxed"
-  }, "Kelola banner, sponsor, dan campaign dari Backoffice > Promo agar Branding tetap fokus ke identitas toko."), React.createElement("button", {
+  }, "Kelola mitra, sponsor, dan cerita warga dari Backoffice > Jelajah agar Branding tetap fokus ke identitas toko."), React.createElement("button", {
     type: "button",
     onClick: () => setAdminActiveSubMenu('promo'),
     className: "mt-2 bg-[#703d92] text-white font-bold text-[10px] px-3 py-2 rounded-xl"
-  }, "Buka Tab Promo"))))))), React.createElement("div", {
+  }, "Buka Tab Jelajah"))))))), React.createElement("div", {
     className: "fixed bottom-0 left-0 right-0 sm:absolute z-30 h-20 flex flex-col justify-end select-none pointer-events-none"
   }, React.createElement("div", {
     className: "relative w-full h-16 pointer-events-auto"
@@ -7353,6 +7361,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19d03df0ee96042',t:'MTc4MzgyNzUwNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

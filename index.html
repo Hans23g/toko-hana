@@ -1372,6 +1372,52 @@ Pembayaran sah tetap diselesaikan dalam Rupiah. Edukasi komunitas Pi hadir sebag
 Intinya: Toko Hana adalah warung digital rakyat — tempat kebutuhan, informasi, edukasi, mitra, dan kepedulian lingkungan bertemu dalam satu genggaman.`,
   showBanner: true,
   style: 'blogazine'
+}, {
+  id: 9006,
+  title: 'Undangan Ulang Tahun Hana',
+  category: 'Info Warga',
+  desc: 'Template undangan digital ulang tahun dengan countdown, foto, waktu acara, dan tombol share WhatsApp.',
+  image: BRAND_LOGO_DATA_URI,
+  link: '',
+  eventDate: '2026-08-17T16:00',
+  body: `Dengan penuh rasa syukur, kami mengundang sahabat dan keluarga untuk hadir dalam acara ulang tahun Hana.
+
+Hari/Tanggal: Senin, 17 Agustus 2026
+Waktu: 16.00 WIB sampai selesai
+Tempat: Toko Hana / Rumah Hana
+
+Doa dan kehadiran kawan-kawan menjadi hadiah paling berharga. Jangan lupa datang dengan senyum terbaik ya.`,
+  showBanner: true,
+  style: 'invitation'
+}, {
+  id: 9007,
+  title: 'Undangan Pernikahan — Rani & Dimas',
+  category: 'Info Warga',
+  desc: 'Template undangan pernikahan digital dengan countdown menuju hari H, foto calon pengantin, detail akad/resepsi, dan share WhatsApp.',
+  image: BRAND_LOGO_DATA_URI,
+  link: '',
+  eventDate: '2026-09-20T09:00',
+  body: `Bismillahirrahmanirrahim.
+
+Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dalam acara pernikahan kami.
+
+Rani Putri
+&
+Dimas Pratama
+
+Akad Nikah
+Minggu, 20 September 2026
+Pukul 09.00 WIB
+
+Resepsi
+Pukul 11.00 WIB sampai selesai
+
+Tempat
+Kediaman keluarga / Gedung Serbaguna
+
+Merupakan kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.`,
+  showBanner: true,
+  style: 'wedding'
 }];
 const defaultCategories = [{
   name: 'Semua',
@@ -1960,6 +2006,7 @@ function App() {
     title: '',
     category: 'Mitra',
     style: 'standard',
+    eventDate: '',
     desc: '',
     image: '',
     link: '',
@@ -1969,6 +2016,7 @@ function App() {
   const [editingSponsor, setEditingSponsor] = useState(null);
   const [activeSponsorIndex, setActiveSponsorIndex] = useState(0);
   const [selectedSponsor, setSelectedSponsor] = useState(null);
+  const [countdownNow, setCountdownNow] = useState(() => new Date());
   const [selectedJelajahCategory, setSelectedJelajahCategory] = useState('Semua');
   const jelajahCategories = [{
     key: 'Cara Belanja',
@@ -2065,6 +2113,10 @@ function App() {
     }, 60000);
     return () => clearInterval(timer);
   }, [featuredSponsorBanners]);
+  useEffect(() => {
+    const timer = setInterval(() => setCountdownNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
   const [loginPassword, setLoginPassword] = useState('');
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -4103,6 +4155,7 @@ function App() {
       ...sponsorForm,
       category: sponsorForm.category || 'Mitra',
       style: sponsorForm.style || 'standard',
+      eventDate: sponsorForm.eventDate || '',
       image: sponsorForm.image || BRAND_LOGO_DATA_URI,
       showBanner: sponsorForm.showBanner !== false
     };
@@ -4124,6 +4177,7 @@ function App() {
       title: '',
       category: 'Mitra',
       style: 'standard',
+      eventDate: '',
       desc: '',
       image: '',
       link: '',
@@ -4138,6 +4192,7 @@ function App() {
       title: item.title || '',
       category: item.category || 'Mitra',
       style: item.style || 'standard',
+      eventDate: item.eventDate || '',
       desc: item.desc || '',
       image: item.image || '',
       link: item.link || '',
@@ -5058,7 +5113,11 @@ Buka Toko Hana dan cek menu Jelajah.`;
     className: "text-[7px] font-black text-[#703d92] bg-purple-50 px-1.5 py-0.5 rounded-full flex-shrink-0"
   }, post.category || 'Mitra'), post.style === 'blogazine' && React.createElement("span", {
     className: "text-[7px] font-black text-white bg-[#703d92] px-1.5 py-0.5 rounded-full flex-shrink-0"
-  }, "Blogazine"), post.showBanner !== false && React.createElement("span", {
+  }, "Blogazine"), post.style === 'invitation' && React.createElement("span", {
+    className: "text-[7px] font-black text-white bg-pink-500 px-1.5 py-0.5 rounded-full flex-shrink-0"
+  }, "Undangan"), post.style === 'wedding' && React.createElement("span", {
+    className: "text-[7px] font-black text-[#2d1242] bg-[#FFD700] px-1.5 py-0.5 rounded-full flex-shrink-0"
+  }, "Wedding"), post.showBanner !== false && React.createElement("span", {
     className: "text-[7px] font-black text-[#2d1242] bg-[#FFD700] px-1.5 py-0.5 rounded-full flex-shrink-0"
   }, "Banner")), React.createElement("p", {
     className: "text-[10px] text-gray-500 font-semibold leading-snug mt-0.5 line-clamp-2"
@@ -5077,6 +5136,72 @@ Buka Toko Hana dan cek menu Jelajah.`;
     className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1"
   }, "Mulai dari cara mendaftar, menjadi pelanggan, mengumpulkan HanaPoin, sampai memahami pembayaran yang tetap diselesaikan dalam Rupiah."))), currentTab === 'SponsorDetail' && (() => {
     const sponsor = selectedSponsor || sponsorBanners && sponsorBanners[0] || defaultSponsorBanners[0];
+    const eventTime = sponsor.eventDate ? new Date(sponsor.eventDate).getTime() : null;
+    const diffMs = eventTime ? Math.max(0, eventTime - countdownNow.getTime()) : 0;
+    const countdown = {
+      hari: Math.floor(diffMs / 86400000),
+      jam: Math.floor(diffMs % 86400000 / 3600000),
+      menit: Math.floor(diffMs % 3600000 / 60000),
+      detik: Math.floor(diffMs % 60000 / 1000)
+    };
+    const isWeddingInvitation = sponsor.style === 'wedding';
+    if (sponsor.style === 'invitation' || isWeddingInvitation) {
+      return React.createElement("div", {
+        className: "animate-fade-in p-4 pb-24"
+      }, React.createElement("article", {
+        className: `relative overflow-hidden rounded-[2rem] text-white shadow-xl border border-[#FFD700]/50 ${isWeddingInvitation ? 'bg-gradient-to-br from-[#1f1730] via-[#4f3b78] to-[#D4AF37]' : 'bg-gradient-to-br from-[#2d1242] via-[#703d92] to-pink-500'}`
+      }, React.createElement("div", {
+        className: "absolute inset-0 opacity-20",
+        style: {
+          backgroundImage: BRAND_BATIK_DATA_URI ? `url(${BRAND_BATIK_DATA_URI})` : 'none',
+          backgroundSize: '240px auto'
+        }
+      }), React.createElement("div", {
+        className: "absolute -top-16 -right-16 w-44 h-44 bg-[#FFD700]/30 rounded-full blur-2xl"
+      }), React.createElement("div", {
+        className: "relative p-5 text-center"
+      }, React.createElement("div", {
+        className: "text-[9px] font-black tracking-[0.35em] uppercase text-amber-200"
+      }, isWeddingInvitation ? 'Undangan Pernikahan' : 'Undangan Digital'), React.createElement("h2", {
+        className: `mt-3 font-black leading-tight ${isWeddingInvitation ? 'text-4xl font-serif' : 'text-3xl'}`
+      }, sponsor.title || (isWeddingInvitation ? 'Undangan Pernikahan' : 'Undangan Ulang Tahun')), React.createElement("p", {
+        className: "mt-2 text-[12px] text-white/80 font-semibold leading-relaxed"
+      }, sponsor.desc || 'Dengan bahagia kami mengundang kawan semua untuk hadir.'), React.createElement("div", {
+        className: `mx-auto my-5 w-32 h-32 p-1 bg-gradient-to-br from-[#FFD700] to-white shadow-2xl ${isWeddingInvitation ? 'rounded-[2rem] rotate-1' : 'rounded-full'}`
+      }, React.createElement("img", {
+        src: sponsor.image || BRAND_LOGO_DATA_URI,
+        alt: sponsor.title,
+        className: `w-full h-full object-cover bg-white ${isWeddingInvitation ? 'rounded-[1.65rem]' : 'rounded-full'}`,
+        onError: e => {
+          e.currentTarget.src = BRAND_LOGO_DATA_URI;
+        }
+      })), React.createElement("div", {
+        className: "grid grid-cols-4 gap-2 mb-5"
+      }, Object.entries(countdown).map(([label, value]) => React.createElement("div", {
+        key: label,
+        className: "rounded-2xl bg-white/15 border border-white/20 p-2 backdrop-blur-sm"
+      }, React.createElement("div", {
+        className: "text-xl font-black text-[#FFD700]"
+      }, String(value).padStart(2, '0')), React.createElement("div", {
+        className: "text-[8px] font-bold uppercase text-white/70"
+      }, label)))), sponsor.eventDate && React.createElement("p", {
+        className: "text-[11px] font-black text-amber-100 mb-4"
+      }, "Waktu acara: ", new Date(sponsor.eventDate).toLocaleString('id-ID', {
+        dateStyle: 'full',
+        timeStyle: 'short'
+      }), " WIB"), React.createElement("div", {
+        className: "rounded-3xl bg-white text-[#2d1242] text-left p-4 shadow-lg"
+      }, React.createElement("p", {
+        className: "text-[12px] leading-relaxed whitespace-pre-line"
+      }, sponsor.body || 'Kehadiran dan doa kawan semua menjadi hadiah terindah.')), React.createElement("button", {
+        type: "button",
+        onClick: () => shareJelajahPost(sponsor),
+        className: "mt-4 inline-flex items-center gap-1.5 bg-green-500 text-white font-black text-[10px] px-4 py-2.5 rounded-xl shadow-sm active:scale-95"
+      }, isWeddingInvitation ? 'Share Undangan Pernikahan via WA' : 'Share Undangan via WA', " ", React.createElement(LucideIcon, {
+        name: "Share2",
+        size: 12
+      })))));
+    }
     return React.createElement("div", {
       className: "animate-fade-in p-4 pb-24"
     }, React.createElement("article", {
@@ -6371,7 +6496,19 @@ Buka Toko Hana dan cek menu Jelajah.`;
     value: "standard"
   }, "Style Standar"), React.createElement("option", {
     value: "blogazine"
-  }, "Style Blogazine")), React.createElement("input", {
+  }, "Style Blogazine"), React.createElement("option", {
+    value: "invitation"
+  }, "Template Undangan Ultah/Acara"), React.createElement("option", {
+    value: "wedding"
+  }, "Template Undangan Pernikahan")), (sponsorForm.style === 'invitation' || sponsorForm.style === 'wedding') && React.createElement("input", {
+    type: "datetime-local",
+    value: sponsorForm.eventDate || '',
+    onChange: e => setSponsorForm({
+      ...sponsorForm,
+      eventDate: e.target.value
+    }),
+    className: "w-full border border-amber-200 rounded-xl p-2.5 bg-white focus:outline-none focus:border-[#703d92] font-bold text-gray-600"
+  }), React.createElement("input", {
     value: sponsorForm.desc,
     onChange: e => setSponsorForm({
       ...sponsorForm,
@@ -6426,6 +6563,7 @@ Buka Toko Hana dan cek menu Jelajah.`;
         title: '',
         category: 'Mitra',
         style: 'standard',
+        eventDate: '',
         desc: '',
         image: '',
         link: '',
@@ -6453,7 +6591,11 @@ Buka Toko Hana dan cek menu Jelajah.`;
     className: "text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 bg-purple-50 text-[#703d92]"
   }, item.category || 'Mitra'), item.style === 'blogazine' && React.createElement("span", {
     className: "text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 bg-[#703d92] text-white"
-  }, "Blogazine"), React.createElement("span", {
+  }, "Blogazine"), item.style === 'invitation' && React.createElement("span", {
+    className: "text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 bg-pink-500 text-white"
+  }, "Undangan"), item.style === 'wedding' && React.createElement("span", {
+    className: "text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 bg-[#FFD700] text-[#2d1242]"
+  }, "Wedding"), React.createElement("span", {
     className: `text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 ${item.showBanner !== false ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-400'}`
   }, item.showBanner !== false ? 'Banner' : 'List')), React.createElement("p", {
     className: "text-[8.5px] text-gray-400 truncate"
@@ -7613,5 +7755,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a0aa27cf1ca17f',t:'MTc4Mzg2NTc3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a178cebf5afd27',t:'MTc4Mzg3NDIzOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -2842,7 +2842,18 @@ function App() {
       title: p.name,
       desc: p.desc || 'Barang baru masuk etalase warung.'
     }));
-    const merged = [...promoItems, ...bestSellerItems, ...newestItems];
+    let merged = [...promoItems, ...bestSellerItems, ...newestItems];
+    if (!merged.length && safeProducts.length) {
+      merged = safeProducts.slice(0, 3).map(p => ({
+        type: 'pick',
+        badge: '🏪 Pilihan',
+        tone: 'text-[#703d92]',
+        badgeBg: 'bg-purple-50/95 border-purple-200',
+        product: p,
+        title: p.name,
+        desc: p.desc || 'Pilihan etalase Toko Hana.'
+      }));
+    }
     const seen = new Set();
     return merged.filter(item => {
       const key = `${item.type}-${item.product?.id}`;
@@ -4571,7 +4582,64 @@ function App() {
     }));
   }))), currentTab === 'Home' && React.createElement("div", null, React.createElement(GununganDivider, {
     title: lang === 'id' ? 'Produk Warung' : 'Our Products'
-  }), loading ? React.createElement("div", {
+  }), currentTab === 'Home' && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
+    className: "mx-4 mt-4 mb-5 overflow-hidden rounded-2xl border border-amber-100 bg-white shadow-sm"
+  }, React.createElement("div", {
+    className: "px-4 pt-3 pb-2 flex items-center justify-between"
+  }, React.createElement("div", null, React.createElement("h4", {
+    className: "font-extrabold text-[11px] text-[#703d92] uppercase tracking-wider"
+  }, "Etalase Dinamis Promo"), React.createElement("p", {
+    className: "text-[9px] text-gray-400 font-semibold"
+  }, "Promo, terlaris, dan barang baru otomatis dari etalase.")), React.createElement("span", {
+    className: "text-[9px] font-black text-amber-600 bg-amber-50 border border-amber-100 px-2 py-1 rounded-full"
+  }, dynamicPromoHighlights.length, " kabar")), React.createElement("div", {
+    className: "relative overflow-hidden pb-3"
+  }, React.createElement("div", {
+    className: "flex gap-2 px-4 hana-banner-marquee"
+  }, [...(dynamicPromoHighlights || []), ...(dynamicPromoHighlights || [])].map((item, idx) => React.createElement("button", {
+    key: `${item.type}-${item.product.id}-${idx}`,
+    type: "button",
+    onClick: () => setSelectedProductDetail(item.product),
+    className: "relative w-[calc((min(100vw,430px)-56px)/2)] flex-shrink-0 h-24 overflow-visible text-left active:scale-[0.98] transition-all",
+    style: {
+      transform: `rotate(${idx % 2 === 0 ? '-0.6deg' : '0.6deg'})`
+    }
+  }, React.createElement("div", {
+    className: "absolute top-0 left-1/2 -translate-x-1/2 w-14 h-3.5 z-30 pointer-events-none",
+    style: {
+      background: 'linear-gradient(90deg, rgba(212,175,55,0.52), rgba(255,215,0,0.82), rgba(212,175,55,0.52))',
+      transform: `translateX(-50%) rotate(${idx % 2 === 0 ? '2deg' : '-2deg'})`,
+      boxShadow: '0 1px 3px rgba(0,0,0,0.16)',
+      borderLeft: '1px dashed rgba(255,255,255,0.50)',
+      borderRight: '1px dashed rgba(255,255,255,0.50)'
+    }
+  }), React.createElement("div", {
+    className: "relative w-full overflow-hidden bg-[#FFFDF6]",
+    style: {
+      height: 'calc(100% - 8px)',
+      marginTop: '8px',
+      border: '1px solid #eee4c8',
+      borderRadius: '4px',
+      boxShadow: '0 3px 10px rgba(45,18,66,0.10), 0 1px 3px rgba(45,18,66,0.08)'
+    }
+  }, React.createElement("img", {
+    src: item.product.image,
+    alt: item.title,
+    className: "absolute inset-0 w-full h-full object-cover",
+    onError: e => {
+      e.currentTarget.src = getPlaceholderImage(item.product.name, item.product.category);
+    }
+  }), React.createElement("div", {
+    className: "absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-black/45 via-black/12 to-transparent"
+  }), React.createElement("div", {
+    className: "absolute left-0 right-0 bottom-0 bg-black/68 px-2.5 py-1.5"
+  }, React.createElement("span", {
+    className: `inline-block text-[7px] font-black leading-none mb-0.5 px-1.5 py-0.5 rounded-full border shadow-sm ${item.badgeBg} ${item.tone}`
+  }, item.badge), React.createElement("h5", {
+    className: "font-black text-[#FFD700] text-[9.5px] leading-tight line-clamp-1 drop-shadow"
+  }, item.title), React.createElement("p", {
+    className: "text-[7.4px] text-white font-semibold leading-tight line-clamp-2 mt-0.5 drop-shadow"
+  }, item.desc)))))))), loading ? React.createElement("div", {
     className: "grid grid-cols-2 gap-2.5 px-3 pb-8"
   }, [1, 2, 3, 4].map(idx => React.createElement("div", {
     key: idx,
@@ -4766,64 +4834,7 @@ function App() {
     className: "text-center pb-2 -mt-4"
   }, React.createElement("span", {
     className: "text-[9px] text-gray-400 font-semibold"
-  }, "— ", filteredProducts.length, " ", lang === 'id' ? 'barang tersedia di warung' : 'items available in store', " —"))), currentTab === 'Home' && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
-    className: "mx-4 mt-4 mb-5 overflow-hidden rounded-2xl border border-amber-100 bg-white shadow-sm"
-  }, React.createElement("div", {
-    className: "px-4 pt-3 pb-2 flex items-center justify-between"
-  }, React.createElement("div", null, React.createElement("h4", {
-    className: "font-extrabold text-[11px] text-[#703d92] uppercase tracking-wider"
-  }, "Etalase Dinamis Promo"), React.createElement("p", {
-    className: "text-[9px] text-gray-400 font-semibold"
-  }, "Promo, terlaris, dan barang baru otomatis dari etalase.")), React.createElement("span", {
-    className: "text-[9px] font-black text-amber-600 bg-amber-50 border border-amber-100 px-2 py-1 rounded-full"
-  }, dynamicPromoHighlights.length, " kabar")), React.createElement("div", {
-    className: "relative overflow-hidden pb-3"
-  }, React.createElement("div", {
-    className: "flex gap-2 px-4 hana-banner-marquee"
-  }, [...(dynamicPromoHighlights || []), ...(dynamicPromoHighlights || [])].map((item, idx) => React.createElement("button", {
-    key: `${item.type}-${item.product.id}-${idx}`,
-    type: "button",
-    onClick: () => setSelectedProductDetail(item.product),
-    className: "relative w-[calc((min(100vw,430px)-56px)/2)] flex-shrink-0 h-24 overflow-visible text-left active:scale-[0.98] transition-all",
-    style: {
-      transform: `rotate(${idx % 2 === 0 ? '-0.6deg' : '0.6deg'})`
-    }
-  }, React.createElement("div", {
-    className: "absolute top-0 left-1/2 -translate-x-1/2 w-14 h-3.5 z-30 pointer-events-none",
-    style: {
-      background: 'linear-gradient(90deg, rgba(212,175,55,0.52), rgba(255,215,0,0.82), rgba(212,175,55,0.52))',
-      transform: `translateX(-50%) rotate(${idx % 2 === 0 ? '2deg' : '-2deg'})`,
-      boxShadow: '0 1px 3px rgba(0,0,0,0.16)',
-      borderLeft: '1px dashed rgba(255,255,255,0.50)',
-      borderRight: '1px dashed rgba(255,255,255,0.50)'
-    }
-  }), React.createElement("div", {
-    className: "relative w-full overflow-hidden bg-[#FFFDF6]",
-    style: {
-      height: 'calc(100% - 8px)',
-      marginTop: '8px',
-      border: '1px solid #eee4c8',
-      borderRadius: '4px',
-      boxShadow: '0 3px 10px rgba(45,18,66,0.10), 0 1px 3px rgba(45,18,66,0.08)'
-    }
-  }, React.createElement("img", {
-    src: item.product.image,
-    alt: item.title,
-    className: "absolute inset-0 w-full h-full object-cover",
-    onError: e => {
-      e.currentTarget.src = getPlaceholderImage(item.product.name, item.product.category);
-    }
-  }), React.createElement("div", {
-    className: "absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-black/45 via-black/12 to-transparent"
-  }), React.createElement("div", {
-    className: "absolute left-0 right-0 bottom-0 bg-black/68 px-2.5 py-1.5"
-  }, React.createElement("span", {
-    className: `inline-block text-[7px] font-black leading-none mb-0.5 px-1.5 py-0.5 rounded-full border shadow-sm ${item.badgeBg} ${item.tone}`
-  }, item.badge), React.createElement("h5", {
-    className: "font-black text-[#FFD700] text-[9.5px] leading-tight line-clamp-1 drop-shadow"
-  }, item.title), React.createElement("p", {
-    className: "text-[7.4px] text-white font-semibold leading-tight line-clamp-2 mt-0.5 drop-shadow"
-  }, item.desc)))))))), currentTab === 'Home' && React.createElement("div", {
+  }, "— ", filteredProducts.length, " ", lang === 'id' ? 'barang tersedia di warung' : 'items available in store', " —"))), currentTab === 'Home' && React.createElement("div", {
     className: "bg-[#2d1242] text-white mt-6 text-center flex-shrink-0 animate-fade-in relative z-10"
   }, React.createElement("div", {
     className: "px-4 pt-4 pb-24 space-y-2"
@@ -7348,6 +7359,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19bdb5bde7f8950',t:'MTc4MzgxNTM2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19c0b417b4af91c',t:'MTc4MzgxNzMyMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

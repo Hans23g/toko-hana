@@ -1354,6 +1354,24 @@ const defaultSponsorBanners = [{
   link: '',
   body: 'Info Warga adalah ruang kabar sekitar: pengumuman RT/RW, kegiatan lingkungan, jadwal iuran, kabar sosial, atau informasi yang bermanfaat bagi tetangga. Toko Hana ingin menjadi warung yang menyapa, bukan hanya tempat transaksi.',
   showBanner: false
+}, {
+  id: 9005,
+  title: 'Toko Hana — Warungnya Rakyat',
+  category: 'Edukasi',
+  desc: 'Intisari Toko Hana: warung digital yang bukan hanya tempat belanja, tapi ruang warga untuk belajar, berbagi, dan saling menyapa.',
+  image: BRAND_LOGO_DATA_URI,
+  link: '',
+  body: `Toko Hana lahir dari rasa warung dekat rumah: sederhana, akrab, dan mengerti kebutuhan harian warga. Di sini orang bisa membeli beras, minyak, kopi, jajanan, obat warung, sampai layanan digital tanpa merasa sedang masuk ke sistem yang rumit.
+
+Namun Toko Hana bukan hanya etalase produk. Ia adalah ruang kecil tempat belanja bertemu cerita. Ada Jelajah untuk edukasi, kabar warga, mitra lokal, dan informasi yang bisa dibaca bahkan ketika pengunjung sedang tidak ingin belanja.
+
+Warna ungu dan emas, motif batik, serta Hana π menjadi bahasa visual bahwa teknologi boleh maju, tapi akar tetap membumi: Indonesia, Bogor, warung rakyat, dan hubungan antar manusia.
+
+Pembayaran sah tetap diselesaikan dalam Rupiah. Edukasi komunitas Pi hadir sebagai ruang belajar yang aman, bukan janji keuntungan dan bukan alat pembayaran resmi. Toko Hana memilih tumbuh pelan, legal, dan dipercaya.
+
+Intinya: Toko Hana adalah warung digital rakyat — tempat kebutuhan, informasi, edukasi, mitra, dan kepedulian lingkungan bertemu dalam satu genggaman.`,
+  showBanner: true,
+  style: 'blogazine'
 }];
 const defaultCategories = [{
   name: 'Semua',
@@ -1922,6 +1940,7 @@ function App() {
           const normalized = parsed.map(item => ({
             ...item,
             category: guessCategory(item),
+            style: item.style || 'standard',
             showBanner: item.showBanner !== false
           }));
           const titles = new Set(normalized.map(item => (item.title || '').toLowerCase()));
@@ -1940,6 +1959,7 @@ function App() {
   const [sponsorForm, setSponsorForm] = useState({
     title: '',
     category: 'Mitra',
+    style: 'standard',
     desc: '',
     image: '',
     link: '',
@@ -4082,6 +4102,7 @@ function App() {
     const payload = {
       ...sponsorForm,
       category: sponsorForm.category || 'Mitra',
+      style: sponsorForm.style || 'standard',
       image: sponsorForm.image || BRAND_LOGO_DATA_URI,
       showBanner: sponsorForm.showBanner !== false
     };
@@ -4102,6 +4123,7 @@ function App() {
     setSponsorForm({
       title: '',
       category: 'Mitra',
+      style: 'standard',
       desc: '',
       image: '',
       link: '',
@@ -4115,6 +4137,7 @@ function App() {
     setSponsorForm({
       title: item.title || '',
       category: item.category || 'Mitra',
+      style: item.style || 'standard',
       desc: item.desc || '',
       image: item.image || '',
       link: item.link || '',
@@ -5033,7 +5056,9 @@ Buka Toko Hana dan cek menu Jelajah.`;
     className: "font-black text-[#2d1242] text-[11px] truncate"
   }, post.title || 'Postingan Jelajah'), React.createElement("span", {
     className: "text-[7px] font-black text-[#703d92] bg-purple-50 px-1.5 py-0.5 rounded-full flex-shrink-0"
-  }, post.category || 'Mitra'), post.showBanner !== false && React.createElement("span", {
+  }, post.category || 'Mitra'), post.style === 'blogazine' && React.createElement("span", {
+    className: "text-[7px] font-black text-white bg-[#703d92] px-1.5 py-0.5 rounded-full flex-shrink-0"
+  }, "Blogazine"), post.showBanner !== false && React.createElement("span", {
     className: "text-[7px] font-black text-[#2d1242] bg-[#FFD700] px-1.5 py-0.5 rounded-full flex-shrink-0"
   }, "Banner")), React.createElement("p", {
     className: "text-[10px] text-gray-500 font-semibold leading-snug mt-0.5 line-clamp-2"
@@ -5055,9 +5080,9 @@ Buka Toko Hana dan cek menu Jelajah.`;
     return React.createElement("div", {
       className: "animate-fade-in p-4 pb-24"
     }, React.createElement("article", {
-      className: "overflow-hidden rounded-3xl bg-white border border-amber-100 shadow-sm"
+      className: `overflow-hidden rounded-3xl bg-white border shadow-sm ${sponsor.style === 'blogazine' ? 'border-[#FFD700]/50' : 'border-amber-100'}`
     }, React.createElement("div", {
-      className: "relative h-40 bg-gradient-to-br from-[#703d92] via-[#2d1242] to-[#FFD700] flex items-center justify-center"
+      className: `relative ${sponsor.style === 'blogazine' ? 'h-52' : 'h-40'} bg-gradient-to-br from-[#703d92] via-[#2d1242] to-[#FFD700] flex items-center justify-center`
     }, React.createElement("div", {
       className: "absolute inset-0 opacity-20",
       style: {
@@ -5076,9 +5101,11 @@ Buka Toko Hana dan cek menu Jelajah.`;
     }, React.createElement("span", {
       className: "inline-block text-[8px] font-black text-[#2d1242] bg-[#FFD700] px-2 py-1 rounded-full mb-2 uppercase tracking-wider"
     }, sponsor.category || 'Mitra', " Jelajah"), React.createElement("h2", {
-      className: "font-black text-[#703d92] text-xl leading-tight"
-    }, sponsor.title || 'Edukasi Mitra Pi'), React.createElement("p", {
-      className: "mt-2 text-[12px] text-gray-500 font-semibold leading-relaxed"
+      className: `font-black leading-tight ${sponsor.style === 'blogazine' ? 'text-[#2d1242] text-3xl tracking-tight' : 'text-[#703d92] text-xl'}`
+    }, sponsor.title || 'Edukasi Mitra Pi'), sponsor.style === 'blogazine' && React.createElement("div", {
+      className: "mt-2 text-[9px] font-black text-[#D4AF37] uppercase tracking-[0.35em]"
+    }, "Blogazine Toko Hana"), React.createElement("p", {
+      className: `mt-2 font-semibold leading-relaxed ${sponsor.style === 'blogazine' ? 'text-[13px] text-gray-600 italic' : 'text-[12px] text-gray-500'}`
     }, sponsor.desc || 'Ruang belajar komunitas yang aman, legal, dan membumi bersama Toko Hana.'), React.createElement("button", {
       type: "button",
       onClick: () => shareJelajahPost(sponsor),
@@ -5088,7 +5115,22 @@ Buka Toko Hana dan cek menu Jelajah.`;
       size: 12
     })), React.createElement("div", {
       className: "my-4 h-px bg-gradient-to-r from-transparent via-amber-200 to-transparent"
+    }), sponsor.style === 'blogazine' ? React.createElement("div", {
+      className: "space-y-4"
+    }, (sponsor.body || defaultSponsorBanners[0].body).split(/\n\s*\n/).map((para, idx) => React.createElement("p", {
+      key: idx,
+      className: `text-gray-700 leading-relaxed ${idx === 0 ? 'text-[14px]' : 'text-[12.5px]'}`
+    }, idx === 0 && para ? React.createElement("span", {
+      className: "float-left text-5xl leading-[0.82] font-black text-[#703d92] pr-2 pt-1"
+    }, para.charAt(0)) : null, idx === 0 ? para.slice(1) : para)), React.createElement("blockquote", {
+      className: "relative rounded-3xl bg-gradient-to-br from-[#2d1242] to-[#703d92] text-white p-4 overflow-hidden"
+    }, React.createElement("div", {
+      className: "absolute -right-6 -top-6 w-20 h-20 bg-[#FFD700]/20 rounded-full blur-xl"
     }), React.createElement("p", {
+      className: "relative text-lg font-black leading-snug"
+    }, "“Warung hidup bukan hanya karena transaksi, tapi karena warga merasa disapa.”"), React.createElement("p", {
+      className: "relative mt-2 text-[10px] text-amber-200 font-bold"
+    }, "— Toko Hana, Warungnya Rakyat"))) : React.createElement("p", {
       className: "text-[12px] text-gray-700 leading-relaxed whitespace-pre-line"
     }, sponsor.body || defaultSponsorBanners[0].body), sponsor.link && React.createElement("a", {
       href: sponsor.link,
@@ -6318,7 +6360,18 @@ Buka Toko Hana dan cek menu Jelajah.`;
   }, jelajahCategories.map(cat => React.createElement("option", {
     key: cat.key,
     value: cat.key
-  }, cat.title))), React.createElement("input", {
+  }, cat.title))), React.createElement("select", {
+    value: sponsorForm.style || 'standard',
+    onChange: e => setSponsorForm({
+      ...sponsorForm,
+      style: e.target.value
+    }),
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white focus:outline-none focus:border-[#703d92] font-bold text-gray-600"
+  }, React.createElement("option", {
+    value: "standard"
+  }, "Style Standar"), React.createElement("option", {
+    value: "blogazine"
+  }, "Style Blogazine")), React.createElement("input", {
     value: sponsorForm.desc,
     onChange: e => setSponsorForm({
       ...sponsorForm,
@@ -6372,6 +6425,7 @@ Buka Toko Hana dan cek menu Jelajah.`;
       setSponsorForm({
         title: '',
         category: 'Mitra',
+        style: 'standard',
         desc: '',
         image: '',
         link: '',
@@ -6397,7 +6451,9 @@ Buka Toko Hana dan cek menu Jelajah.`;
     className: "font-bold text-gray-800 text-[10px] truncate"
   }, item.title), React.createElement("span", {
     className: "text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 bg-purple-50 text-[#703d92]"
-  }, item.category || 'Mitra'), React.createElement("span", {
+  }, item.category || 'Mitra'), item.style === 'blogazine' && React.createElement("span", {
+    className: "text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 bg-[#703d92] text-white"
+  }, "Blogazine"), React.createElement("span", {
     className: `text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 ${item.showBanner !== false ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-400'}`
   }, item.showBanner !== false ? 'Banner' : 'List')), React.createElement("p", {
     className: "text-[8.5px] text-gray-400 truncate"
@@ -7557,6 +7613,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a0aa27cf1ca17f',t:'MTc4Mzg2NTc3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

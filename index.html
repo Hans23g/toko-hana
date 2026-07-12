@@ -4417,7 +4417,7 @@ function App() {
   })))))))), React.createElement("main", {
     ref: mainScrollRef,
     onScroll: handleMainScroll,
-    className: `flex-1 min-h-0 overflow-y-auto flex flex-col scroll-smooth transition-colors duration-300 ${darkMode ? 'dark-theme bg-[#11091d]' : 'bg-white'}`
+    className: `flex-1 min-h-0 overflow-y-auto overflow-x-hidden flex flex-col scroll-smooth transition-colors duration-300 ${darkMode ? 'dark-theme bg-[#11091d]' : 'bg-white'}`
   }, currentTab === 'Home' && React.createElement("div", {
     className: "relative w-full flex-shrink-0 overflow-hidden shadow-[inset_0_10px_14px_-8px_rgba(0,0,0,0.5)]"
   }, React.createElement("div", {
@@ -4767,7 +4767,7 @@ function App() {
   }, React.createElement("span", {
     className: "text-[9px] text-gray-400 font-semibold"
   }, "— ", filteredProducts.length, " ", lang === 'id' ? 'barang tersedia di warung' : 'items available in store', " —"))), currentTab === 'Home' && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
-    className: "-mx-4 mb-5 overflow-hidden border-y border-amber-100 bg-white shadow-sm"
+    className: "mx-4 mt-4 mb-5 overflow-hidden rounded-2xl border border-amber-100 bg-white shadow-sm"
   }, React.createElement("div", {
     className: "px-4 pt-3 pb-2 flex items-center justify-between"
   }, React.createElement("div", null, React.createElement("h4", {
@@ -4784,7 +4784,7 @@ function App() {
     key: `${item.type}-${item.product.id}-${idx}`,
     type: "button",
     onClick: () => setSelectedProductDetail(item.product),
-    className: "relative w-[calc((min(100vw,430px)-40px)/2)] flex-shrink-0 h-24 overflow-visible text-left active:scale-[0.98] transition-all",
+    className: "relative w-[calc((min(100vw,430px)-56px)/2)] flex-shrink-0 h-24 overflow-visible text-left active:scale-[0.98] transition-all",
     style: {
       transform: `rotate(${idx % 2 === 0 ? '-0.6deg' : '0.6deg'})`
     }
@@ -4939,7 +4939,7 @@ function App() {
       setCurrentTab('Home');
       setSelectedProductDetail(item.product);
     },
-    className: "relative w-[calc((min(100vw,430px)-40px)/2)] flex-shrink-0 h-24 overflow-visible text-left active:scale-[0.98] transition-all",
+    className: "relative w-[calc((min(100vw,430px)-56px)/2)] flex-shrink-0 h-24 overflow-visible text-left active:scale-[0.98] transition-all",
     style: {
       transform: `rotate(${idx % 2 === 0 ? '-0.6deg' : '0.6deg'})`
     }
@@ -7348,6 +7348,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19bbae979d3ce29',t:'MTc4MzgxNDAzMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19bdb5bde7f8950',t:'MTc4MzgxNTM2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

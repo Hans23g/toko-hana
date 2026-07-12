@@ -2278,21 +2278,26 @@ function App() {
       height: size,
       viewBox: "0 0 24 24",
       fill: "none"
-    }, React.createElement("path", {
-      d: "M12.6 3 L20 3 C20.55 3 21 3.45 21 4 L21 11.4 C21 11.93 20.79 12.44 20.41 12.81 L12.31 20.91 C11.53 21.69 10.27 21.69 9.49 20.91 L3.09 14.51 C2.31 13.73 2.31 12.47 3.09 11.69 L11.19 3.59 C11.56 3.21 12.07 3 12.6 3 Z",
+    }, React.createElement("circle", {
+      cx: "12",
+      cy: "12",
+      r: "8.5",
       stroke: c,
-      strokeWidth: sw,
-      strokeLinejoin: "round"
+      strokeWidth: sw
     }), React.createElement("circle", {
-      cx: "17",
-      cy: "7",
-      r: "1.6",
-      stroke: c,
-      strokeWidth: sw * 0.8
+      cx: "12",
+      cy: "12",
+      r: "1.5",
+      fill: c
     }), React.createElement("path", {
-      d: "M8 13.5 L11.5 17 M11 12 L13 14",
+      d: "M15.8 7.4 L13.6 13.6 L7.4 15.8 L9.6 9.6 Z",
       stroke: c,
-      strokeWidth: sw * 0.8,
+      strokeWidth: sw * 0.85,
+      strokeLinejoin: "round"
+    }), React.createElement("path", {
+      d: "M12 1.8 V3.6 M12 20.4 V22.2 M1.8 12 H3.6 M20.4 12 H22.2",
+      stroke: c,
+      strokeWidth: sw * 0.65,
       strokeLinecap: "round"
     }));
     if (type === 'cart') return React.createElement("svg", {
@@ -4931,7 +4936,56 @@ function App() {
     className: "font-black text-[#703d92] text-sm"
   }, "Edukasi Toko Hana"), React.createElement("p", {
     className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1"
-  }, "Mulai dari cara mendaftar, menjadi pelanggan, mengumpulkan HanaPoin, sampai memahami pembayaran yang tetap diselesaikan dalam Rupiah."))), currentTab === 'Cart' && React.createElement("div", {
+  }, "Mulai dari cara mendaftar, menjadi pelanggan, mengumpulkan HanaPoin, sampai memahami pembayaran yang tetap diselesaikan dalam Rupiah."))), currentTab === 'SponsorDetail' && (() => {
+    const sponsor = selectedSponsor || sponsorBanners && sponsorBanners[0] || defaultSponsorBanners[0];
+    return React.createElement("div", {
+      className: "animate-fade-in p-4 pb-24"
+    }, React.createElement("button", {
+      type: "button",
+      onClick: () => setCurrentTab('Promo'),
+      className: "mb-3 inline-flex items-center gap-1.5 bg-white border border-purple-100 text-[#703d92] font-black text-[10px] px-3 py-2 rounded-xl shadow-sm active:scale-95"
+    }, React.createElement(LucideIcon, {
+      name: "ChevronLeft",
+      size: 13
+    }), " Kembali ke Jelajah"), React.createElement("article", {
+      className: "overflow-hidden rounded-3xl bg-white border border-amber-100 shadow-sm"
+    }, React.createElement("div", {
+      className: "relative h-40 bg-gradient-to-br from-[#703d92] via-[#2d1242] to-[#FFD700] flex items-center justify-center"
+    }, React.createElement("div", {
+      className: "absolute inset-0 opacity-20",
+      style: {
+        backgroundImage: batikPatternUrl ? `url(${batikPatternUrl})` : 'none',
+        backgroundSize: '220px auto'
+      }
+    }), React.createElement("img", {
+      src: sponsor.image || BRAND_LOGO_DATA_URI,
+      alt: sponsor.title || 'Ruang Mitra',
+      className: "relative w-24 h-24 rounded-3xl object-cover border-4 border-white/80 shadow-xl bg-white",
+      onError: e => {
+        e.currentTarget.src = BRAND_LOGO_DATA_URI;
+      }
+    })), React.createElement("div", {
+      className: "p-4"
+    }, React.createElement("span", {
+      className: "inline-block text-[8px] font-black text-[#2d1242] bg-[#FFD700] px-2 py-1 rounded-full mb-2 uppercase tracking-wider"
+    }, "Ruang Mitra Jelajah"), React.createElement("h2", {
+      className: "font-black text-[#703d92] text-xl leading-tight"
+    }, sponsor.title || 'Edukasi Mitra Pi'), React.createElement("p", {
+      className: "mt-2 text-[12px] text-gray-500 font-semibold leading-relaxed"
+    }, sponsor.desc || 'Ruang belajar komunitas yang aman, legal, dan membumi bersama Toko Hana.'), React.createElement("div", {
+      className: "my-4 h-px bg-gradient-to-r from-transparent via-amber-200 to-transparent"
+    }), React.createElement("p", {
+      className: "text-[12px] text-gray-700 leading-relaxed whitespace-pre-line"
+    }, sponsor.body || defaultSponsorBanners[0].body), sponsor.link && React.createElement("a", {
+      href: sponsor.link,
+      target: "_blank",
+      rel: "noreferrer",
+      className: "mt-4 inline-flex items-center gap-1.5 bg-[#703d92] text-white font-black text-[10px] px-4 py-2.5 rounded-xl shadow-sm"
+    }, "Buka Tautan ", React.createElement(LucideIcon, {
+      name: "ExternalLink",
+      size: 12
+    })))));
+  })(), currentTab === 'Cart' && React.createElement("div", {
     className: "animate-fade-in p-4 pb-24"
   }, cart.length === 0 && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
     className: "-mx-4 mb-4 overflow-hidden bg-white shadow-sm"

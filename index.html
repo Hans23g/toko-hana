@@ -1324,7 +1324,8 @@ const defaultSponsorBanners = [{
   desc: 'Ruang belajar komunitas: mengenal Pi secara aman, legal, dan tetap mengutamakan Rupiah.',
   image: BRAND_LOGO_DATA_URI,
   link: '',
-  body: 'Toko Hana mendukung edukasi komunitas digital dengan tetap menjaga prinsip hukum: pembayaran sah diselesaikan dalam Rupiah. Ruang mitra ini menjadi tempat informasi, edukasi, dan kolaborasi yang bermanfaat bagi sahabat warung.'
+  body: 'Toko Hana mendukung edukasi komunitas digital dengan tetap menjaga prinsip hukum: pembayaran sah diselesaikan dalam Rupiah. Ruang mitra ini menjadi tempat informasi, edukasi, dan kolaborasi yang bermanfaat bagi sahabat warung.',
+  showBanner: true
 }];
 const defaultCategories = [{
   name: 'Semua',
@@ -1902,11 +1903,13 @@ function App() {
     desc: '',
     image: '',
     link: '',
-    body: ''
+    body: '',
+    showBanner: true
   });
   const [editingSponsor, setEditingSponsor] = useState(null);
   const [activeSponsorIndex, setActiveSponsorIndex] = useState(0);
   const [selectedSponsor, setSelectedSponsor] = useState(null);
+  const featuredSponsorBanners = useMemo(() => (sponsorBanners || []).filter(item => item && item.showBanner !== false), [sponsorBanners]);
   const [cart, setCart] = useState(() => {
     try {
       const local = safeStorage.getItem('toko_hana_cart');
@@ -1973,12 +1976,12 @@ function App() {
     return () => clearInterval(timer);
   }, [banners]);
   useEffect(() => {
-    if (!sponsorBanners || sponsorBanners.length <= 1) return;
+    if (!featuredSponsorBanners || featuredSponsorBanners.length <= 1) return;
     const timer = setInterval(() => {
-      setActiveSponsorIndex(prev => (prev + 1) % sponsorBanners.length);
+      setActiveSponsorIndex(prev => (prev + 1) % featuredSponsorBanners.length);
     }, 60000);
     return () => clearInterval(timer);
-  }, [sponsorBanners]);
+  }, [featuredSponsorBanners]);
   const [loginPassword, setLoginPassword] = useState('');
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -4015,7 +4018,8 @@ function App() {
     if (!sponsorForm.title) return alert('Judul Mitra wajib diisi');
     const payload = {
       ...sponsorForm,
-      image: sponsorForm.image || BRAND_LOGO_DATA_URI
+      image: sponsorForm.image || BRAND_LOGO_DATA_URI,
+      showBanner: sponsorForm.showBanner !== false
     };
     if (editingSponsor) {
       saveSponsorList(sponsorBanners.map(s => s.id === editingSponsor.id ? {
@@ -4036,7 +4040,8 @@ function App() {
       desc: '',
       image: '',
       link: '',
-      body: ''
+      body: '',
+      showBanner: true
     });
     setEditingSponsor(null);
   };
@@ -4047,7 +4052,8 @@ function App() {
       desc: item.desc || '',
       image: item.image || '',
       link: item.link || '',
-      body: item.body || ''
+      body: item.body || '',
+      showBanner: item.showBanner !== false
     });
   };
   const handleDeleteSponsor = id => {
@@ -4868,8 +4874,8 @@ function App() {
     className: "-mx-4"
   }, React.createElement(GununganDivider, {
     title: lang === 'id' ? 'Jelajah Toko Hana' : 'Explore Toko Hana'
-  })), sponsorBanners && sponsorBanners.length > 0 && (() => {
-    const sponsor = sponsorBanners[activeSponsorIndex % sponsorBanners.length];
+  })), featuredSponsorBanners && featuredSponsorBanners.length > 0 && (() => {
+    const sponsor = featuredSponsorBanners[activeSponsorIndex % featuredSponsorBanners.length];
     return React.createElement("button", {
       type: "button",
       onClick: () => {
@@ -4930,7 +4936,42 @@ function App() {
     className: "font-black text-[#703d92] text-[11px]"
   }, item.title), React.createElement("p", {
     className: "text-[9px] text-gray-500 font-semibold leading-snug mt-0.5"
-  }, item.desc))))), React.createElement("div", {
+  }, item.desc)))), React.createElement("div", {
+    className: "mt-4 space-y-2"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between"
+  }, React.createElement("h5", {
+    className: "font-black text-[#703d92] text-[11px] uppercase tracking-wider"
+  }, "Postingan Jelajah"), React.createElement("span", {
+    className: "text-[9px] font-bold text-gray-400"
+  }, (sponsorBanners || []).length, " tulisan")), (sponsorBanners || []).map(post => React.createElement("button", {
+    key: post.id,
+    type: "button",
+    onClick: () => {
+      setSelectedSponsor(post);
+      setCurrentTab('SponsorDetail');
+    },
+    className: "w-full text-left rounded-2xl border border-purple-50 bg-gradient-to-br from-white to-purple-50/40 p-3 active:scale-[0.99] transition-all"
+  }, React.createElement("div", {
+    className: "flex gap-2.5"
+  }, React.createElement("img", {
+    src: post.image || BRAND_LOGO_DATA_URI,
+    alt: post.title,
+    className: "w-9 h-9 rounded-full object-cover border border-amber-100 bg-white flex-shrink-0",
+    onError: e => {
+      e.currentTarget.src = BRAND_LOGO_DATA_URI;
+    }
+  }), React.createElement("div", {
+    className: "min-w-0 flex-1"
+  }, React.createElement("div", {
+    className: "flex items-center gap-1.5 min-w-0"
+  }, React.createElement("h6", {
+    className: "font-black text-[#2d1242] text-[11px] truncate"
+  }, post.title || 'Postingan Jelajah'), post.showBanner !== false && React.createElement("span", {
+    className: "text-[7px] font-black text-[#2d1242] bg-[#FFD700] px-1.5 py-0.5 rounded-full flex-shrink-0"
+  }, "Banner")), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold leading-snug mt-0.5 line-clamp-2"
+  }, post.desc || post.body || 'Cerita dan info dari Toko Hana.'))))))), React.createElement("div", {
     className: "bg-gradient-to-r from-purple-50 to-amber-50 border border-purple-100 rounded-2xl p-3"
   }, React.createElement("h4", {
     className: "font-black text-[#703d92] text-sm"
@@ -4940,14 +4981,7 @@ function App() {
     const sponsor = selectedSponsor || sponsorBanners && sponsorBanners[0] || defaultSponsorBanners[0];
     return React.createElement("div", {
       className: "animate-fade-in p-4 pb-24"
-    }, React.createElement("button", {
-      type: "button",
-      onClick: () => setCurrentTab('Promo'),
-      className: "mb-3 inline-flex items-center gap-1.5 bg-white border border-purple-100 text-[#703d92] font-black text-[10px] px-3 py-2 rounded-xl shadow-sm active:scale-95"
-    }, React.createElement(LucideIcon, {
-      name: "ChevronLeft",
-      size: 13
-    }), " Kembali ke Jelajah"), React.createElement("article", {
+    }, React.createElement("article", {
       className: "overflow-hidden rounded-3xl bg-white border border-amber-100 shadow-sm"
     }, React.createElement("div", {
       className: "relative h-40 bg-gradient-to-br from-[#703d92] via-[#2d1242] to-[#FFD700] flex items-center justify-center"
@@ -6226,7 +6260,17 @@ function App() {
     }),
     placeholder: "Cerita lengkap / informasi iklan",
     className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white focus:outline-none focus:border-[#703d92] min-h-[90px]"
-  }), React.createElement("div", {
+  }), React.createElement("label", {
+    className: "flex items-center gap-2 bg-white border border-amber-100 rounded-xl p-2.5 font-bold text-[10px] text-gray-600"
+  }, React.createElement("input", {
+    type: "checkbox",
+    checked: sponsorForm.showBanner !== false,
+    onChange: e => setSponsorForm({
+      ...sponsorForm,
+      showBanner: e.target.checked
+    }),
+    className: "accent-[#703d92]"
+  }), React.createElement("span", null, "Tampilkan sebagai banner sorotan Jelajah")), React.createElement("div", {
     className: "flex gap-2"
   }, React.createElement("button", {
     type: "submit",
@@ -6240,7 +6284,8 @@ function App() {
         desc: '',
         image: '',
         link: '',
-        body: ''
+        body: '',
+        showBanner: true
       });
     },
     className: "bg-gray-200 text-gray-700 font-bold text-[10px] px-3 py-2.5 rounded-xl"
@@ -6255,9 +6300,13 @@ function App() {
     className: "w-10 h-10 rounded-lg object-cover border"
   }), React.createElement("div", {
     className: "flex-1 min-w-0"
+  }, React.createElement("div", {
+    className: "flex items-center gap-1 min-w-0"
   }, React.createElement("h6", {
     className: "font-bold text-gray-800 text-[10px] truncate"
-  }, item.title), React.createElement("p", {
+  }, item.title), React.createElement("span", {
+    className: `text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 ${item.showBanner !== false ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-400'}`
+  }, item.showBanner !== false ? 'Banner' : 'List')), React.createElement("p", {
     className: "text-[8.5px] text-gray-400 truncate"
   }, item.desc)), React.createElement("button", {
     type: "button",
@@ -7415,5 +7464,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19ee019786c6141',t:'MTc4Mzg0NzAxMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

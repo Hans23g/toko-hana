@@ -529,6 +529,34 @@ const getSupabaseClient = () => {
   }
   return null;
 };
+const mapJelajahDbToApp = row => ({
+  id: row.id,
+  title: row.title || '',
+  category: row.category || 'Edukasi',
+  style: row.style || 'standard',
+  desc: row.description || '',
+  body: row.body || '',
+  image: row.image_url || BRAND_LOGO_DATA_URI,
+  link: row.link_url || '',
+  eventDate: row.event_date ? String(row.event_date).slice(0, 16) : '',
+  showBanner: row.show_banner !== false,
+  isPublished: row.is_published !== false,
+  sortOrder: row.sort_order || 0
+});
+const mapJelajahAppToDb = post => ({
+  id: post.id,
+  title: post.title || 'Postingan Jelajah',
+  category: post.category || 'Mitra',
+  style: post.style || 'standard',
+  description: post.desc || '',
+  body: post.body || '',
+  image_url: post.image && post.image !== BRAND_LOGO_DATA_URI ? post.image : null,
+  link_url: post.link || null,
+  event_date: post.eventDate || null,
+  show_banner: post.showBanner !== false,
+  is_published: post.isPublished !== false,
+  sort_order: post.sortOrder || post.id || 0
+});
 const supabaseService = {
   getProducts: async () => {
     const client = getSupabaseClient();
@@ -910,6 +938,75 @@ const supabaseService = {
       const {
         error
       } = await client.from('categories').delete().eq('name', name);
+      return {
+        error
+      };
+    } catch (e) {
+      return {
+        error: e
+      };
+    }
+  },
+  getJelajahPosts: async () => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('jelajah_posts').select('*').eq('is_published', true).order('sort_order', {
+        ascending: true
+      }).order('id', {
+        ascending: true
+      });
+      return {
+        data: data ? data.map(mapJelajahDbToApp) : data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
+  upsertJelajahPost: async post => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const row = mapJelajahAppToDb(post);
+      const {
+        data,
+        error
+      } = await client.from('jelajah_posts').upsert([row], {
+        onConflict: 'id'
+      }).select();
+      return {
+        data: data ? data.map(mapJelajahDbToApp) : data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
+  deleteJelajahPost: async id => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        error
+      } = await client.from('jelajah_posts').delete().eq('id', id);
       return {
         error
       };
@@ -2136,6 +2233,23 @@ function App() {
   useEffect(() => {
     const timer = setInterval(() => setCountdownNow(new Date()), 1000);
     return () => clearInterval(timer);
+  }, []);
+  useEffect(() => {
+    let mounted = true;
+    supabaseService.getJelajahPosts().then(({
+      data,
+      error
+    }) => {
+      if (!mounted) return;
+      if (!error && Array.isArray(data) && data.length > 0) {
+        saveSponsorList(data);
+      } else if (error) {
+        console.warn('Jelajah Supabase fallback local:', error.message || error);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
   }, []);
   const [loginPassword, setLoginPassword] = useState('');
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -4168,7 +4282,7 @@ function App() {
     setSponsorBanners(safeList);
     safeStorage.setItem('toko_hana_sponsor_banners', JSON.stringify(safeList));
   };
-  const handleSaveSponsor = e => {
+  const handleSaveSponsor = async e => {
     e.preventDefault();
     if (!sponsorForm.title) return alert('Judul Mitra wajib diisi');
     const payload = {
@@ -4179,19 +4293,31 @@ function App() {
       image: sponsorForm.image || BRAND_LOGO_DATA_URI,
       showBanner: sponsorForm.showBanner !== false
     };
+    const savedPost = editingSponsor ? {
+      ...payload,
+      id: editingSponsor.id,
+      sortOrder: editingSponsor.sortOrder || editingSponsor.id
+    } : {
+      ...payload,
+      id: sponsorBanners.length ? Math.max(...sponsorBanners.map(s => s.id || 0)) + 1 : 1,
+      sortOrder: sponsorBanners.length ? Math.max(...sponsorBanners.map(s => s.sortOrder || s.id || 0)) + 10 : 10
+    };
     if (editingSponsor) {
-      saveSponsorList(sponsorBanners.map(s => s.id === editingSponsor.id ? {
-        ...payload,
-        id: editingSponsor.id
-      } : s));
-      showToast('🤝 Banner mitra diperbarui.');
+      saveSponsorList(sponsorBanners.map(s => s.id === editingSponsor.id ? savedPost : s));
     } else {
-      const id = sponsorBanners.length ? Math.max(...sponsorBanners.map(s => s.id || 0)) + 1 : 1;
-      saveSponsorList([...sponsorBanners, {
-        ...payload,
-        id
-      }]);
-      showToast('🤝 Banner mitra ditambahkan.');
+      saveSponsorList([...sponsorBanners, savedPost]);
+    }
+    const {
+      data,
+      error
+    } = await supabaseService.upsertJelajahPost(savedPost);
+    if (!error && data && data[0]) {
+      const dbPost = data[0];
+      saveSponsorList(editingSponsor ? sponsorBanners.map(s => s.id === editingSponsor.id ? dbPost : s) : [...sponsorBanners, dbPost]);
+      showToast(editingSponsor ? '🧭 Postingan Jelajah tersimpan ke database.' : '🧭 Postingan Jelajah ditambahkan ke database.');
+    } else {
+      console.warn('Jelajah save fallback local:', error?.message || error);
+      showToast('☕ Postingan tersimpan lokal. Database belum menerima (cek login admin/RLS).');
     }
     setSponsorForm({
       title: '',
@@ -4220,12 +4346,15 @@ function App() {
       showBanner: item.showBanner !== false
     });
   };
-  const handleDeleteSponsor = id => {
+  const handleDeleteSponsor = async id => {
     if (!confirm('Hapus banner mitra ini?')) return;
     const nextList = sponsorBanners.filter(s => s.id !== id);
     saveSponsorList(nextList);
+    const {
+      error
+    } = await supabaseService.deleteJelajahPost(id);
     setSelectedSponsor(null);
-    showToast(nextList.length ? '🗑️ Banner mitra dihapus.' : '☕ Jelajah tidak boleh kosong. Postingan pembuka dipasang lagi.');
+    showToast(error ? '☕ Dihapus lokal. Database belum menerima (cek login admin/RLS).' : nextList.length ? '🗑️ Postingan Jelajah dihapus dari database.' : '☕ Jelajah tidak boleh kosong. Postingan pembuka dipasang lagi.');
   };
   const shareJelajahPost = post => {
     const title = post?.title || 'Postingan Jelajah Toko Hana';
@@ -7777,5 +7906,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a1e8001bfdfd65',t:'MTc4Mzg3ODc5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

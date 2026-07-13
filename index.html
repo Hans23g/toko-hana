@@ -682,6 +682,32 @@ const supabaseService = {
       };
     }
   },
+  getProductPriceTiers: async () => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('product_price_tiers').select('*').order('sort_order', {
+        ascending: true
+      }).order('id', {
+        ascending: true
+      });
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
   signUp: async (email, password, metadata = {}) => {
     const client = getSupabaseClient();
     if (!client) return {
@@ -2353,6 +2379,34 @@ function App() {
   const [selectedProductDetail, setSelectedProductDetail] = useState(null);
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
   useEffect(() => {
+    if (!selectedProductDetail) return;
+    if (Array.isArray(selectedProductDetail.price_tiers) && selectedProductDetail.price_tiers.length > 0) return;
+    let mounted = true;
+    const productId = selectedProductDetail.baseProductId || selectedProductDetail.id;
+    supabaseService.getProductPriceTiers().then(({
+      data,
+      error
+    }) => {
+      if (!mounted || error || !Array.isArray(data)) return;
+      const tiers = data.filter(t => String(t.product_id) === String(productId)).map(t => ({
+        label: t.label,
+        qty: Number(t.qty),
+        unit: t.unit,
+        price: Number(t.price),
+        is_default: t.is_default
+      }));
+      if (tiers.length) {
+        setSelectedProductDetail(prev => prev && String(prev.id) === String(selectedProductDetail.id) ? {
+          ...prev,
+          price_tiers: tiers
+        } : prev);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [selectedProductDetail && selectedProductDetail.id]);
+  useEffect(() => {
     if (!banners || banners.length <= 1) return;
     const timer = setInterval(() => {
       setActiveBannerIndex(prev => (prev + 1) % banners.length);
@@ -2823,6 +2877,21 @@ function App() {
         error
       } = await supabaseService.getProducts();
       if (data && data.length > 0) {
+        const tierResult = await supabaseService.getProductPriceTiers();
+        const tiersByProduct = {};
+        if (!tierResult.error && Array.isArray(tierResult.data)) {
+          tierResult.data.forEach(t => {
+            const pid = t.product_id;
+            if (!tiersByProduct[pid]) tiersByProduct[pid] = [];
+            tiersByProduct[pid].push({
+              label: t.label,
+              qty: Number(t.qty),
+              unit: t.unit,
+              price: Number(t.price),
+              is_default: t.is_default
+            });
+          });
+        }
         const mapped = data.map(item => {
           let catName = 'Sembako';
           if (item.category_id === 2 || item.category_id === 'Minuman') catName = 'Minuman';else if (item.category_id === 3 || item.category_id === 'Snack' || item.category_id === 'Jajanan') catName = 'Jajanan';else if (item.category_id === 4 || item.category_id === 'Digital') catName = 'Digital';else if (item.category_id === 5 || item.category_id === 'Kosmetik') catName = 'Kosmetik';else if (item.category_id === 6 || item.category_id === 'Makanan Instan') catName = 'Makanan Instan';else if (item.category_id === 7 || item.category_id === 'Bumbu Dapur') catName = 'Bumbu Dapur';else if (item.category_id === 8 || item.category_id === 'Rumah Tangga') catName = 'Rumah Tangga';else if (item.category_id === 9 || item.category_id === 'Rokok 18+') catName = 'Rokok 18+';else if (typeof item.category_id === 'string' && item.category_id.trim() !== '') catName = item.category_id;
@@ -2835,7 +2904,14 @@ function App() {
             image: item.image_url,
             desc: item.desc || `${item.name} premium berkualitas dari Toko Hana.`,
             stock: item.stock || 50,
-            sold: item.sold || 0
+            sold: item.sold || 0,
+            base_unit: item.base_unit || 'pcs',
+            sell_unit: item.sell_unit || item.base_unit || 'pcs',
+            purchase_unit: item.purchase_unit || 'pcs',
+            units_per_purchase: item.units_per_purchase || 1,
+            purchase_price: item.purchase_price || null,
+            allow_fraction: item.allow_fraction === true,
+            price_tiers: tiersByProduct[item.id] || []
           };
         });
         const localAdded = JSON.parse(safeStorage.getItem('toko_hana_local_products') || '[]');
@@ -8322,7 +8398,38 @@ Buka Toko Hana dan cek menu Jelajah.`;
     className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[7px] border-l-[7px] border-t-[#d9c98f] border-l-transparent"
   })), React.createElement("span", {
     className: "font-black text-amber-500 text-[9px] bg-amber-50 px-2 py-0.5 rounded border border-amber-200 mt-1 shadow-sm"
-  }, convertRpToPi(selectedProductDetail.price).toFixed(4), " π")))), React.createElement("button", {
+  }, convertRpToPi(selectedProductDetail.price).toFixed(4), " π")))), selectedProductDetail.price_tiers && selectedProductDetail.price_tiers.length > 0 && React.createElement("div", {
+    className: "mt-3 border-t border-dashed border-[#E8D9A0] pt-3"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between mb-2"
+  }, React.createElement("span", {
+    className: "text-[10px] font-black text-[#703d92] uppercase tracking-wider"
+  }, "Pilihan Harga Warung"), React.createElement("span", {
+    className: "text-[9px] font-bold text-gray-400"
+  }, selectedProductDetail.sell_unit || selectedProductDetail.base_unit || 'pcs')), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, selectedProductDetail.price_tiers.map((tier, idx) => React.createElement("button", {
+    key: `${tier.label}-${idx}`,
+    type: "button",
+    onClick: () => {
+      handleAddToCart({
+        ...selectedProductDetail,
+        id: `${selectedProductDetail.id}-tier-${idx}`,
+        baseProductId: selectedProductDetail.id,
+        name: `${selectedProductDetail.name} (${tier.label})`,
+        price: tier.price,
+        tier
+      }, 1);
+      setSelectedProductDetail(null);
+    },
+    className: "text-left rounded-2xl border border-amber-100 bg-white p-2.5 active:scale-[0.99] shadow-sm"
+  }, React.createElement("div", {
+    className: "font-black text-[#2d1242] text-[11px]"
+  }, tier.label), React.createElement("div", {
+    className: "text-[9px] text-gray-400 font-bold"
+  }, tier.qty, " ", tier.unit), React.createElement("div", {
+    className: "mt-1 font-black text-[#703d92] text-[12px]"
+  }, "Rp ", Number(tier.price || 0).toLocaleString('id-ID')))))), React.createElement("button", {
     onClick: () => {
       handleAddToCart(selectedProductDetail);
       setSelectedProductDetail(null);
@@ -8343,5 +8450,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a7a7f919d549f3',t:'MTc4MzkzOTA4Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a87ad74f3ffe8e',t:'MTc4Mzk0NzcyMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

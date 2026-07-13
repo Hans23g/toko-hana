@@ -2885,6 +2885,14 @@ function App() {
           setWarungAddress(map.warung_address);
           safeStorage.setItem('toko_hana_warung_address', map.warung_address);
         }
+        if (map.warung_status_mode) {
+          setWarungStatusMode(map.warung_status_mode);
+          safeStorage.setItem('toko_hana_status_mode', map.warung_status_mode);
+        }
+        if (map.warung_status_note !== undefined) {
+          setWarungStatusNote(map.warung_status_note || '');
+          safeStorage.setItem('toko_hana_status_note', map.warung_status_note || '');
+        }
         if (map.nav_pattern !== undefined) {
           setNavPatternUrl(map.nav_pattern || BRAND_BATIK_DATA_URI);
           if (map.nav_pattern) safeStorage.setItem('toko_hana_nav_pattern', map.nav_pattern);
@@ -4296,7 +4304,7 @@ function App() {
     });
   };
   const persistSettingToDb = (key, value) => {
-    supabaseService.saveSetting(key, value).then(({
+    return supabaseService.saveSetting(key, value).then(({
       error
     }) => {
       if (error) {
@@ -4305,7 +4313,17 @@ function App() {
       } else {
         console.log('Setting "' + key + '" tersimpan ke database.');
       }
+      return {
+        error
+      };
     });
+  };
+  const saveWarungStatusToDb = async (mode = warungStatusMode, note = warungStatusNote) => {
+    safeStorage.setItem('toko_hana_status_mode', mode);
+    safeStorage.setItem('toko_hana_status_note', note || '');
+    const results = await Promise.all([persistSettingToDb('warung_status_mode', mode), persistSettingToDb('warung_status_note', note || '')]);
+    const hasError = results.some(r => r && r.error);
+    showToast(hasError ? '☕ Status tersimpan lokal. Database belum menerima.' : '🏪 Status warung tersimpan ke database.');
   };
   const handleSaveHeaderPattern = e => {
     e.preventDefault();
@@ -7651,17 +7669,13 @@ Buka Toko Hana dan cek menu Jelajah.`;
     onClick: () => {
       setWarungStatusMode('auto');
       setWarungStatusNote('');
-      safeStorage.removeItem('toko_hana_status_mode');
-      safeStorage.removeItem('toko_hana_status_note');
-      showToast('Status warung kembali otomatis.');
+      saveWarungStatusToDb('auto', '');
     },
     className: "bg-gray-100 text-gray-600 font-bold py-2.5 rounded-xl"
   }, "Reset Auto"), React.createElement("button", {
     type: "button",
     onClick: () => {
-      safeStorage.setItem('toko_hana_status_mode', warungStatusMode);
-      safeStorage.setItem('toko_hana_status_note', warungStatusNote);
-      showToast('Status warung tersimpan.');
+      saveWarungStatusToDb(warungStatusMode, warungStatusNote);
     },
     className: "bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
   }, "Simpan Status")))), adminActiveSubMenu === 'branding' && React.createElement("div", {
@@ -8249,6 +8263,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a68a188c2b3d87',t:'MTc4MzkyNzM3Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

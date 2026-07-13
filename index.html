@@ -2436,15 +2436,16 @@ function App() {
   const [selectedProductDetail, setSelectedProductDetail] = useState(null);
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
   const [showWarungCalculator, setShowWarungCalculator] = useState(false);
-  const [warungCalcText, setWarungCalcText] = useState('11000x2.5L\n9000x3.5kg\n+ 5000');
-  const [warungCalcPaid, setWarungCalcPaid] = useState('70000');
+  const [warungCalcText, setWarungCalcText] = useState('');
+  const [warungCalcPaid, setWarungCalcPaid] = useState('');
   const parseWarungCalcLine = line => {
     const raw = String(line || '').trim();
     if (!raw) return null;
     const left = raw.split('=')[0].trim().replace(',', '.');
+    const pct = left.match(/(-?\d+(?:\.\d+)?)\s*%\s*(-?\d+(?:\.\d+)?)/i);
     const mult = left.match(/(-?\d+(?:\.\d+)?)\s*(?:x|\*)\s*(-?\d+(?:\.\d+)?)/i);
     let value = 0;
-    if (mult) value = Number(mult[1]) * Number(mult[2]);else {
+    if (pct) value = Number(pct[1]) * Number(pct[2]) / 100;else if (mult) value = Number(mult[1]) * Number(mult[2]);else {
       const nums = left.match(/-?\d+(?:\.\d+)?/g);
       value = nums ? Number(nums[0]) : 0;
       if (/^\s*-/.test(left)) value = -Math.abs(value);
@@ -8537,12 +8538,12 @@ ${TOKO_HANA_PUBLIC_URL}`;
     value: warungCalcText,
     onChange: e => setWarungCalcText(e.target.value),
     className: "w-full min-h-[130px] border border-purple-100 rounded-2xl p-3 font-mono text-[13px] leading-relaxed bg-white focus:outline-none focus:border-[#703d92]",
-    placeholder: "11000x2.5\n9000x3.5\n+ 5000"
+    placeholder: "Ketik hitungan atau pakai tombol cepat..."
   }), React.createElement("p", {
     className: "text-[9px] text-gray-400 font-semibold mt-1 mb-2"
-  }, "Pakai tombol cepat. Contoh: 11000 x 2.5, lalu baris baru."), React.createElement("div", {
+  }, "Contoh: 11000 x 2.5 lalu Enter, 9000 x 3.5, + 5000, atau 10000 % 10."), React.createElement("div", {
     className: "grid grid-cols-4 gap-1.5 mb-3"
-  }, ['7', '8', '9', 'x', '4', '5', '6', '+', '1', '2', '3', '-', '0', '.', '000', '↵', '⌫'].map(key => React.createElement("button", {
+  }, ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '+', '0', '000', '.', '↵', '-', '%'].map(key => React.createElement("button", {
     key: key,
     type: "button",
     onClick: () => {
@@ -8550,7 +8551,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       if (key === '↵') return setWarungCalcText(prev => prev + '\n');
       setWarungCalcText(prev => prev + key);
     },
-    className: `rounded-xl py-2.5 text-sm font-black border active:scale-95 ${key === 'x' || key === '+' || key === '-' ? 'bg-[#703d92] text-white border-[#703d92]' : key === '↵' ? 'bg-[#FFD700] text-[#2d1242] border-amber-200' : key === '⌫' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-purple-100'}`
+    className: `rounded-xl py-2.5 text-sm font-black border active:scale-95 ${key === 'x' || key === '+' || key === '-' || key === '%' ? 'bg-[#703d92] text-white border-[#703d92]' : key === '↵' ? 'bg-[#FFD700] text-[#2d1242] border-amber-200' : key === '⌫' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-purple-100'}`
   }, key === '↵' ? 'Enter' : key))), React.createElement("div", {
     className: "rounded-2xl bg-purple-50/60 border border-purple-100 p-3 space-y-1.5 mb-3"
   }, warungCalcRows.length ? warungCalcRows.map((row, idx) => React.createElement("div", {
@@ -8592,7 +8593,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       setWarungCalcText('');
       setWarungCalcPaid('');
     },
-    className: "w-full bg-gray-100 text-gray-600 font-black text-[10px] py-2.5 rounded-xl"
+    className: "w-full bg-gray-100 text-gray-600 font-black text-[10px] py-2.5 rounded-xl mb-24"
   }, "Bersihkan"))), selectedProductDetail && React.createElement("div", {
     className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center animate-fade-in",
     onClick: () => setSelectedProductDetail(null)
@@ -8778,5 +8779,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ac1f2a4b395f6e',t:'MTc4Mzk4NTkxMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ac39a35a83fcee',t:'MTc4Mzk4Njk5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

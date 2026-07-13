@@ -2497,7 +2497,14 @@ function App() {
     image: '',
     desc: '',
     stock: '50',
-    sold: '0'
+    sold: '0',
+    base_unit: 'pcs',
+    sell_unit: 'pcs',
+    purchase_unit: 'pcs',
+    units_per_purchase: '1',
+    purchase_price: '',
+    allow_fraction: false,
+    price_tiers: ''
   });
   const [bulkImportRows, setBulkImportRows] = useState([]);
   const [bulkImportError, setBulkImportError] = useState('');
@@ -3423,6 +3430,19 @@ function App() {
     setCart(prevCart => prevCart.filter(item => item.product.id !== productId));
     if (item) showToast(`🗑️ ${item.product.name} dihapus dari keranjang.`);
   };
+  const handleChangeCartChoice = cartProduct => {
+    const baseId = cartProduct.baseProductId || cartProduct.id;
+    setCart(prevCart => prevCart.filter(item => item.product.id !== cartProduct.id));
+    const cleanName = (cartProduct.baseProductName || cartProduct.name || '').replace(/\s\([^)]*\)$/, '');
+    setSelectedProductDetail({
+      ...cartProduct,
+      id: baseId,
+      name: cleanName,
+      price: cartProduct.basePrice || cartProduct.price,
+      price_tiers: cartProduct.price_tiers || []
+    });
+    showToast('☕ Pilih ulang varian/harga warung.');
+  };
   const cartSubtotal = useMemo(() => {
     return cart.reduce((total, item) => total + item.product.price * item.quantity, 0);
   }, [cart]);
@@ -4101,8 +4121,10 @@ function App() {
     }
     const priceNum = parseInt(prodForm.price) || 0;
     const originalPriceNum = prodForm.original_price ? parseInt(prodForm.original_price) : null;
-    const stockNum = parseInt(prodForm.stock) || 0;
+    const stockNum = parseFloat(String(prodForm.stock).replace(',', '.')) || 0;
     const soldNum = parseInt(prodForm.sold) || 0;
+    const unitsPerPurchaseNum = parseFloat(String(prodForm.units_per_purchase || '1').replace(',', '.')) || 1;
+    const purchasePriceNum = prodForm.purchase_price ? parseInt(prodForm.purchase_price) || null : null;
     const catId = prodForm.category;
     if (editingProduct) {
       const updatesDb = {
@@ -4113,7 +4135,13 @@ function App() {
         category_id: catId,
         desc: prodForm.desc,
         stock: stockNum,
-        sold: soldNum
+        sold: soldNum,
+        base_unit: prodForm.base_unit || 'pcs',
+        sell_unit: prodForm.sell_unit || prodForm.base_unit || 'pcs',
+        purchase_unit: prodForm.purchase_unit || 'pcs',
+        units_per_purchase: unitsPerPurchaseNum,
+        purchase_price: purchasePriceNum,
+        allow_fraction: prodForm.allow_fraction === true
       };
       const {
         data,
@@ -4160,6 +4188,8 @@ function App() {
         } : p));
         showToast(`⚠️ Diperbarui secara lokal.`);
       } else {
+        const tiers = parsePriceTiersValue(prodForm.price_tiers);
+        if (tiers.length) await supabaseService.saveProductPriceTiers(editingProduct.id, tiers);
         showToast(`✏️ Berhasil disimpan di Supabase!`);
       }
     } else {
@@ -4171,7 +4201,13 @@ function App() {
         category_id: catId,
         desc: prodForm.desc,
         stock: stockNum,
-        sold: soldNum
+        sold: soldNum,
+        base_unit: prodForm.base_unit || 'pcs',
+        sell_unit: prodForm.sell_unit || prodForm.base_unit || 'pcs',
+        purchase_unit: prodForm.purchase_unit || 'pcs',
+        units_per_purchase: unitsPerPurchaseNum,
+        purchase_price: purchasePriceNum,
+        allow_fraction: prodForm.allow_fraction === true
       };
       const {
         data,
@@ -4200,6 +4236,8 @@ function App() {
         showToast(`✨ Berhasil disimpan di Supabase!`);
         if (data && data[0]) {
           const inserted = data[0];
+          const tiers = parsePriceTiersValue(prodForm.price_tiers);
+          if (tiers.length) await supabaseService.saveProductPriceTiers(inserted.id, tiers);
           const newProductLocal = {
             id: inserted.id,
             name: inserted.name,
@@ -4223,7 +4261,14 @@ function App() {
       image: '',
       desc: '',
       stock: '50',
-      sold: '0'
+      sold: '0',
+      base_unit: 'pcs',
+      sell_unit: 'pcs',
+      purchase_unit: 'pcs',
+      units_per_purchase: '1',
+      purchase_price: '',
+      allow_fraction: false,
+      price_tiers: ''
     });
     setEditingProduct(null);
   };
@@ -4237,7 +4282,14 @@ function App() {
       image: p.image,
       desc: p.desc || '',
       stock: p.stock.toString(),
-      sold: p.sold.toString()
+      sold: p.sold.toString(),
+      base_unit: p.base_unit || 'pcs',
+      sell_unit: p.sell_unit || p.base_unit || 'pcs',
+      purchase_unit: p.purchase_unit || 'pcs',
+      units_per_purchase: (p.units_per_purchase || 1).toString(),
+      purchase_price: p.purchase_price ? p.purchase_price.toString() : '',
+      allow_fraction: p.allow_fraction === true,
+      price_tiers: (p.price_tiers || []).map(t => `${t.label}|${t.qty}|${t.unit}|${t.price}`).join(';')
     });
   };
   const handleDeleteProduct = async id => {
@@ -5885,9 +5937,15 @@ Buka Toko Hana dan cek menu Jelajah.`;
     className: "flex-1 min-w-0"
   }, React.createElement("h4", {
     className: "font-bold text-xs text-gray-800 truncate"
-  }, item.product.name), React.createElement("div", {
+  }, item.product.name), item.product.tier && React.createElement("div", {
+    className: "text-[9px] text-amber-700 font-bold bg-amber-50 border border-amber-100 rounded-full px-2 py-0.5 inline-block mt-1"
+  }, item.product.tier.label, " • stok ", item.product.tier.qty, " ", item.product.tier.unit), React.createElement("div", {
     className: "font-extrabold text-xs text-[#703d92]"
-  }, "Rp ", item.product.price.toLocaleString('id-ID'))), React.createElement("div", {
+  }, "Rp ", item.product.price.toLocaleString('id-ID')), item.product.tier && React.createElement("button", {
+    type: "button",
+    onClick: () => handleChangeCartChoice(item.product),
+    className: "mt-1 text-[8px] font-black text-[#703d92] bg-purple-50 border border-purple-100 px-2 py-1 rounded-full"
+  }, "Ubah pilihan")), React.createElement("div", {
     className: "flex flex-col items-end gap-1.5"
   }, React.createElement("button", {
     onClick: () => handleRemoveFromCart(item.product.id),
@@ -6787,7 +6845,37 @@ Buka Toko Hana dan cek menu Jelajah.`;
     }),
     placeholder: "Terjual",
     className: "w-full border rounded-lg p-2 text-[10px] font-bold"
-  })), React.createElement("textarea", {
+  })), React.createElement("div", {
+    className: "grid grid-cols-3 gap-1.5 mb-1.5"
+  }, React.createElement("input", {
+    value: row.base_unit || '',
+    onChange: e => updateBulkImportRow(idx, {
+      base_unit: e.target.value
+    }),
+    placeholder: "Unit stok",
+    className: "w-full border rounded-lg p-2 text-[10px] font-bold"
+  }), React.createElement("input", {
+    value: row.purchase_unit || '',
+    onChange: e => updateBulkImportRow(idx, {
+      purchase_unit: e.target.value
+    }),
+    placeholder: "Beli per",
+    className: "w-full border rounded-lg p-2 text-[10px] font-bold"
+  }), React.createElement("input", {
+    value: row.units_per_purchase || '',
+    onChange: e => updateBulkImportRow(idx, {
+      units_per_purchase: e.target.value
+    }),
+    placeholder: "Isi/beli",
+    className: "w-full border rounded-lg p-2 text-[10px] font-bold"
+  })), React.createElement("input", {
+    value: row.price_tiers || '',
+    onChange: e => updateBulkImportRow(idx, {
+      price_tiers: e.target.value
+    }),
+    placeholder: "Tier harga: label|qty|unit|price;...",
+    className: "w-full border rounded-lg p-2 text-[10px] font-semibold mb-1.5"
+  }), React.createElement("textarea", {
     value: row.desc,
     onChange: e => updateBulkImportRow(idx, {
       desc: e.target.value
@@ -6902,6 +6990,61 @@ Buka Toko Hana dan cek menu Jelajah.`;
     }),
     placeholder: "Deskripsi Singkat 1 Baris *",
     className: "w-full border rounded-xl p-2.5"
+  }), React.createElement("div", {
+    className: "grid grid-cols-3 gap-2"
+  }, React.createElement("input", {
+    value: prodForm.base_unit,
+    onChange: e => setProdForm({
+      ...prodForm,
+      base_unit: e.target.value
+    }),
+    placeholder: "Satuan stok",
+    className: "w-full border rounded-xl p-2.5"
+  }), React.createElement("input", {
+    value: prodForm.purchase_unit,
+    onChange: e => setProdForm({
+      ...prodForm,
+      purchase_unit: e.target.value
+    }),
+    placeholder: "Beli per",
+    className: "w-full border rounded-xl p-2.5"
+  }), React.createElement("input", {
+    value: prodForm.units_per_purchase,
+    onChange: e => setProdForm({
+      ...prodForm,
+      units_per_purchase: e.target.value
+    }),
+    placeholder: "Isi/beli",
+    className: "w-full border rounded-xl p-2.5"
+  })), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("input", {
+    type: "number",
+    value: prodForm.purchase_price,
+    onChange: e => setProdForm({
+      ...prodForm,
+      purchase_price: e.target.value
+    }),
+    placeholder: "Harga beli pack/dus",
+    className: "w-full border rounded-xl p-2.5"
+  }), React.createElement("label", {
+    className: "flex items-center gap-2 border rounded-xl p-2.5 bg-white text-[10px] font-bold text-gray-600"
+  }, React.createElement("input", {
+    type: "checkbox",
+    checked: prodForm.allow_fraction === true,
+    onChange: e => setProdForm({
+      ...prodForm,
+      allow_fraction: e.target.checked
+    }),
+    className: "accent-[#703d92]"
+  }), React.createElement("span", null, "Boleh pecahan"))), React.createElement("textarea", {
+    value: prodForm.price_tiers,
+    onChange: e => setProdForm({
+      ...prodForm,
+      price_tiers: e.target.value
+    }),
+    placeholder: "Tier harga: 1 butir|0.0625|kg|1500;1/4 kg|0.25|kg|6500",
+    className: "w-full border rounded-xl p-2.5 min-h-[58px]"
   }), React.createElement("div", {
     className: "flex gap-2 pt-1"
   }, React.createElement("button", {
@@ -8416,6 +8559,8 @@ Buka Toko Hana dan cek menu Jelajah.`;
         ...selectedProductDetail,
         id: `${selectedProductDetail.id}-tier-${idx}`,
         baseProductId: selectedProductDetail.id,
+        baseProductName: selectedProductDetail.name,
+        basePrice: selectedProductDetail.price,
         name: `${selectedProductDetail.name} (${tier.label})`,
         price: tier.price,
         tier
@@ -8450,6 +8595,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a8e2b6f9dffda7',t:'MTc4Mzk1MTk3OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1aac280af30fdec',t:'MTc4Mzk3MTYzMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

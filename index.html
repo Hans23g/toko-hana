@@ -648,6 +648,40 @@ const supabaseService = {
       };
     }
   },
+  saveProductPriceTiers: async (productId, tiers = []) => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const del = await client.from('product_price_tiers').delete().eq('product_id', productId);
+      if (del.error) return {
+        error: del.error
+      };
+      if (!tiers.length) return {
+        error: null
+      };
+      const rows = tiers.map((t, idx) => ({
+        product_id: productId,
+        label: t.label,
+        qty: t.qty,
+        unit: t.unit,
+        price: t.price,
+        is_default: idx === tiers.length - 1,
+        sort_order: (idx + 1) * 10
+      }));
+      const {
+        error
+      } = await client.from('product_price_tiers').insert(rows);
+      return {
+        error
+      };
+    } catch (e) {
+      return {
+        error: e
+      };
+    }
+  },
   signUp: async (email, password, metadata = {}) => {
     const client = getSupabaseClient();
     if (!client) return {
@@ -3753,6 +3787,18 @@ function App() {
     result.push(current.trim());
     return result;
   };
+  const parsePriceTiersValue = value => {
+    if (!value) return [];
+    return String(value).split(';').map((part, idx) => {
+      const [label, qty, unit, price] = part.split('|').map(v => (v || '').trim());
+      return {
+        label: label || `Tier ${idx + 1}`,
+        qty: parseFloat(String(qty || '1').replace(',', '.')) || 1,
+        unit: unit || 'pcs',
+        price: parseInt(String(price || '0').replace(/[^0-9]/g, '')) || 0
+      };
+    }).filter(t => t.label && t.qty > 0 && t.price >= 0);
+  };
   const parseProductsCsv = csvText => {
     const clean = csvText.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
     const lines = clean.split('\n').filter(line => line.trim() && !line.trim().startsWith('#'));
@@ -3771,8 +3817,15 @@ function App() {
       const price = parseInt((raw.price || '').replace(/[^0-9]/g, '')) || 0;
       const originalPrice = raw.original_price ? parseInt(raw.original_price.replace(/[^0-9]/g, '')) || null : null;
       const costPrice = raw.cost_price ? parseInt(raw.cost_price.replace(/[^0-9]/g, '')) || null : null;
-      const stock = parseInt((raw.stock || '0').replace(/[^0-9-]/g, '')) || 0;
+      const stock = parseFloat((raw.stock || '0').replace(',', '.').replace(/[^0-9.-]/g, '')) || 0;
       const sold = parseInt((raw.sold || '0').replace(/[^0-9-]/g, '')) || 0;
+      const baseUnit = raw.base_unit || raw.sell_unit || 'pcs';
+      const sellUnit = raw.sell_unit || baseUnit;
+      const purchaseUnit = raw.purchase_unit || sellUnit;
+      const unitsPerPurchase = parseFloat((raw.units_per_purchase || '1').replace(',', '.').replace(/[^0-9.-]/g, '')) || 1;
+      const purchasePrice = raw.purchase_price ? parseInt(raw.purchase_price.replace(/[^0-9]/g, '')) || null : null;
+      const allowFraction = ['1', 'true', 'ya', 'yes', 'y'].includes(String(raw.allow_fraction || '').toLowerCase());
+      const priceTiers = raw.price_tiers || '';
       const category = raw.category_id || raw.category || 'Sembako';
       const desc = raw.desc || `${name} tersedia di Toko Hana.`;
       const imageUrl = raw.image_url || raw.image || '';
@@ -3794,7 +3847,14 @@ function App() {
         image: imageUrl,
         desc,
         stock,
-        sold
+        sold,
+        base_unit: baseUnit,
+        sell_unit: sellUnit,
+        purchase_unit: purchaseUnit,
+        units_per_purchase: unitsPerPurchase,
+        purchase_price: purchasePrice,
+        allow_fraction: allowFraction,
+        price_tiers: priceTiers
       };
     });
   };
@@ -3822,6 +3882,7 @@ function App() {
     if (!row.name) errors.push('nama kosong');
     if (!row.price || row.price < 0) errors.push('harga tidak valid');
     if ((row.stock || 0) < 0) errors.push('stok tidak boleh minus');
+    if (row.units_per_purchase !== undefined && row.units_per_purchase <= 0) errors.push('isi per pembelian harus > 0');
     if (row.category && validCategories.size && !validCategories.has(row.category)) errors.push(`kategori "${row.category}" belum ada`);
     return errors;
   };
@@ -3835,14 +3896,14 @@ function App() {
       if ('price' in patch) next.price = parseInt(String(patch.price).replace(/[^0-9]/g, '')) || 0;
       if ('original_price' in patch) next.original_price = patch.original_price === '' || patch.original_price === null ? null : parseInt(String(patch.original_price).replace(/[^0-9]/g, '')) || null;
       if ('cost_price' in patch) next.cost_price = patch.cost_price === '' || patch.cost_price === null ? null : parseInt(String(patch.cost_price).replace(/[^0-9]/g, '')) || null;
-      if ('stock' in patch) next.stock = parseInt(String(patch.stock).replace(/[^0-9-]/g, '')) || 0;
+      if ('stock' in patch) next.stock = parseFloat(String(patch.stock).replace(',', '.').replace(/[^0-9.-]/g, '')) || 0;
       if ('sold' in patch) next.sold = parseInt(String(patch.sold).replace(/[^0-9-]/g, '')) || 0;
       next.errors = validateBulkProductRow(next);
       return next;
     }));
   };
   const downloadProductCsvTemplate = () => {
-    const csv = ['id,name,price,original_price,cost_price,category_id,stock,sold,image_url,desc', ',Indomie Goreng,3500,,3000,Makanan Instan,100,0,https://example.com/indomie.jpg,"Mi goreng instan isi 85g, rasa gurih klasik favorit keluarga."', ',Minyak Goreng 1L,15000,18000,13500,Sembako,50,0,https://example.com/minyak.jpg,"Minyak goreng kemasan 1 liter untuk kebutuhan harian."', ',Aqua 600ml,4000,,3200,Minuman,120,0,https://example.com/aqua.jpg,"Air mineral botol 600ml, segar diminum dingin."'].join('\n');
+    const csv = ['id,name,price,original_price,cost_price,category_id,stock,sold,base_unit,sell_unit,purchase_unit,units_per_purchase,purchase_price,allow_fraction,price_tiers,image_url,desc', ',Telur Ayam Curah,23000,,22000,Sembako,10.5,0,kg,kg,peti,15,330000,true,"1/4 kg|0.25|kg|6500;1/2 kg|0.5|kg|12000;1 kg|1|kg|23000",https://example.com/telur.jpg,"Telur ayam curah bisa beli 1/4 kg, 1/2 kg, atau 1 kg."', ',Kopi Sachet,1500,,1300,Minuman,50,0,sachet,sachet,renceng,10,13000,false,"1 sachet|1|sachet|1500;1 renceng isi 10|10|sachet|14000",https://example.com/kopi.jpg,"Kopi sachet jual satuan atau renceng."', ',Rokok Magnum Ketengan,2500,,2083,Rokok 18+,120,0,batang,batang,bungkus,12,25000,false,"1 batang|1|batang|2500;1 bungkus isi 12|12|batang|28000",https://example.com/rokok.jpg,"Rokok bisa jual batang atau bungkus."'].join('\n');
     const blob = new Blob([csv], {
       type: 'text/csv;charset=utf-8'
     });
@@ -3874,7 +3935,13 @@ function App() {
         image_url: row.image,
         desc: row.desc,
         stock: row.stock,
-        sold: row.sold
+        sold: row.sold,
+        base_unit: row.base_unit,
+        sell_unit: row.sell_unit,
+        purchase_unit: row.purchase_unit,
+        units_per_purchase: row.units_per_purchase,
+        purchase_price: row.purchase_price,
+        allow_fraction: row.allow_fraction
       };
       const matchedExisting = row.id ? null : existingByKey.get(normalizeKey(row.name, row.category));
       const targetId = row.id || matchedExisting?.id || null;
@@ -3886,6 +3953,12 @@ function App() {
           result = await supabaseService.insertProduct(dbPayload);
         }
         if (result?.error) throw result.error;
+        const savedProductId = result?.data?.[0]?.id || targetId;
+        const tiers = parsePriceTiersValue(row.price_tiers);
+        if (savedProductId && tiers.length) {
+          const tierResult = await supabaseService.saveProductPriceTiers(savedProductId, tiers);
+          if (tierResult?.error) console.warn('Gagal simpan price tiers:', tierResult.error.message || tierResult.error);
+        }
         supabaseOk++;
       } catch (err) {
         const fallbackId = targetId || Date.now() + localProductsToSave.length;
@@ -3899,7 +3972,14 @@ function App() {
           image: row.image,
           desc: row.desc,
           stock: row.stock,
-          sold: row.sold
+          sold: row.sold,
+          base_unit: row.base_unit,
+          sell_unit: row.sell_unit,
+          purchase_unit: row.purchase_unit,
+          units_per_purchase: row.units_per_purchase,
+          purchase_price: row.purchase_price,
+          allow_fraction: row.allow_fraction,
+          price_tiers: parsePriceTiersValue(row.price_tiers)
         });
         localOk++;
       }
@@ -8263,5 +8343,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a68a188c2b3d87',t:'MTc4MzkyNzM3Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a7a7f919d549f3',t:'MTc4MzkzOTA4Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

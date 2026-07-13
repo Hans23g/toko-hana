@@ -5727,7 +5727,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: `text-[9px] font-semibold leading-snug mt-0.5 ${selectedJelajahCategory === item.key ? 'text-white/75' : 'text-gray-500'}`
   }, item.desc)))), React.createElement("button", {
     type: "button",
-    onClick: () => setShowWarungCalculator(true),
+    onClick: () => setCurrentTab('WarungCalc'),
     className: "mt-3 w-full text-left rounded-2xl border border-[#FFD700]/50 bg-gradient-to-br from-[#2d1242] via-[#703d92] to-[#553C9A] p-3 text-white active:scale-[0.99] transition-all shadow-sm"
   }, React.createElement("div", {
     className: "flex items-center gap-2"
@@ -8520,12 +8520,10 @@ ${TOKO_HANA_PUBLIC_URL}`;
       onClick: () => setShowQrisModal(false),
       className: "w-full mt-4 bg-gradient-to-r from-[#703d92] to-[#553C9A] text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md active:scale-95"
     }, lang === 'id' ? 'Selesai Pembayaran' : 'Finish Payment')));
-  })(), showWarungCalculator && React.createElement("div", {
-    className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center animate-fade-in",
-    onClick: () => setShowWarungCalculator(false)
+  })(), currentTab === 'WarungCalc' && React.createElement("div", {
+    className: "animate-fade-in p-4 pb-24"
   }, React.createElement("div", {
-    className: "w-full max-w-md bg-[#FFFDF6] rounded-t-[28px] p-4 animate-slide-up border-t border-[#E8D9A0] shadow-2xl max-h-[88vh] overflow-y-auto",
-    onClick: e => e.stopPropagation()
+    className: "bg-[#FFFDF6] rounded-3xl p-4 border border-[#E8D9A0] shadow-sm"
   }, React.createElement("div", {
     className: "flex items-center justify-between mb-3"
   }, React.createElement("div", null, React.createElement("span", {
@@ -8533,12 +8531,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "Aplikasi Kecil Toko Hana"), React.createElement("h3", {
     className: "font-black text-[#2d1242] text-lg"
   }, "🧮 Kalkulator Warung")), React.createElement("button", {
-    onClick: () => setShowWarungCalculator(false),
-    className: "p-1.5 bg-white border border-gray-100 text-gray-500 rounded-full shadow-sm"
-  }, React.createElement(LucideIcon, {
-    name: "X",
-    size: 16
-  }))), React.createElement("textarea", {
+    onClick: () => setCurrentTab('Promo'),
+    className: "px-3 py-2 bg-white border border-gray-100 text-[#703d92] rounded-xl shadow-sm text-[10px] font-black"
+  }, "Jelajah")), React.createElement("textarea", {
     value: warungCalcText,
     onChange: e => setWarungCalcText(e.target.value),
     className: "w-full min-h-[130px] border border-purple-100 rounded-2xl p-3 font-mono text-[13px] leading-relaxed bg-white focus:outline-none focus:border-[#703d92]",
@@ -8783,5 +8778,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ac07ec0b69294b',t:'MTc4Mzk4NDk1OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ac1f2a4b395f6e',t:'MTc4Mzk4NTkxMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

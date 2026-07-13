@@ -1016,6 +1016,74 @@ const supabaseService = {
       };
     }
   },
+  getPartners: async () => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('partners').select('*').order('sort_order', {
+        ascending: true
+      }).order('id', {
+        ascending: true
+      });
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
+  upsertPartner: async partner => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('partners').upsert([partner], {
+        onConflict: 'id'
+      }).select();
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
+  deletePartner: async id => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        error
+      } = await client.from('partners').delete().eq('id', id);
+      return {
+        error
+      };
+    } catch (e) {
+      return {
+        error: e
+      };
+    }
+  },
   getCustomers: async () => {
     const client = getSupabaseClient();
     if (!client) return {
@@ -2158,6 +2226,40 @@ function App() {
   }];
   const featuredSponsorBanners = useMemo(() => (sponsorBanners || []).filter(item => item && item.showBanner !== false), [sponsorBanners]);
   const filteredJelajahPosts = useMemo(() => selectedJelajahCategory === 'Semua' ? sponsorBanners || [] : (sponsorBanners || []).filter(item => (item.category || 'Mitra') === selectedJelajahCategory), [sponsorBanners, selectedJelajahCategory]);
+  const partnerTypes = [{
+    key: 'courier',
+    label: 'Kurir'
+  }, {
+    key: 'umkm',
+    label: 'UMKM'
+  }, {
+    key: 'sponsor',
+    label: 'Sponsor'
+  }, {
+    key: 'supplier',
+    label: 'Supplier'
+  }, {
+    key: 'content',
+    label: 'Konten'
+  }, {
+    key: 'system_partner',
+    label: 'Mitra Sistem'
+  }];
+  const [partners, setPartners] = useState([]);
+  const [partnerForm, setPartnerForm] = useState({
+    name: '',
+    type: 'courier',
+    status: 'active',
+    phone: '',
+    area: '',
+    address: '',
+    image_url: '',
+    description: '',
+    notes: '',
+    is_public: false,
+    show_phone_public: false
+  });
+  const [editingPartner, setEditingPartner] = useState(null);
   const [cart, setCart] = useState(() => {
     try {
       const local = safeStorage.getItem('toko_hana_cart');
@@ -2246,6 +2348,19 @@ function App() {
       } else if (error) {
         console.warn('Jelajah Supabase fallback local:', error.message || error);
       }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+  useEffect(() => {
+    let mounted = true;
+    supabaseService.getPartners().then(({
+      data,
+      error
+    }) => {
+      if (!mounted) return;
+      if (!error && Array.isArray(data)) setPartners(data);else if (error) console.warn('Partners Supabase skipped:', error.message || error);
     });
     return () => {
       mounted = false;
@@ -4355,6 +4470,70 @@ function App() {
     } = await supabaseService.deleteJelajahPost(id);
     setSelectedSponsor(null);
     showToast(error ? '☕ Dihapus lokal. Database belum menerima (cek login admin/RLS).' : nextList.length ? '🗑️ Postingan Jelajah dihapus dari database.' : '☕ Jelajah tidak boleh kosong. Postingan pembuka dipasang lagi.');
+  };
+  const resetPartnerForm = () => {
+    setPartnerForm({
+      name: '',
+      type: 'courier',
+      status: 'active',
+      phone: '',
+      area: '',
+      address: '',
+      image_url: '',
+      description: '',
+      notes: '',
+      is_public: false,
+      show_phone_public: false
+    });
+    setEditingPartner(null);
+  };
+  const handleSavePartner = async e => {
+    e.preventDefault();
+    if (!partnerForm.name) return alert('Nama mitra wajib diisi');
+    const payload = {
+      ...partnerForm,
+      id: editingPartner ? editingPartner.id : partners.length ? Math.max(...partners.map(p => p.id || 0)) + 1 : 1,
+      sort_order: editingPartner ? editingPartner.sort_order || editingPartner.id : partners.length ? Math.max(...partners.map(p => p.sort_order || p.id || 0)) + 10 : 10
+    };
+    const localList = editingPartner ? partners.map(p => p.id === editingPartner.id ? payload : p) : [...partners, payload];
+    setPartners(localList);
+    const {
+      data,
+      error
+    } = await supabaseService.upsertPartner(payload);
+    if (!error && data && data[0]) {
+      setPartners(editingPartner ? partners.map(p => p.id === editingPartner.id ? data[0] : p) : [...partners, data[0]]);
+      showToast(editingPartner ? '🤝 Data mitra tersimpan ke database.' : '🤝 Mitra baru ditambahkan ke database.');
+    } else {
+      console.warn('Partner save fallback local:', error?.message || error);
+      showToast('☕ Mitra tersimpan lokal. Database belum menerima (cek login admin/RLS).');
+    }
+    resetPartnerForm();
+  };
+  const handleEditPartner = item => {
+    setEditingPartner(item);
+    setPartnerForm({
+      name: item.name || '',
+      type: item.type || 'courier',
+      status: item.status || 'active',
+      phone: item.phone || '',
+      area: item.area || '',
+      address: item.address || '',
+      image_url: item.image_url || '',
+      description: item.description || '',
+      notes: item.notes || '',
+      is_public: item.is_public === true,
+      show_phone_public: item.show_phone_public === true
+    });
+  };
+  const handleDeletePartner = async id => {
+    if (!confirm('Hapus mitra ini?')) return;
+    const nextList = partners.filter(p => p.id !== id);
+    setPartners(nextList);
+    const {
+      error
+    } = await supabaseService.deletePartner(id);
+    showToast(error ? '☕ Mitra dihapus lokal. Database belum menerima.' : '🗑️ Mitra dihapus dari database.');
   };
   const shareJelajahPost = post => {
     const title = post?.title || 'Postingan Jelajah Toko Hana';
@@ -6760,6 +6939,170 @@ Buka Toko Hana dan cek menu Jelajah.`;
   })), React.createElement("button", {
     type: "button",
     onClick: () => handleDeleteSponsor(item.id),
+    className: "p-1.5 bg-red-50 text-red-600 rounded-lg"
+  }, React.createElement(LucideIcon, {
+    name: "Trash2",
+    size: 12
+  }))))))), adminActiveSubMenu === 'promo' && React.createElement("div", {
+    className: "space-y-4 text-xs"
+  }, React.createElement("div", {
+    className: "bg-white rounded-2xl p-4 border shadow-sm space-y-3"
+  }, React.createElement("div", {
+    className: "flex items-start gap-3"
+  }, React.createElement("div", {
+    className: "w-10 h-10 rounded-2xl bg-[#703d92] text-[#FFD700] flex items-center justify-center shadow-sm flex-shrink-0"
+  }, "🤝"), React.createElement("div", null, React.createElement("h5", {
+    className: "font-extrabold text-[#703d92] uppercase tracking-wider text-[11px]"
+  }, "Data Mitra Lokal"), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold mt-1 leading-relaxed"
+  }, "Kelola kurir warga, UMKM, sponsor, supplier, dan mitra konten. Tahap awal: data dasar dulu, kerja nyata menyusul pelan-pelan."))), React.createElement("form", {
+    onSubmit: handleSavePartner,
+    className: "space-y-2 bg-purple-50/40 p-3 rounded-2xl border border-dashed border-purple-200"
+  }, React.createElement("input", {
+    value: partnerForm.name,
+    onChange: e => setPartnerForm({
+      ...partnerForm,
+      name: e.target.value
+    }),
+    placeholder: "Nama Mitra / Kurir / UMKM",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white focus:outline-none focus:border-[#703d92]",
+    required: true
+  }), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("select", {
+    value: partnerForm.type,
+    onChange: e => setPartnerForm({
+      ...partnerForm,
+      type: e.target.value
+    }),
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white font-bold text-gray-600"
+  }, partnerTypes.map(t => React.createElement("option", {
+    key: t.key,
+    value: t.key
+  }, t.label))), React.createElement("select", {
+    value: partnerForm.status,
+    onChange: e => setPartnerForm({
+      ...partnerForm,
+      status: e.target.value
+    }),
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white font-bold text-gray-600"
+  }, React.createElement("option", {
+    value: "active"
+  }, "Aktif"), React.createElement("option", {
+    value: "inactive"
+  }, "Nonaktif"), React.createElement("option", {
+    value: "pending"
+  }, "Pending"), React.createElement("option", {
+    value: "suspended"
+  }, "Suspend"))), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("input", {
+    value: partnerForm.phone,
+    onChange: e => setPartnerForm({
+      ...partnerForm,
+      phone: e.target.value
+    }),
+    placeholder: "No. WA Mitra",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white"
+  }), React.createElement("input", {
+    value: partnerForm.area,
+    onChange: e => setPartnerForm({
+      ...partnerForm,
+      area: e.target.value
+    }),
+    placeholder: "Area / Wilayah",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white"
+  })), React.createElement("input", {
+    value: partnerForm.image_url,
+    onChange: e => setPartnerForm({
+      ...partnerForm,
+      image_url: e.target.value
+    }),
+    placeholder: "URL foto/logo mitra (opsional)",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white"
+  }), React.createElement("textarea", {
+    value: partnerForm.description,
+    onChange: e => setPartnerForm({
+      ...partnerForm,
+      description: e.target.value
+    }),
+    placeholder: "Deskripsi publik singkat",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white min-h-[56px]"
+  }), React.createElement("textarea", {
+    value: partnerForm.notes,
+    onChange: e => setPartnerForm({
+      ...partnerForm,
+      notes: e.target.value
+    }),
+    placeholder: "Catatan internal admin (tidak untuk publik)",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white min-h-[56px]"
+  }), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("label", {
+    className: "flex items-center gap-2 bg-white border border-purple-100 rounded-xl p-2.5 font-bold text-[10px] text-gray-600"
+  }, React.createElement("input", {
+    type: "checkbox",
+    checked: partnerForm.is_public === true,
+    onChange: e => setPartnerForm({
+      ...partnerForm,
+      is_public: e.target.checked
+    }),
+    className: "accent-[#703d92]"
+  }), React.createElement("span", null, "Tampil publik")), React.createElement("label", {
+    className: "flex items-center gap-2 bg-white border border-purple-100 rounded-xl p-2.5 font-bold text-[10px] text-gray-600"
+  }, React.createElement("input", {
+    type: "checkbox",
+    checked: partnerForm.show_phone_public === true,
+    onChange: e => setPartnerForm({
+      ...partnerForm,
+      show_phone_public: e.target.checked
+    }),
+    className: "accent-[#703d92]"
+  }), React.createElement("span", null, "WA publik"))), React.createElement("div", {
+    className: "flex gap-2"
+  }, React.createElement("button", {
+    type: "submit",
+    className: "flex-1 bg-[#703d92] text-white font-bold text-[10px] px-3 py-2.5 rounded-xl"
+  }, editingPartner ? 'Perbarui Mitra' : 'Simpan Mitra'), editingPartner && React.createElement("button", {
+    type: "button",
+    onClick: resetPartnerForm,
+    className: "bg-gray-200 text-gray-700 font-bold text-[10px] px-3 py-2.5 rounded-xl"
+  }, "Batal"))), React.createElement("div", {
+    className: "space-y-2"
+  }, (partners || []).map(item => React.createElement("div", {
+    key: item.id,
+    className: "flex items-center gap-2 border rounded-xl p-2 bg-white"
+  }, React.createElement("img", {
+    src: item.image_url || BRAND_LOGO_DATA_URI,
+    alt: item.name,
+    className: "w-10 h-10 rounded-lg object-cover border bg-white",
+    onError: e => {
+      e.currentTarget.src = BRAND_LOGO_DATA_URI;
+    }
+  }), React.createElement("div", {
+    className: "flex-1 min-w-0"
+  }, React.createElement("div", {
+    className: "flex items-center gap-1 min-w-0"
+  }, React.createElement("h6", {
+    className: "font-bold text-gray-800 text-[10px] truncate"
+  }, item.name), React.createElement("span", {
+    className: "text-[7px] font-black px-1.5 py-0.5 rounded-full bg-purple-50 text-[#703d92] flex-shrink-0"
+  }, (partnerTypes.find(t => t.key === item.type) || {}).label || item.type), React.createElement("span", {
+    className: `text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 ${item.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`
+  }, item.status), item.is_public && React.createElement("span", {
+    className: "text-[7px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0"
+  }, "Publik")), React.createElement("p", {
+    className: "text-[8.5px] text-gray-400 truncate"
+  }, item.area || item.phone || item.description || 'Belum ada detail')), React.createElement("button", {
+    type: "button",
+    onClick: () => handleEditPartner(item),
+    className: "p-1.5 bg-blue-50 text-blue-600 rounded-lg"
+  }, React.createElement(LucideIcon, {
+    name: "Edit",
+    size: 12
+  })), React.createElement("button", {
+    type: "button",
+    onClick: () => handleDeletePartner(item.id),
     className: "p-1.5 bg-red-50 text-red-600 rounded-lg"
   }, React.createElement(LucideIcon, {
     name: "Trash2",

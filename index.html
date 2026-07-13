@@ -667,7 +667,8 @@ const supabaseService = {
         qty: t.qty,
         unit: t.unit,
         price: t.price,
-        is_default: idx === tiers.length - 1,
+        is_default: t.is_default === true || t.is_default === undefined && idx === tiers.length - 1,
+        show_on_card: t.show_on_card === true,
         sort_order: (idx + 1) * 10
       }));
       const {
@@ -2393,7 +2394,8 @@ function App() {
         qty: Number(t.qty),
         unit: t.unit,
         price: Number(t.price),
-        is_default: t.is_default
+        is_default: t.is_default,
+        show_on_card: t.show_on_card
       }));
       if (tiers.length) {
         setSelectedProductDetail(prev => prev && String(prev.id) === String(selectedProductDetail.id) ? {
@@ -2895,13 +2897,16 @@ function App() {
               qty: Number(t.qty),
               unit: t.unit,
               price: Number(t.price),
-              is_default: t.is_default
+              is_default: t.is_default,
+              show_on_card: t.show_on_card
             });
           });
         }
         const mapped = data.map(item => {
           let catName = 'Sembako';
           if (item.category_id === 2 || item.category_id === 'Minuman') catName = 'Minuman';else if (item.category_id === 3 || item.category_id === 'Snack' || item.category_id === 'Jajanan') catName = 'Jajanan';else if (item.category_id === 4 || item.category_id === 'Digital') catName = 'Digital';else if (item.category_id === 5 || item.category_id === 'Kosmetik') catName = 'Kosmetik';else if (item.category_id === 6 || item.category_id === 'Makanan Instan') catName = 'Makanan Instan';else if (item.category_id === 7 || item.category_id === 'Bumbu Dapur') catName = 'Bumbu Dapur';else if (item.category_id === 8 || item.category_id === 'Rumah Tangga') catName = 'Rumah Tangga';else if (item.category_id === 9 || item.category_id === 'Rokok 18+') catName = 'Rokok 18+';else if (typeof item.category_id === 'string' && item.category_id.trim() !== '') catName = item.category_id;
+          const productTiers = tiersByProduct[item.id] || [];
+          const cardTier = productTiers.find(t => t.show_on_card) || productTiers.find(t => t.is_default) || null;
           return {
             id: item.id,
             name: item.name,
@@ -2918,7 +2923,9 @@ function App() {
             units_per_purchase: item.units_per_purchase || 1,
             purchase_price: item.purchase_price || null,
             allow_fraction: item.allow_fraction === true,
-            price_tiers: tiersByProduct[item.id] || []
+            price_tiers: productTiers,
+            card_price: cardTier ? cardTier.price : item.price,
+            card_label: cardTier ? cardTier.label : item.sell_unit || item.base_unit || ''
           };
         });
         const localAdded = JSON.parse(safeStorage.getItem('toko_hana_local_products') || '[]');
@@ -3886,12 +3893,15 @@ function App() {
   const parsePriceTiersValue = value => {
     if (!value) return [];
     return String(value).split(';').map((part, idx) => {
-      const [label, qty, unit, price] = part.split('|').map(v => (v || '').trim());
+      const [label, qty, unit, price, isDefault, showOnCard] = part.split('|').map(v => (v || '').trim());
+      const truthy = v => ['1', 'true', 'ya', 'yes', 'y', 'default', 'card'].includes(String(v || '').toLowerCase());
       return {
         label: label || `Tier ${idx + 1}`,
         qty: parseFloat(String(qty || '1').replace(',', '.')) || 1,
         unit: unit || 'pcs',
-        price: parseInt(String(price || '0').replace(/[^0-9]/g, '')) || 0
+        price: parseInt(String(price || '0').replace(/[^0-9]/g, '')) || 0,
+        is_default: truthy(isDefault),
+        show_on_card: truthy(showOnCard)
       };
     }).filter(t => t.label && t.qty > 0 && t.price >= 0);
   };
@@ -3999,7 +4009,7 @@ function App() {
     }));
   };
   const downloadProductCsvTemplate = () => {
-    const csv = ['id,name,price,original_price,cost_price,category_id,stock,sold,base_unit,sell_unit,purchase_unit,units_per_purchase,purchase_price,allow_fraction,price_tiers,image_url,desc', ',Telur Ayam Curah,23000,,22000,Sembako,10.5,0,kg,kg,peti,15,330000,true,"1 butir|0.0625|kg|1500;1/4 kg|0.25|kg|6500;1/2 kg|0.5|kg|12000;1 kg|1|kg|23000",https://example.com/telur.jpg,"Telur ayam curah bisa beli 1/4 kg, 1/2 kg, atau 1 kg."', ',Kopi Sachet,1500,,1300,Minuman,50,0,sachet,sachet,renceng,10,13000,false,"1 sachet|1|sachet|1500;1 renceng isi 10|10|sachet|14000",https://example.com/kopi.jpg,"Kopi sachet jual satuan atau renceng."', ',Rokok Magnum Ketengan,2500,,2083,Rokok 18+,120,0,batang,batang,bungkus,12,25000,false,"1 batang|1|batang|2500;1 bungkus isi 12|12|batang|28000",https://example.com/rokok.jpg,"Rokok bisa jual batang atau bungkus."'].join('\n');
+    const csv = ['id,name,price,original_price,cost_price,category_id,stock,sold,base_unit,sell_unit,purchase_unit,units_per_purchase,purchase_price,allow_fraction,price_tiers,image_url,desc', ',Telur Ayam Curah,23000,,22000,Sembako,10.5,0,kg,kg,peti,15,330000,true,"1 butir|0.0625|kg|1500|false|false;1/4 kg|0.25|kg|6500|false|false;1/2 kg|0.5|kg|12000|false|false;1 kg|1|kg|23000|true|true",https://example.com/telur.jpg,"Telur ayam curah bisa beli 1/4 kg, 1/2 kg, atau 1 kg."', ',Kopi Sachet,1500,,1300,Minuman,50,0,sachet,sachet,renceng,10,13000,false,"1 sachet|1|sachet|1500|true|true;1 renceng isi 10|10|sachet|14000|false|false",https://example.com/kopi.jpg,"Kopi sachet jual satuan atau renceng."', ',Rokok Magnum Ketengan,2500,,2083,Rokok 18+,120,0,batang,batang,bungkus,12,25000,false,"1 batang|1|batang|2500|true|false;1/2 bungkus isi 6|6|batang|14000|false|false;1 bungkus isi 12|12|batang|28000|false|true",https://example.com/rokok.jpg,"Rokok bisa jual batang atau bungkus."'].join('\n');
     const blob = new Blob([csv], {
       type: 'text/csv;charset=utf-8'
     });
@@ -4289,7 +4299,7 @@ function App() {
       units_per_purchase: (p.units_per_purchase || 1).toString(),
       purchase_price: p.purchase_price ? p.purchase_price.toString() : '',
       allow_fraction: p.allow_fraction === true,
-      price_tiers: (p.price_tiers || []).map(t => `${t.label}|${t.qty}|${t.unit}|${t.price}`).join(';')
+      price_tiers: (p.price_tiers || []).map(t => `${t.label}|${t.qty}|${t.unit}|${t.price}|${t.is_default ? 'true' : 'false'}|${t.show_on_card ? 'true' : 'false'}`).join(';')
     });
   };
   const handleDeleteProduct = async id => {
@@ -5433,7 +5443,7 @@ Buka Toko Hana dan cek menu Jelajah.`;
     className: "text-sm font-medium text-gray-800 leading-tight truncate"
   }, product.name), React.createElement("p", {
     className: "text-[10px] text-gray-400 mt-1 truncate block"
-  }, product.desc || 'Premium selected goods')), React.createElement("div", {
+  }, product.card_label ? `/ ${product.card_label} • ${product.desc || 'Premium selected goods'}` : product.desc || 'Premium selected goods')), React.createElement("div", {
     className: "mt-2 flex flex-col justify-end"
   }, product.original_price && product.original_price > product.price ? React.createElement("div", {
     className: "flex flex-col"
@@ -5450,14 +5460,14 @@ Buka Toko Hana dan cek menu Jelajah.`;
     style: {
       fontFamily: "'Courier New', monospace"
     }
-  }, "Rp ", product.price.toLocaleString('id-ID')), React.createElement("span", {
+  }, "Rp ", (product.card_price || product.price).toLocaleString('id-ID')), React.createElement("span", {
     className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[7px] border-l-[7px] border-t-[#d9c98f] border-l-transparent",
     style: {
       filter: 'drop-shadow(-1px 1px 1px rgba(0,0,0,0.08))'
     }
   })), React.createElement("span", {
     className: "text-[8.5px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 shrink-0"
-  }, convertRpToPi(product.price).toFixed(4), " π"))) : React.createElement("div", {
+  }, convertRpToPi(product.card_price || product.price).toFixed(4), " π"))) : React.createElement("div", {
     className: "flex flex-col"
   }, React.createElement("div", {
     className: "h-2"
@@ -5470,14 +5480,14 @@ Buka Toko Hana dan cek menu Jelajah.`;
     style: {
       fontFamily: "'Courier New', monospace"
     }
-  }, "Rp ", product.price.toLocaleString('id-ID')), React.createElement("span", {
+  }, "Rp ", (product.card_price || product.price).toLocaleString('id-ID')), React.createElement("span", {
     className: "absolute -top-[1px] -right-[1px] w-0 h-0 border-t-[7px] border-l-[7px] border-t-[#d9c98f] border-l-transparent",
     style: {
       filter: 'drop-shadow(-1px 1px 1px rgba(0,0,0,0.08))'
     }
   })), React.createElement("span", {
     className: "text-[8.5px] font-black text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 shrink-0"
-  }, convertRpToPi(product.price).toFixed(4), " π"))), React.createElement("div", {
+  }, convertRpToPi(product.card_price || product.price).toFixed(4), " π"))), React.createElement("div", {
     className: "flex items-center justify-between mt-1"
   }, React.createElement("span", {
     className: "text-[9px] text-gray-400 font-semibold"
@@ -5485,7 +5495,11 @@ Buka Toko Hana dan cek menu Jelajah.`;
     type: "button",
     onClick: e => {
       e.stopPropagation();
-      handleAddToCart(product);
+      if (product.price_tiers && product.price_tiers.length > 0) {
+        setSelectedProductDetail(product);
+      } else {
+        handleAddToCart(product);
+      }
     },
     className: "w-[26px] h-[26px] rounded-full bg-[#703d92]/95 border-2 border-[#FFD700] text-[#FFD700] flex items-center justify-center shadow-md active:scale-95 transition-all",
     title: lang === 'id' ? 'Langsung masukkan keranjang' : 'Quick add to cart'
@@ -6873,7 +6887,7 @@ Buka Toko Hana dan cek menu Jelajah.`;
     onChange: e => updateBulkImportRow(idx, {
       price_tiers: e.target.value
     }),
-    placeholder: "Tier harga: label|qty|unit|price;...",
+    placeholder: "Tier: label|qty|unit|harga|default|card",
     className: "w-full border rounded-lg p-2 text-[10px] font-semibold mb-1.5"
   }), React.createElement("textarea", {
     value: row.desc,
@@ -7043,7 +7057,7 @@ Buka Toko Hana dan cek menu Jelajah.`;
       ...prodForm,
       price_tiers: e.target.value
     }),
-    placeholder: "Tier harga: 1 butir|0.0625|kg|1500;1/4 kg|0.25|kg|6500",
+    placeholder: "Tier: label|qty|unit|harga|default|card",
     className: "w-full border rounded-xl p-2.5 min-h-[58px]"
   }), React.createElement("div", {
     className: "flex gap-2 pt-1"
@@ -8595,5 +8609,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1aac280af30fdec',t:'MTc4Mzk3MTYzMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ab909de8f31ecc',t:'MTc4Mzk4MDA3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

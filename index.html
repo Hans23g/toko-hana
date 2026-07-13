@@ -8542,10 +8542,21 @@ ${TOKO_HANA_PUBLIC_URL}`;
     value: warungCalcText,
     onChange: e => setWarungCalcText(e.target.value),
     className: "w-full min-h-[130px] border border-purple-100 rounded-2xl p-3 font-mono text-[13px] leading-relaxed bg-white focus:outline-none focus:border-[#703d92]",
-    placeholder: "11000x2.5L\n9000x3.5kg\n+ 5000"
+    placeholder: "11000x2.5\n9000x3.5\n+ 5000"
   }), React.createElement("p", {
-    className: "text-[9px] text-gray-400 font-semibold mt-1 mb-3"
-  }, "Format: 11000x2.5L, 9000x3.5kg, + 5000, - 2000."), React.createElement("div", {
+    className: "text-[9px] text-gray-400 font-semibold mt-1 mb-2"
+  }, "Pakai tombol cepat. Contoh: 11000 x 2.5, lalu baris baru."), React.createElement("div", {
+    className: "grid grid-cols-4 gap-1.5 mb-3"
+  }, ['7', '8', '9', 'x', '4', '5', '6', '+', '1', '2', '3', '-', '0', '.', '000', '↵', '⌫'].map(key => React.createElement("button", {
+    key: key,
+    type: "button",
+    onClick: () => {
+      if (key === '⌫') return setWarungCalcText(prev => prev.slice(0, -1));
+      if (key === '↵') return setWarungCalcText(prev => prev + '\n');
+      setWarungCalcText(prev => prev + key);
+    },
+    className: `rounded-xl py-2.5 text-sm font-black border active:scale-95 ${key === 'x' || key === '+' || key === '-' ? 'bg-[#703d92] text-white border-[#703d92]' : key === '↵' ? 'bg-[#FFD700] text-[#2d1242] border-amber-200' : key === '⌫' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-purple-100'}`
+  }, key === '↵' ? 'Enter' : key))), React.createElement("div", {
     className: "rounded-2xl bg-purple-50/60 border border-purple-100 p-3 space-y-1.5 mb-3"
   }, warungCalcRows.length ? warungCalcRows.map((row, idx) => React.createElement("div", {
     key: idx,
@@ -8772,5 +8783,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1abe3367b1c9855',t:'MTc4Mzk4MzQ1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ac07ec0b69294b',t:'MTc4Mzk4NDk1OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

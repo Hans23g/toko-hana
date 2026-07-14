@@ -7748,23 +7748,72 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "grid grid-cols-4 gap-1.5"
   }, [{
     label: 'Telur',
-    value: '1 butir|0.0625|kg|1500|false|false;1/4 kg|0.25|kg|6500|false|false;1/2 kg|0.5|kg|12000|false|false;1 kg|1|kg|23000|true|true'
+    value: '1 butir|0.0625|kg|1500|false|false;1/4 kg|0.25|kg|6500|false|false;1/2 kg|0.5|kg|12000|false|false;1 kg|1|kg|23000|true|true',
+    defaults: {
+      category: 'Sembako',
+      price: prodForm.price || '23000',
+      cost_price: prodForm.cost_price || '22000',
+      base_unit: 'kg',
+      sell_unit: 'kg',
+      purchase_unit: 'peti',
+      units_per_purchase: '15',
+      purchase_price: prodForm.purchase_price || '330000',
+      allow_fraction: true
+    }
   }, {
     label: 'Rokok',
-    value: '1 batang|1|batang|2500|true|false;1/2 bungkus isi 6|6|batang|14000|false|false;1 bungkus isi 12|12|batang|28000|false|true'
+    value: '1 batang|1|batang|2500|true|false;1/2 bungkus isi 6|6|batang|14000|false|false;1 bungkus isi 12|12|batang|28000|false|true',
+    defaults: {
+      category: 'Rokok 18+',
+      price: prodForm.price || '2500',
+      cost_price: prodForm.cost_price || '2083',
+      base_unit: 'batang',
+      sell_unit: 'batang',
+      purchase_unit: 'bungkus',
+      units_per_purchase: '12',
+      purchase_price: prodForm.purchase_price || '25000',
+      allow_fraction: false
+    }
   }, {
     label: 'Beras',
-    value: '1 liter|0.8|kg|13000|false|false;1 kg|1|kg|15000|true|true;5 kg|5|kg|72000|false|false;10 kg|10|kg|140000|false|false;25 kg|25|kg|340000|false|false;50 kg / 1 karung|50|kg|670000|false|false'
+    value: '1 liter|0.8|kg|13000|false|false;1 kg|1|kg|15000|true|true;5 kg|5|kg|72000|false|false;10 kg|10|kg|140000|false|false;25 kg|25|kg|340000|false|false;50 kg / 1 karung|50|kg|670000|false|false',
+    defaults: {
+      category: 'Sembako',
+      price: prodForm.price || '15000',
+      cost_price: prodForm.cost_price || '13400',
+      base_unit: 'kg',
+      sell_unit: 'kg',
+      purchase_unit: 'karung',
+      units_per_purchase: '50',
+      purchase_price: prodForm.purchase_price || '670000',
+      allow_fraction: true
+    }
   }, {
     label: 'DANA',
-    value: 'DANA 20rb + admin 2rb|1|transaksi|22000|true|true;DANA 50rb + admin 3rb|1|transaksi|53000|false|false;DANA 100rb + admin 5rb|1|transaksi|105000|false|false'
+    value: 'DANA 20rb + admin 2rb|1|transaksi|22000|true|true;DANA 50rb + admin 3rb|1|transaksi|53000|false|false;DANA 100rb + admin 5rb|1|transaksi|105000|false|false',
+    defaults: {
+      category: 'Digital',
+      price: prodForm.price || '22000',
+      cost_price: prodForm.cost_price || '20000',
+      stock: prodForm.stock || '999999',
+      base_unit: 'transaksi',
+      sell_unit: 'transaksi',
+      purchase_unit: 'layanan',
+      units_per_purchase: '1',
+      purchase_price: '',
+      allow_fraction: false
+    }
   }].map(tpl => React.createElement("button", {
     key: tpl.label,
     type: "button",
-    onClick: () => setProdForm({
-      ...prodForm,
-      price_tiers: tpl.value
-    }),
+    onClick: () => {
+      setProdForm({
+        ...prodForm,
+        ...tpl.defaults,
+        price_tiers: tpl.value
+      });
+      showToast(`☕ Template ${tpl.label} dipasang. Tinggal sesuaikan harga warung.`);
+    },
     className: "bg-white border border-amber-100 text-[#703d92] font-black text-[9px] px-2 py-2 rounded-xl active:scale-95"
   }, tpl.label))), React.createElement("textarea", {
     value: prodForm.price_tiers,
@@ -9413,5 +9462,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b45649aa5bfd8c',t:'MTc4NDA3MjA1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b46c1aa842a8e5',t:'MTc4NDA3Mjk0OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

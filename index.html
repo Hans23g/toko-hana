@@ -1612,7 +1612,7 @@ const defaultSponsorBanners = [{
 }, {
   id: 9002,
   title: 'Cara Belanja di Toko Hana',
-  category: 'Cara Belanja',
+  category: 'Edukasi',
   desc: 'Pilih barang kebutuhan, masukkan keranjang, cek total, lalu checkout dengan data yang jelas.',
   image: BRAND_LOGO_DATA_URI,
   link: '',
@@ -2284,7 +2284,7 @@ function App() {
       if (local) {
         const parsed = JSON.parse(local);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const guessCategory = item => item.category || (/belanja|checkout|keranjang/i.test(item.title || '') ? 'Cara Belanja' : /warga|rt|rw|lingkungan/i.test(item.title || '') ? 'Info Warga' : /edukasi|pi|belajar/i.test(item.title || '') ? 'Edukasi' : 'Mitra');
+          const guessCategory = item => item.category || (/belanja|checkout|keranjang/i.test(item.title || '') ? 'Edukasi' : /warga|rt|rw|lingkungan/i.test(item.title || '') ? 'Info Warga' : /edukasi|pi|belajar/i.test(item.title || '') ? 'Edukasi' : 'Mitra');
           const normalized = parsed.map(item => ({
             ...item,
             category: guessCategory(item),
@@ -2321,10 +2321,10 @@ function App() {
   const [countdownNow, setCountdownNow] = useState(() => new Date());
   const [selectedJelajahCategory, setSelectedJelajahCategory] = useState('Semua');
   const jelajahCategories = [{
-    key: 'Cara Belanja',
-    icon: '🛒',
-    title: 'Cara Belanja',
-    desc: 'Panduan daftar, pilih barang, dan checkout.'
+    key: 'Aplikasi',
+    icon: '🧰',
+    title: 'Aplikasi',
+    desc: 'Alat kecil: kalkulator warung dan hitung harga jual.'
   }, {
     key: 'Mitra',
     icon: '🤝',
@@ -8801,5 +8801,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b116651954fd91',t:'MTc4NDAzNzk4MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b1bde35a186584',t:'MTc4NDA0NDg0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

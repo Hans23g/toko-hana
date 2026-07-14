@@ -5211,20 +5211,13 @@ ${TOKO_HANA_PUBLIC_URL}`;
     }, priceCalcForm.unit || 'kg')), React.createElement("div", {
       className: "grid grid-cols-3 gap-1.5"
     }, miniField('totalCost', 'Modal'), miniField('totalQty', 'Isi'), miniField('margin', 'Margin'), miniField('packaging', 'Kemasan'), miniField('rounding', 'Bulat'), miniField('literFactor', 'Liter'))), React.createElement("div", {
-      className: "grid grid-cols-4 gap-1.5 flex-shrink-0"
-    }, keys.map(key => React.createElement("button", {
-      key,
-      type: "button",
-      onClick: () => press(key),
-      className: `rounded-2xl py-3 text-[15px] font-black border active:scale-95 shadow-sm ${key === 'Unit' ? 'bg-emerald-600 text-white border-emerald-600' : key === 'C' || key === '←' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-emerald-100'}`
-    }, key))), React.createElement("div", {
-      className: "rounded-2xl bg-[#2d1242] text-white p-3 flex-shrink-0"
+      className: "rounded-2xl bg-[#2d1242] text-white p-2.5 flex-shrink-0"
     }, React.createElement("span", {
       className: "block text-[8px] text-amber-200 font-black uppercase tracking-wider"
     }, "Modal per ", priceCalcForm.unit || 'unit'), React.createElement("strong", {
-      className: "block text-xl font-black mt-0.5"
+      className: "block text-lg font-black mt-0.5"
     }, formatCalcNumber(priceCalcResult.modalPerUnit))), React.createElement("div", {
-      className: "flex-1 min-h-0 overflow-y-auto space-y-1.5 pb-[calc(env(safe-area-inset-bottom)+8px)]"
+      className: "flex-1 min-h-0 overflow-y-auto space-y-1.5"
     }, priceCalcResult.rows.map((row, idx) => React.createElement("div", {
       key: idx,
       className: "rounded-2xl border border-emerald-100 bg-emerald-50/50 p-2.5"
@@ -5242,7 +5235,14 @@ ${TOKO_HANA_PUBLIC_URL}`;
       className: `inline-block text-[7px] font-black px-1.5 py-0.5 rounded-full mb-0.5 ${row.status === 'RUGI' ? 'bg-red-100 text-red-700' : row.status === 'TIPIS' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`
     }, row.status), React.createElement("strong", {
       className: "block text-[16px] font-black text-emerald-700"
-    }, formatCalcNumber(row.suggested)))))))));
+    }, formatCalcNumber(row.suggested))))))), React.createElement("div", {
+      className: "grid grid-cols-4 gap-1.5 flex-shrink-0 pb-[calc(env(safe-area-inset-bottom)+8px)]"
+    }, keys.map(key => React.createElement("button", {
+      key,
+      type: "button",
+      onClick: () => press(key),
+      className: `rounded-2xl py-3 text-[15px] font-black border active:scale-95 shadow-sm ${key === 'Unit' ? 'bg-emerald-600 text-white border-emerald-600' : key === 'C' || key === '←' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-emerald-100'}`
+    }, key)))));
   };
   return React.createElement("div", {
     className: `flex-1 flex flex-col relative transition-colors duration-300 ${darkMode ? 'bg-[#11091d]' : 'bg-[#2d1242]'}`,
@@ -8991,5 +8991,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b20bb73ac4f922',t:'MTc4NDA0ODAyOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b216906b0fa1b5',t:'MTc4NDA0ODQ3Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

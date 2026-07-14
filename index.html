@@ -5942,7 +5942,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "flex items-center justify-between"
   }, React.createElement("h5", {
     className: "font-black text-[#703d92] text-[11px] uppercase tracking-wider"
-  }, "Info Jelajah"), React.createElement("button", {
+  }, selectedJelajahCategory === 'Aplikasi' ? 'Info Aplikasi' : selectedJelajahCategory === 'Mitra' ? 'Info Mitra' : selectedJelajahCategory === 'Info Warga' ? 'Info Warga' : selectedJelajahCategory === 'Edukasi' ? 'Info Edukasi' : 'Info Jelajah'), React.createElement("button", {
     type: "button",
     onClick: () => setSelectedJelajahCategory('Semua'),
     className: "text-[9px] font-black text-[#703d92] bg-purple-50 px-2 py-1 rounded-full"
@@ -5967,21 +5967,21 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "Hitung cepat total belanja dan kembalian.")))), selectedJelajahCategory === 'Aplikasi' && React.createElement("button", {
     type: "button",
     onClick: () => setCurrentTab('PriceCalc'),
-    className: "w-full text-left rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-amber-50 p-3 active:scale-[0.99] transition-all shadow-sm"
+    className: "w-full text-left rounded-2xl border border-emerald-300 bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-500 p-3 text-white active:scale-[0.99] transition-all shadow-sm"
   }, React.createElement("div", {
     className: "flex gap-2.5 items-center"
   }, React.createElement("div", {
-    className: "w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-sm flex-shrink-0"
+    className: "w-9 h-9 rounded-xl bg-white text-emerald-700 flex items-center justify-center text-lg shadow-sm flex-shrink-0"
   }, "💹"), React.createElement("div", {
     className: "min-w-0 flex-1"
   }, React.createElement("div", {
     className: "flex items-center gap-1.5 min-w-0"
   }, React.createElement("h6", {
-    className: "font-black text-[#2d1242] text-[11px] truncate"
+    className: "font-black text-[#FFD700] text-[11px] truncate"
   }, "Hitung Harga Jual"), React.createElement("span", {
-    className: "text-[7px] font-black text-white bg-emerald-600 px-1.5 py-0.5 rounded-full flex-shrink-0"
+    className: "text-[7px] font-black text-emerald-700 bg-white px-1.5 py-0.5 rounded-full flex-shrink-0"
   }, "Aplikasi")), React.createElement("p", {
-    className: "text-[10px] text-gray-500 font-semibold leading-snug mt-0.5"
+    className: "text-[10px] text-white/80 font-semibold leading-snug mt-0.5"
   }, "Rekomendasi harga jual dari modal, kemasan, margin dan pembulatan warung.")))), (filteredJelajahPosts || []).map(post => React.createElement("button", {
     key: post.id,
     type: "button",
@@ -9008,5 +9008,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b2deee588f7d87',t:'MTc4NDA1NjY4MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

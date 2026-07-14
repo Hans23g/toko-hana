@@ -6079,7 +6079,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "font-black text-[#703d92] text-sm leading-tight"
   }, "Ingin Jadi Mitra Toko Hana?"), React.createElement("p", {
     className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-0.5"
-  }, "Pilih kebutuhanmu: supplier, kurir, UMKM, iklan, atau mitra warung pengguna sistem."))), React.createElement("div", {
+  }, "Pilih jalur kerja sama sesuai kebutuhan nyata: barang, antar, promosi, konten, atau sistem warung."))), React.createElement("div", {
     className: "grid grid-cols-2 gap-1.5 mb-3"
   }, partnerApplicationTypes.map(t => React.createElement("button", {
     key: t.key,
@@ -6088,18 +6088,27 @@ ${TOKO_HANA_PUBLIC_URL}`;
       ...prev,
       partner_type: t.key
     })),
-    className: `text-left rounded-2xl border p-2 active:scale-[0.99] transition-all ${partnerApplicationForm.partner_type === t.key ? 'bg-[#703d92] border-[#703d92] text-white' : 'bg-white border-amber-100 text-[#2d1242]'}`
+    className: `text-left rounded-2xl border p-2 active:scale-[0.99] transition-all ${partnerApplicationForm.partner_type === t.key ? 'bg-gradient-to-br from-[#703d92] to-[#2d1242] border-[#FFD700] text-white shadow-sm' : 'bg-white border-amber-100 text-[#2d1242]'}`
   }, React.createElement("div", {
     className: "text-base"
   }, t.icon), React.createElement("div", {
     className: `font-black text-[10px] ${partnerApplicationForm.partner_type === t.key ? 'text-[#FFD700]' : 'text-[#703d92]'}`
   }, t.label), React.createElement("p", {
     className: `text-[8px] font-semibold leading-tight ${partnerApplicationForm.partner_type === t.key ? 'text-white/75' : 'text-gray-400'}`
-  }, t.desc)))), React.createElement("form", {
-    onSubmit: handleSubmitPartnerApplication,
-    className: "space-y-2"
+  }, t.desc)))), React.createElement("div", {
+    className: "grid grid-cols-3 gap-1.5 mb-3"
+  }, ['Isi Form', 'Kami Hubungi', 'Ngopi Kebutuhan'].map((step, idx) => React.createElement("div", {
+    key: step,
+    className: "rounded-xl bg-white/80 border border-purple-100 px-2 py-1.5 text-center"
   }, React.createElement("div", {
-    className: "grid grid-cols-2 gap-2"
+    className: "mx-auto mb-0.5 w-5 h-5 rounded-full bg-[#703d92] text-[#FFD700] text-[9px] font-black flex items-center justify-center"
+  }, idx + 1), React.createElement("div", {
+    className: "text-[8px] font-black text-[#703d92] leading-tight"
+  }, step)))), React.createElement("form", {
+    onSubmit: handleSubmitPartnerApplication,
+    className: "space-y-1.5"
+  }, React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5"
   }, React.createElement("input", {
     value: partnerApplicationForm.name,
     onChange: e => setPartnerApplicationForm({
@@ -6107,7 +6116,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       name: e.target.value
     }),
     placeholder: "Nama / Usaha *",
-    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white",
     required: true
   }), React.createElement("input", {
     value: partnerApplicationForm.phone,
@@ -6116,10 +6125,10 @@ ${TOKO_HANA_PUBLIC_URL}`;
       phone: e.target.value
     }),
     placeholder: "WhatsApp *",
-    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white",
     required: true
   })), React.createElement("div", {
-    className: "grid grid-cols-2 gap-2"
+    className: "grid grid-cols-2 gap-1.5"
   }, React.createElement("input", {
     value: partnerApplicationForm.owner_name,
     onChange: e => setPartnerApplicationForm({
@@ -6127,7 +6136,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       owner_name: e.target.value
     }),
     placeholder: "Penanggung jawab",
-    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white"
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
   }), React.createElement("input", {
     value: partnerApplicationForm.area,
     onChange: e => setPartnerApplicationForm({
@@ -6135,7 +6144,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       area: e.target.value
     }),
     placeholder: "Area / Wilayah",
-    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white"
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
   })), partnerApplicationForm.partner_type === 'warung_partner' && React.createElement("div", {
     className: "grid grid-cols-2 gap-1.5 bg-white/70 rounded-2xl border border-purple-100 p-2"
   }, [['needs_pos_offline', 'POS Offline'], ['needs_online_catalog', 'Katalog Online'], ['needs_stock_report', 'Stok & Laporan'], ['needs_consignment', 'Barang Titipan'], ['needs_multi_cashier', 'Multi Kasir'], ['needs_delivery', 'Delivery']].map(([key, label]) => React.createElement("label", {
@@ -6156,10 +6165,10 @@ ${TOKO_HANA_PUBLIC_URL}`;
       notes: e.target.value
     }),
     placeholder: "Ceritakan kebutuhan singkat...",
-    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white min-h-[58px]"
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white min-h-[52px]"
   }), React.createElement("button", {
     type: "submit",
-    className: "w-full bg-[#703d92] text-white font-black text-[11px] py-3 rounded-2xl shadow-sm"
+    className: "w-full bg-[#703d92] text-white font-black text-[11px] py-2.5 rounded-2xl shadow-sm"
   }, "Kirim Form Mitra"))), (filteredJelajahPosts || []).map(post => React.createElement("button", {
     key: post.id,
     type: "button",
@@ -9186,5 +9195,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b347799edfa24f',t:'MTc4NDA2MDk2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b3590c7f7dfdea',t:'MTc4NDA2MTY4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

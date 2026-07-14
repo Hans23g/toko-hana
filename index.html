@@ -2439,6 +2439,7 @@ function App() {
     needs_delivery: false,
     notes: ''
   });
+  const [partnerApplicationSubmitted, setPartnerApplicationSubmitted] = useState(false);
   const [cart, setCart] = useState(() => {
     try {
       const local = safeStorage.getItem('toko_hana_cart');
@@ -5000,13 +5001,14 @@ function App() {
       error
     } = await supabaseService.insertPartnerApplication(payload);
     if (error) {
+      setPartnerApplicationSubmitted(false);
       console.warn('Partner application failed:', error.message || error);
       showToast('☕ Form belum masuk database. Coba lagi / hubungi WA Toko Hana.');
       alert('Form belum terkirim ke database. Coba lagi atau hubungi WA Toko Hana.\n\nDetail: ' + (error.message || error));
       return;
     }
+    setPartnerApplicationSubmitted(true);
     showToast('🤝 Terima kasih! Form Mitra Toko Hana sudah terkirim.');
-    alert('Terima kasih, form Mitra Toko Hana sudah terkirim. Kami akan hubungi untuk ngobrol kebutuhan. ☕');
     setPartnerApplicationForm(prev => ({
       ...prev,
       name: '',
@@ -6086,10 +6088,13 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, partnerApplicationTypes.map(t => React.createElement("button", {
     key: t.key,
     type: "button",
-    onClick: () => setPartnerApplicationForm(prev => ({
-      ...prev,
-      partner_type: t.key
-    })),
+    onClick: () => {
+      setPartnerApplicationSubmitted(false);
+      setPartnerApplicationForm(prev => ({
+        ...prev,
+        partner_type: t.key
+      }));
+    },
     className: `text-left rounded-2xl border p-2 active:scale-[0.99] transition-all ${partnerApplicationForm.partner_type === t.key ? 'bg-gradient-to-br from-[#703d92] to-[#2d1242] border-[#FFD700] text-white shadow-sm' : 'bg-white border-amber-100 text-[#2d1242]'}`
   }, React.createElement("div", {
     className: "text-base"
@@ -6113,19 +6118,25 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "grid grid-cols-2 gap-1.5"
   }, React.createElement("input", {
     value: partnerApplicationForm.name,
-    onChange: e => setPartnerApplicationForm({
-      ...partnerApplicationForm,
-      name: e.target.value
-    }),
+    onChange: e => {
+      setPartnerApplicationSubmitted(false);
+      setPartnerApplicationForm({
+        ...partnerApplicationForm,
+        name: e.target.value
+      });
+    },
     placeholder: "Nama / Usaha *",
     className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white",
     required: true
   }), React.createElement("input", {
     value: partnerApplicationForm.phone,
-    onChange: e => setPartnerApplicationForm({
-      ...partnerApplicationForm,
-      phone: e.target.value
-    }),
+    onChange: e => {
+      setPartnerApplicationSubmitted(false);
+      setPartnerApplicationForm({
+        ...partnerApplicationForm,
+        phone: e.target.value
+      });
+    },
     placeholder: "WhatsApp *",
     className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white",
     required: true
@@ -6168,7 +6179,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
     }),
     placeholder: "Ceritakan kebutuhan singkat...",
     className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white min-h-[52px]"
-  }), React.createElement("button", {
+  }), partnerApplicationSubmitted && React.createElement("div", {
+    className: "rounded-2xl border border-emerald-100 bg-emerald-50 text-emerald-700 px-3 py-2 text-[10px] font-bold leading-relaxed"
+  }, "✅ Form Mitra terkirim. Kami akan hubungi untuk ngobrol kebutuhan. ☕"), React.createElement("button", {
     type: "submit",
     className: "w-full bg-[#703d92] text-white font-black text-[11px] py-2.5 rounded-2xl shadow-sm"
   }, "Kirim Form Mitra"))), (filteredJelajahPosts || []).map(post => React.createElement("button", {
@@ -9197,5 +9210,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b36a6c88b55cd6',t:'MTc4NDA2MjM5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b37ecdec000fe2',t:'MTc4NDA2MzIyOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

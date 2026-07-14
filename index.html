@@ -1201,6 +1201,28 @@ const supabaseService = {
       };
     }
   },
+  insertPartnerApplication: async application => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('partner_applications').insert([application]).select();
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
   getCustomers: async () => {
     const client = getSupabaseClient();
     if (!client) return {
@@ -2377,6 +2399,46 @@ function App() {
     show_phone_public: false
   });
   const [editingPartner, setEditingPartner] = useState(null);
+  const partnerApplicationTypes = [{
+    key: 'supplier',
+    label: 'Supplier',
+    icon: '📦',
+    desc: 'Pemasok barang warung.'
+  }, {
+    key: 'courier',
+    label: 'Kurir',
+    icon: '🛵',
+    desc: 'Antar pesanan sekitar.'
+  }, {
+    key: 'umkm_ads',
+    label: 'UMKM & Iklan',
+    icon: '🏪',
+    desc: 'Titip produk atau promosi.'
+  }, {
+    key: 'warung_partner',
+    label: 'Mitra Warung',
+    icon: '🤝',
+    desc: 'POS offline/online dan sistem warung.'
+  }, {
+    key: 'content',
+    label: 'Konten Warga',
+    icon: '📝',
+    desc: 'Info warga dan edukasi.'
+  }];
+  const [partnerApplicationForm, setPartnerApplicationForm] = useState({
+    partner_type: 'warung_partner',
+    name: '',
+    owner_name: '',
+    phone: '',
+    area: '',
+    needs_pos_offline: true,
+    needs_online_catalog: false,
+    needs_stock_report: true,
+    needs_consignment: false,
+    needs_multi_cashier: false,
+    needs_delivery: false,
+    notes: ''
+  });
   const [cart, setCart] = useState(() => {
     try {
       const local = safeStorage.getItem('toko_hana_cart');
@@ -4927,6 +4989,31 @@ function App() {
     } = await supabaseService.deletePartner(id);
     showToast(error ? '☕ Mitra dihapus lokal. Database belum menerima.' : '🗑️ Mitra dihapus dari database.');
   };
+  const handleSubmitPartnerApplication = async e => {
+    e.preventDefault();
+    if (!partnerApplicationForm.name || !partnerApplicationForm.phone) return alert('Nama dan WhatsApp wajib diisi');
+    const payload = {
+      ...partnerApplicationForm,
+      status: 'new'
+    };
+    const {
+      error
+    } = await supabaseService.insertPartnerApplication(payload);
+    if (error) {
+      console.warn('Partner application failed:', error.message || error);
+      showToast('☕ Form belum masuk database. Coba lagi / hubungi WA Toko Hana.');
+      return;
+    }
+    showToast('🤝 Terima kasih! Form Mitra Toko Hana sudah terkirim.');
+    setPartnerApplicationForm(prev => ({
+      ...prev,
+      name: '',
+      owner_name: '',
+      phone: '',
+      area: '',
+      notes: ''
+    }));
+  };
   const shareJelajahPost = post => {
     const title = post?.title || 'Postingan Jelajah Toko Hana';
     const desc = post?.desc || post?.body || 'Baca info dari Toko Hana.';
@@ -5982,7 +6069,98 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-[7px] font-black text-[#2d1242] bg-[#FFD700] px-1.5 py-0.5 rounded-full flex-shrink-0"
   }, "Aplikasi")), React.createElement("p", {
     className: "text-[10px] text-white/80 font-semibold leading-snug mt-0.5"
-  }, "Rekomendasi harga jual dari modal, kemasan, margin dan pembulatan warung.")))), (filteredJelajahPosts || []).map(post => React.createElement("button", {
+  }, "Rekomendasi harga jual dari modal, kemasan, margin dan pembulatan warung.")))), selectedJelajahCategory === 'Mitra' && React.createElement("div", {
+    className: "mx-2 my-1 rounded-3xl border border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50 p-3 shadow-sm"
+  }, React.createElement("div", {
+    className: "flex items-start gap-2.5 mb-3"
+  }, React.createElement("div", {
+    className: "w-10 h-10 rounded-2xl bg-[#703d92] text-[#FFD700] flex items-center justify-center text-xl shadow-sm flex-shrink-0"
+  }, "🤝"), React.createElement("div", null, React.createElement("h5", {
+    className: "font-black text-[#703d92] text-sm leading-tight"
+  }, "Ingin Jadi Mitra Toko Hana?"), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-0.5"
+  }, "Pilih kebutuhanmu: supplier, kurir, UMKM, iklan, atau mitra warung pengguna sistem."))), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5 mb-3"
+  }, partnerApplicationTypes.map(t => React.createElement("button", {
+    key: t.key,
+    type: "button",
+    onClick: () => setPartnerApplicationForm(prev => ({
+      ...prev,
+      partner_type: t.key
+    })),
+    className: `text-left rounded-2xl border p-2 active:scale-[0.99] transition-all ${partnerApplicationForm.partner_type === t.key ? 'bg-[#703d92] border-[#703d92] text-white' : 'bg-white border-amber-100 text-[#2d1242]'}`
+  }, React.createElement("div", {
+    className: "text-base"
+  }, t.icon), React.createElement("div", {
+    className: `font-black text-[10px] ${partnerApplicationForm.partner_type === t.key ? 'text-[#FFD700]' : 'text-[#703d92]'}`
+  }, t.label), React.createElement("p", {
+    className: `text-[8px] font-semibold leading-tight ${partnerApplicationForm.partner_type === t.key ? 'text-white/75' : 'text-gray-400'}`
+  }, t.desc)))), React.createElement("form", {
+    onSubmit: handleSubmitPartnerApplication,
+    className: "space-y-2"
+  }, React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("input", {
+    value: partnerApplicationForm.name,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      name: e.target.value
+    }),
+    placeholder: "Nama / Usaha *",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white",
+    required: true
+  }), React.createElement("input", {
+    value: partnerApplicationForm.phone,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      phone: e.target.value
+    }),
+    placeholder: "WhatsApp *",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white",
+    required: true
+  })), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("input", {
+    value: partnerApplicationForm.owner_name,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      owner_name: e.target.value
+    }),
+    placeholder: "Penanggung jawab",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white"
+  }), React.createElement("input", {
+    value: partnerApplicationForm.area,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      area: e.target.value
+    }),
+    placeholder: "Area / Wilayah",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white"
+  })), partnerApplicationForm.partner_type === 'warung_partner' && React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5 bg-white/70 rounded-2xl border border-purple-100 p-2"
+  }, [['needs_pos_offline', 'POS Offline'], ['needs_online_catalog', 'Katalog Online'], ['needs_stock_report', 'Stok & Laporan'], ['needs_consignment', 'Barang Titipan'], ['needs_multi_cashier', 'Multi Kasir'], ['needs_delivery', 'Delivery']].map(([key, label]) => React.createElement("label", {
+    key,
+    className: "flex items-center gap-1.5 text-[9px] font-bold text-gray-600"
+  }, React.createElement("input", {
+    type: "checkbox",
+    checked: partnerApplicationForm[key] === true,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      [key]: e.target.checked
+    }),
+    className: "accent-[#703d92]"
+  }), label))), React.createElement("textarea", {
+    value: partnerApplicationForm.notes,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      notes: e.target.value
+    }),
+    placeholder: "Ceritakan kebutuhan singkat...",
+    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white min-h-[58px]"
+  }), React.createElement("button", {
+    type: "submit",
+    className: "w-full bg-[#703d92] text-white font-black text-[11px] py-3 rounded-2xl shadow-sm"
+  }, "Kirim Form Mitra"))), (filteredJelajahPosts || []).map(post => React.createElement("button", {
     key: post.id,
     type: "button",
     onClick: () => {
@@ -9008,6 +9186,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b347799edfa24f',t:'MTc4NDA2MDk2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

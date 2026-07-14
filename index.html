@@ -5237,7 +5237,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       className: "flex-1 min-h-0 overflow-y-auto space-y-1 content-start"
     }, priceCalcResult.rows.map((row, idx) => React.createElement("div", {
       key: idx,
-      className: "rounded-xl border border-emerald-100 bg-emerald-50/50 px-2.5 py-1.5"
+      className: "rounded-2xl border border-emerald-100 bg-emerald-50/50 px-3 py-2.5"
     }, React.createElement("div", {
       className: "flex items-center justify-between gap-2"
     }, React.createElement("div", {
@@ -5245,13 +5245,13 @@ ${TOKO_HANA_PUBLIC_URL}`;
     }, React.createElement("div", {
       className: "flex items-center gap-1.5 min-w-0"
     }, React.createElement("h5", {
-      className: "font-black text-[#2d1242] text-[10px] leading-tight truncate"
+      className: "font-black text-[#2d1242] text-[12px] leading-tight truncate"
     }, row.label), React.createElement("span", {
-      className: `text-[6.5px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 ${row.status === 'RUGI' ? 'bg-red-100 text-red-700' : row.status === 'TIPIS' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`
+      className: `text-[7.5px] font-black px-2 py-0.5 rounded-full flex-shrink-0 ${row.status === 'RUGI' ? 'bg-red-100 text-red-700' : row.status === 'TIPIS' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`
     }, row.status)), React.createElement("p", {
-      className: "text-[7.5px] text-gray-500 font-semibold leading-tight truncate"
+      className: "text-[9px] text-gray-500 font-semibold leading-tight truncate mt-0.5"
     }, "Modal ", formatCalcNumber(row.modal), " + kemasan ", formatCalcNumber(row.packaging), " • laba ", formatCalcNumber(row.profit))), React.createElement("strong", {
-      className: "text-[16px] font-black text-emerald-700 flex-shrink-0"
+      className: "text-[21px] font-black text-emerald-700 flex-shrink-0 tracking-[-0.04em]"
     }, formatCalcNumber(row.suggested)))))), React.createElement("div", {
       className: "grid grid-cols-4 gap-1.5 flex-shrink-0 pb-[calc(env(safe-area-inset-bottom)+8px)]"
     }, keys.map(key => React.createElement("button", {
@@ -9008,5 +9008,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b283f75e199d6f',t:'MTc4NDA1Mjk1NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b29941edd0f8ec',t:'MTc4NDA1MzgyNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

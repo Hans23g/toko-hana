@@ -5686,26 +5686,26 @@ ${TOKO_HANA_PUBLIC_URL}`;
         setSelectedSponsor(sponsor);
         setCurrentTab('SponsorDetail');
       },
-      className: "relative w-full overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50 p-3 shadow-sm text-left active:scale-[0.99] transition-all mb-4"
+      className: "relative w-full overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50 px-3 py-2.5 shadow-sm text-left active:scale-[0.99] transition-all mb-3"
     }, React.createElement("div", {
       className: "absolute -right-8 -top-8 w-24 h-24 bg-[#FFD700]/20 rounded-full blur-xl"
     }), React.createElement("div", {
-      className: "relative flex items-start gap-2.5"
+      className: "relative flex items-center gap-2.5"
     }, React.createElement("img", {
       src: sponsor.image || BRAND_LOGO_DATA_URI,
       alt: sponsor.title,
-      className: "w-14 h-14 rounded-xl object-cover border border-amber-100 shadow-sm flex-shrink-0",
+      className: "w-12 h-12 rounded-xl object-cover border border-amber-100 shadow-sm flex-shrink-0",
       onError: e => {
         e.currentTarget.src = BRAND_LOGO_DATA_URI;
       }
     }), React.createElement("div", {
-      className: "min-w-0 pt-0.5"
+      className: "min-w-0 flex-1"
     }, React.createElement("span", {
-      className: "inline-block text-[8px] font-black text-[#2d1242] bg-[#FFD700] px-2 py-0.5 rounded-full mb-1"
+      className: "inline-block text-[7.5px] leading-none font-black text-[#2d1242] bg-[#FFD700] px-1.5 py-[3px] rounded-full mb-0.5 align-top"
     }, "SOROTAN"), React.createElement("h4", {
-      className: "font-black text-[#703d92] text-sm leading-tight truncate"
+      className: "font-black text-[#703d92] text-[13px] leading-tight truncate"
     }, sponsor.title || 'Ruang Mitra Toko Hana'), React.createElement("p", {
-      className: "text-[10px] text-gray-500 font-semibold leading-snug mt-0.5 line-clamp-2"
+      className: "text-[9.5px] text-gray-500 font-semibold leading-snug mt-0.5 line-clamp-2"
     }, sponsor.desc || 'Tempat dukungan brand lokal dan sahabat warung.'))));
   })(), React.createElement("div", {
     className: "bg-white rounded-2xl p-4 border border-purple-50 shadow-sm mb-4"
@@ -8784,5 +8784,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ac550dfa42561c',t:'MTc4Mzk4ODExOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1aca3f4ce66fdf0',t:'MTc4Mzk5MTM1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

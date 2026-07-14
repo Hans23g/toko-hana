@@ -2764,6 +2764,7 @@ function App() {
   });
   const [adminActiveSubMenu, setAdminActiveSubMenu] = useState('produk');
   const [adminJelajahView, setAdminJelajahView] = useState('posts');
+  const [adminBrandingView, setAdminBrandingView] = useState('branding');
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingBanner, setEditingBanner] = useState(null);
   const [bannerForm, setBannerForm] = useState({
@@ -8688,11 +8689,19 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "space-y-4 text-xs"
   }, React.createElement("div", {
     className: "bg-white rounded-2xl p-4 border shadow-sm space-y-4"
-  }, React.createElement("h4", {
-    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider border-b pb-2"
-  }, "🖼️ Pengaturan Branding Warung"), React.createElement("form", {
+  }, React.createElement("div", {
+    className: "grid grid-cols-2 gap-1 border-b pb-2"
+  }, React.createElement("button", {
+    type: "button",
+    onClick: () => setAdminBrandingView('branding'),
+    className: `rounded-xl px-2 py-2 text-[9px] font-black ${adminBrandingView === 'branding' ? 'bg-[#703d92] text-white' : 'bg-purple-50 text-[#703d92]'}`
+  }, "Pengaturan Branding"), React.createElement("button", {
+    type: "button",
+    onClick: () => setAdminBrandingView('payment'),
+    className: `rounded-xl px-2 py-2 text-[9px] font-black ${adminBrandingView === 'payment' ? 'bg-[#703d92] text-white' : 'bg-amber-50 text-[#703d92]'}`
+  }, "QRIS & Wallet")), React.createElement("form", {
     onSubmit: handleSaveHeaderPattern,
-    className: "space-y-3"
+    className: adminBrandingView === 'branding' ? "space-y-3" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, "URL Gambar Pattern Header (.png/.jpg)"), React.createElement("input", {
@@ -8710,7 +8719,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "border-t border-gray-100 pt-3 mt-3"
   }), React.createElement("form", {
     onSubmit: handleSaveWarungAddress,
-    className: "space-y-3"
+    className: adminBrandingView === 'branding' ? "space-y-3" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, lang === 'id' ? '🏪 Alamat Warung Fisik (tampil di Kartu Jam Warung + tombol Maps)' : '🏪 Physical Store Address (shown on Store Hours Card + Maps button)'), React.createElement("input", {
@@ -8729,7 +8738,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "border-t border-gray-100 pt-3 mt-3"
   }), React.createElement("form", {
     onSubmit: handleSaveNavPattern,
-    className: "space-y-3"
+    className: adminBrandingView === 'branding' ? "space-y-3" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, lang === 'id' ? 'URL Gambar Pattern Navbar Bawah (.png/.jpg)' : 'Bottom Navbar Pattern Image URL (.png/.jpg)'), React.createElement("input", {
@@ -8762,7 +8771,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "border-t border-gray-100 pt-3 mt-3"
   }), React.createElement("form", {
     onSubmit: handleSaveQrisImage,
-    className: "space-y-3"
+    className: adminBrandingView === 'payment' ? "space-y-3" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, "URL Gambar QRIS Merchant"), React.createElement("input", {
@@ -8780,7 +8789,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "border-t border-gray-100 pt-3 mt-3"
   }), React.createElement("form", {
     onSubmit: handleSaveWaNumber,
-    className: "space-y-3"
+    className: adminBrandingView === 'payment' ? "space-y-3" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, lang === 'id' ? 'Nomor WhatsApp Merchant (Gunakan kode negara, misal: 62812...)' : 'Merchant WhatsApp Number (With country code, e.g., 62812...)'), React.createElement("input", {
@@ -8799,7 +8808,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "border-t border-gray-100 pt-3 mt-3"
   }), React.createElement("form", {
     onSubmit: handleSavePiRate,
-    className: "space-y-3"
+    className: adminBrandingView === 'payment' ? "space-y-3" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, lang === 'id' ? 'Nilai Tukar 1 Pi dalam Rupiah (Rp)' : '1 Pi Exchange Rate in Rupiah (Rp)'), React.createElement("input", {
@@ -8824,7 +8833,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "border-t border-gray-100 pt-3 mt-3"
   }), React.createElement("form", {
     onSubmit: handleSavePiWallet,
-    className: "space-y-3"
+    className: adminBrandingView === 'payment' ? "space-y-3" : "hidden"
   }, React.createElement("h5", {
     className: "font-extrabold text-amber-600 flex items-center gap-1.5 uppercase tracking-wider text-[11px]"
   }, React.createElement(LucideIcon, {
@@ -9372,5 +9381,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b404180b2acdd9',t:'MTc4NDA2ODY4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b413e2986efd96',t:'MTc4NDA2OTMzNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

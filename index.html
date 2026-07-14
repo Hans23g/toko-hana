@@ -2438,6 +2438,7 @@ function App() {
   const [showWarungCalculator, setShowWarungCalculator] = useState(false);
   const [warungCalcText, setWarungCalcText] = useState('');
   const [warungCalcPaid, setWarungCalcPaid] = useState('');
+  const [warungCalcMode, setWarungCalcMode] = useState('items');
   const parseWarungCalcLine = line => {
     const raw = String(line || '').trim();
     if (!raw) return null;
@@ -2450,7 +2451,7 @@ function App() {
       value = nums ? Number(nums[0]) : 0;
       if (/^\s*-/.test(left)) value = -Math.abs(value);
     }
-    const rounded = Math.round(value);
+    const rounded = Math.round(value * 100) / 100;
     return {
       raw,
       value: rounded
@@ -2458,8 +2459,32 @@ function App() {
   };
   const warungCalcRows = useMemo(() => warungCalcText.split('\n').map(parseWarungCalcLine).filter(Boolean), [warungCalcText]);
   const warungCalcTotal = useMemo(() => warungCalcRows.reduce((sum, row) => sum + row.value, 0), [warungCalcRows]);
-  const warungCalcPaidNum = useMemo(() => parseInt(String(warungCalcPaid || '0').replace(/[^0-9-]/g, '')) || 0, [warungCalcPaid]);
+  const warungCalcPaidNum = useMemo(() => parseFloat(String(warungCalcPaid || '0').replace(',', '.').replace(/[^0-9.-]/g, '')) || 0, [warungCalcPaid]);
   const warungCalcChange = warungCalcPaidNum - warungCalcTotal;
+  const formatCalcNumber = value => Number(value || 0).toLocaleString('id-ID', {
+    maximumFractionDigits: 2
+  });
+  const handleWarungCalcKey = key => {
+    if (key === 'Bayar') {
+      setWarungCalcMode('paid');
+      return;
+    }
+    if (key === '⌫') {
+      if (warungCalcMode === 'paid') setWarungCalcPaid(prev => prev.slice(0, -1));else setWarungCalcText(prev => prev.slice(0, -1));
+      return;
+    }
+    if (key === '↵') {
+      setWarungCalcMode('items');
+      setWarungCalcText(prev => prev + '\n');
+      return;
+    }
+    if (warungCalcMode === 'paid') setWarungCalcPaid(prev => prev + key);else setWarungCalcText(prev => prev + key);
+  };
+  const clearWarungCalc = () => {
+    setWarungCalcText('');
+    setWarungCalcPaid('');
+    setWarungCalcMode('items');
+  };
   useEffect(() => {
     if (!selectedProductDetail) return;
     if (Array.isArray(selectedProductDetail.price_tiers) && selectedProductDetail.price_tiers.length > 0) return;
@@ -8522,84 +8547,76 @@ ${TOKO_HANA_PUBLIC_URL}`;
       className: "w-full mt-4 bg-gradient-to-r from-[#703d92] to-[#553C9A] text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md active:scale-95"
     }, lang === 'id' ? 'Selesai Pembayaran' : 'Finish Payment')));
   })(), currentTab === 'WarungCalc' && React.createElement("div", {
-    className: "fixed inset-0 z-[9999] bg-[#F5F3F7] animate-fade-in p-4 pt-[calc(env(safe-area-inset-top)+14px)] pb-6 overflow-y-auto"
+    className: "fixed inset-0 z-[9999] bg-[#F5F3F7] animate-fade-in overflow-hidden flex flex-col",
+    style: {
+      paddingTop: 'calc(env(safe-area-inset-top) + 10px)'
+    }
   }, React.createElement("div", {
-    className: "bg-[#FFFDF6] rounded-3xl p-4 border border-[#E8D9A0] shadow-sm min-h-[calc(100vh-40px)]"
-  }, React.createElement("div", {
-    className: "flex items-center justify-between mb-3"
-  }, React.createElement("div", null, React.createElement("span", {
-    className: "block text-[9px] font-black text-[#703d92] uppercase tracking-[0.16em]"
-  }, "Aplikasi Kecil Toko Hana"), React.createElement("h3", {
-    className: "font-black text-[#2d1242] text-lg"
-  }, "🧮 Kalkulator Warung")), React.createElement("button", {
-    onClick: () => setCurrentTab('Promo'),
-    className: "px-3 py-2 bg-white border border-gray-100 text-[#703d92] rounded-xl shadow-sm text-[10px] font-black"
-  }, "Jelajah")), React.createElement("textarea", {
-    value: warungCalcText,
-    onChange: e => setWarungCalcText(e.target.value),
-    className: "w-full min-h-[130px] border border-purple-100 rounded-2xl p-3 font-mono text-[13px] leading-relaxed bg-white focus:outline-none focus:border-[#703d92]",
-    placeholder: "Ketik hitungan atau pakai tombol cepat..."
-  }), React.createElement("p", {
-    className: "text-[9px] text-gray-400 font-semibold mt-1 mb-2"
-  }, "Contoh: 11000 x 2.5 lalu Enter, 9000 x 3.5, + 5000, atau 10000 % 10."), React.createElement("div", {
-    className: "grid grid-cols-4 gap-1.5 mb-3"
-  }, ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '+', '0', '000', '.', '↵', '-', '%', 'C'].map(key => React.createElement("button", {
-    key: key,
+    className: "px-4 pb-2 flex items-center justify-between flex-shrink-0"
+  }, React.createElement("button", {
     type: "button",
-    onClick: () => {
-      if (key === 'C') {
-        setWarungCalcText('');
-        setWarungCalcPaid('');
-        return;
-      }
-      if (key === '⌫') return setWarungCalcText(prev => prev.slice(0, -1));
-      if (key === '↵') return setWarungCalcText(prev => prev + '\n');
-      setWarungCalcText(prev => prev + key);
-    },
-    className: `rounded-xl py-2.5 text-sm font-black border active:scale-95 ${key === 'x' || key === '+' || key === '-' || key === '%' || key === 'C' ? 'bg-[#703d92] text-white border-[#703d92]' : key === '↵' ? 'bg-[#FFD700] text-[#2d1242] border-amber-200' : key === '⌫' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-purple-100'}`
-  }, key === '↵' ? 'Enter' : key === 'C' ? 'Clear' : key))), React.createElement("div", {
-    className: "rounded-2xl bg-purple-50/60 border border-purple-100 p-3 space-y-1.5 mb-3"
-  }, warungCalcRows.length ? warungCalcRows.map((row, idx) => React.createElement("div", {
-    key: idx,
-    className: "flex items-center justify-between gap-2 text-[11px] font-bold"
+    onClick: () => setCurrentTab('Promo'),
+    className: "bg-white border border-purple-100 text-[#703d92] font-black text-[10px] px-3 py-2 rounded-xl shadow-sm"
+  }, "← Jelajah"), React.createElement("div", {
+    className: "text-center"
+  }, React.createElement("div", {
+    className: "text-[8px] font-black text-[#D4AF37] uppercase tracking-[0.28em]"
+  }, "Toko Hana"), React.createElement("h2", {
+    className: "font-black text-[#2d1242] text-base leading-tight"
+  }, "Kalkulator Warung")), React.createElement("button", {
+    type: "button",
+    onClick: clearWarungCalc,
+    className: "bg-red-50 border border-red-100 text-red-600 font-black text-[10px] px-3 py-2 rounded-xl shadow-sm"
+  }, "Clear")), React.createElement("div", {
+    className: "px-4 flex-1 min-h-0 flex flex-col gap-2"
+  }, React.createElement("div", {
+    onClick: () => setWarungCalcMode('items'),
+    className: `rounded-3xl border p-3 flex-1 min-h-0 overflow-y-auto ${warungCalcMode === 'items' ? 'bg-white border-[#FFD700]' : 'bg-white/80 border-purple-100'}`
+  }, React.createElement("div", {
+    className: "flex items-center justify-between mb-2"
   }, React.createElement("span", {
-    className: "text-gray-600 truncate font-mono"
+    className: "text-[9px] font-black text-[#703d92] uppercase tracking-wider"
+  }, "Hitungan"), React.createElement("span", {
+    className: "text-[8px] text-gray-400 font-bold"
+  }, "nilai x1000")), warungCalcRows.length ? warungCalcRows.map((row, idx) => React.createElement("div", {
+    key: idx,
+    className: "flex items-center justify-between gap-2 py-1 border-b border-dashed border-purple-50 last:border-b-0"
+  }, React.createElement("span", {
+    className: "font-mono text-[13px] text-gray-700 truncate"
   }, row.raw), React.createElement("span", {
-    className: `${row.value < 0 ? 'text-red-600' : 'text-[#703d92]'} font-black`
-  }, "Rp ", row.value.toLocaleString('id-ID')))) : React.createElement("p", {
-    className: "text-[10px] text-gray-400 font-semibold"
-  }, "Belum ada hitungan.")), React.createElement("div", {
-    className: "grid grid-cols-2 gap-2 mb-3"
+    className: `${row.value < 0 ? 'text-red-600' : 'text-[#703d92]'} font-black text-[13px]`
+  }, formatCalcNumber(row.value)))) : React.createElement("div", {
+    className: "h-full min-h-[90px] flex items-center justify-center text-center text-[11px] text-gray-400 font-semibold px-5"
+  }, "Tekan tombol angka di bawah. Contoh: 9 x 3.5 Enter.")), React.createElement("div", {
+    className: "grid grid-cols-3 gap-2 flex-shrink-0"
   }, React.createElement("div", {
     className: "rounded-2xl bg-[#2d1242] text-white p-3"
   }, React.createElement("span", {
-    className: "block text-[9px] font-black text-amber-200 uppercase tracking-wider"
+    className: "block text-[8px] font-black text-amber-200 uppercase tracking-wider"
   }, "Total"), React.createElement("strong", {
-    className: "block text-lg font-black mt-1"
-  }, "Rp ", warungCalcTotal.toLocaleString('id-ID'))), React.createElement("label", {
-    className: "rounded-2xl bg-amber-50 border border-amber-100 p-3"
-  }, React.createElement("span", {
-    className: "block text-[9px] font-black text-amber-700 uppercase tracking-wider mb-1"
-  }, "Total Bayar"), React.createElement("input", {
-    type: "number",
-    value: warungCalcPaid,
-    onChange: e => setWarungCalcPaid(e.target.value),
-    className: "w-full bg-white border border-amber-100 rounded-xl p-2 text-sm font-black text-[#2d1242]",
-    placeholder: "70000"
-  }))), React.createElement("div", {
-    className: `rounded-3xl p-4 border mb-3 ${warungCalcChange < 0 ? 'bg-red-50 border-red-100 text-red-700' : 'bg-emerald-50 border-emerald-100 text-emerald-700'}`
-  }, React.createElement("span", {
-    className: "block text-[9px] font-black uppercase tracking-wider"
-  }, warungCalcChange < 0 ? "Kurang" : "Kembali"), React.createElement("strong", {
-    className: "block text-2xl font-black mt-1"
-  }, "Rp ", Math.abs(warungCalcChange).toLocaleString('id-ID'))), React.createElement("button", {
+    className: "block text-xl font-black mt-0.5"
+  }, formatCalcNumber(warungCalcTotal))), React.createElement("button", {
     type: "button",
-    onClick: () => {
-      setWarungCalcText('');
-      setWarungCalcPaid('');
-    },
-    className: "hidden"
-  }, "Bersihkan"))), selectedProductDetail && React.createElement("div", {
+    onClick: () => setWarungCalcMode('paid'),
+    className: `rounded-2xl p-3 text-left border ${warungCalcMode === 'paid' ? 'bg-[#FFD700] border-[#D4AF37] text-[#2d1242]' : 'bg-amber-50 border-amber-100 text-amber-800'}`
+  }, React.createElement("span", {
+    className: "block text-[8px] font-black uppercase tracking-wider"
+  }, "Bayar"), React.createElement("strong", {
+    className: "block text-xl font-black mt-0.5"
+  }, formatCalcNumber(warungCalcPaidNum))), React.createElement("div", {
+    className: `rounded-2xl p-3 border ${warungCalcChange < 0 ? 'bg-red-50 border-red-100 text-red-700' : 'bg-emerald-50 border-emerald-100 text-emerald-700'}`
+  }, React.createElement("span", {
+    className: "block text-[8px] font-black uppercase tracking-wider"
+  }, warungCalcChange < 0 ? "Kurang" : "Kembali"), React.createElement("strong", {
+    className: "block text-xl font-black mt-0.5"
+  }, formatCalcNumber(Math.abs(warungCalcChange))))), React.createElement("div", {
+    className: "grid grid-cols-4 gap-2 flex-shrink-0 pb-[calc(env(safe-area-inset-bottom)+8px)]"
+  }, ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '↵', '0', '00', '.', 'Bayar'].map(key => React.createElement("button", {
+    key: key,
+    type: "button",
+    onClick: () => handleWarungCalcKey(key),
+    className: `rounded-2xl py-4 text-lg font-black border active:scale-95 shadow-sm ${key === 'x' ? 'bg-[#703d92] text-white border-[#703d92]' : key === '↵' || key === 'Bayar' ? 'bg-[#FFD700] text-[#2d1242] border-amber-200' : key === '⌫' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-purple-100'}`
+  }, key === '↵' ? 'Enter' : key))))), selectedProductDetail && React.createElement("div", {
     className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center animate-fade-in",
     onClick: () => setSelectedProductDetail(null)
   }, React.createElement("div", {
@@ -8784,5 +8801,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1aca3f4ce66fdf0',t:'MTc4Mzk5MTM1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b116651954fd91',t:'MTc4NDAzNzk4MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

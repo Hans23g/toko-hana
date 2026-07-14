@@ -2329,12 +2329,12 @@ function App() {
     key: 'Mitra',
     icon: '🤝',
     title: 'Mitra',
-    desc: 'Cerita sponsor dan sahabat warung.'
+    desc: 'Kemitraan, kurir, UMKM, supplier dan mitra warung.'
   }, {
     key: 'Info Warga',
     icon: '📢',
     title: 'Info Warga',
-    desc: 'Undangan, kabar RT, dan pengumuman.'
+    desc: 'Kabar warga, Undangan dan himbauan.'
   }, {
     key: 'Edukasi',
     icon: '📚',
@@ -2485,6 +2485,55 @@ function App() {
     setWarungCalcPaid('');
     setWarungCalcMode('items');
   };
+  const [priceCalcForm, setPriceCalcForm] = useState({
+    itemName: 'Minyak Sayur Curah',
+    totalCost: '305.6',
+    totalQty: '16',
+    unit: 'kg',
+    margin: '10',
+    packaging: '0.3',
+    rounding: '0.5',
+    literFactor: '0.8'
+  });
+  const updatePriceCalc = patch => setPriceCalcForm(prev => ({
+    ...prev,
+    ...patch
+  }));
+  const priceCalcNumber = v => parseFloat(String(v || '0').replace(',', '.').replace(/[^0-9.-]/g, '')) || 0;
+  const roundWarung = (value, step) => {
+    const s = step > 0 ? step : 0.5;
+    return Math.ceil(value / s) * s;
+  };
+  const priceCalcResult = useMemo(() => {
+    const totalCost = priceCalcNumber(priceCalcForm.totalCost);
+    const totalQty = priceCalcNumber(priceCalcForm.totalQty) || 1;
+    const margin = priceCalcNumber(priceCalcForm.margin);
+    const packaging = priceCalcNumber(priceCalcForm.packaging);
+    const rounding = priceCalcNumber(priceCalcForm.rounding) || 0.5;
+    const literFactor = priceCalcNumber(priceCalcForm.literFactor) || 0.8;
+    const modalPerUnit = totalCost / totalQty;
+    const makeRow = (label, qty) => {
+      const modal = modalPerUnit * qty;
+      const suggested = roundWarung((modal + packaging) * (1 + margin / 100), rounding);
+      const profit = suggested - modal - packaging;
+      const marginPct = suggested ? profit / suggested * 100 : 0;
+      return {
+        label,
+        qty,
+        modal,
+        packaging,
+        suggested,
+        profit,
+        marginPct,
+        status: profit < 0 ? 'RUGI' : marginPct < 7 ? 'TIPIS' : 'AMAN'
+      };
+    };
+    const unit = priceCalcForm.unit || 'unit';
+    return {
+      modalPerUnit,
+      rows: [makeRow(`1 ${unit}`, 1), makeRow(`1/2 ${unit}`, 0.5), makeRow(`1/4 ${unit}`, 0.25), makeRow('1 liter (konversi)', literFactor)]
+    };
+  }, [priceCalcForm]);
   useEffect(() => {
     if (!selectedProductDetail) return;
     if (Array.isArray(selectedProductDetail.price_tiers) && selectedProductDetail.price_tiers.length > 0) return;
@@ -5076,6 +5125,89 @@ ${TOKO_HANA_PUBLIC_URL}`;
     if (!currentUser || currentUser.role !== 'customer') return [];
     return (orders || []).filter(o => o && (o.customer_name?.toLowerCase() === currentUser.name?.toLowerCase() || o.phone === currentUser.phone));
   }, [orders, currentUser]);
+  const renderPriceCalcPage = () => {
+    const inputCls = "w-full border border-gray-200 rounded-2xl p-2.5 font-bold bg-white";
+    const field = (label, key, props = {}) => React.createElement("label", null, React.createElement("span", {
+      className: "block text-[8px] text-gray-400 font-black uppercase tracking-wider mb-1 ml-1"
+    }, label), React.createElement("input", {
+      value: priceCalcForm[key],
+      onChange: e => updatePriceCalc({
+        [key]: e.target.value
+      }),
+      className: inputCls,
+      ...props
+    }));
+    return React.createElement("div", {
+      className: "fixed inset-0 z-[9999] bg-[#F5F3F7] animate-fade-in overflow-y-auto",
+      style: {
+        paddingTop: 'calc(env(safe-area-inset-top) + 10px)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 18px)'
+      }
+    }, React.createElement("div", {
+      className: "px-4 pb-4"
+    }, React.createElement("div", {
+      className: "flex items-center justify-between mb-3"
+    }, React.createElement("button", {
+      type: "button",
+      onClick: () => setCurrentTab('Promo'),
+      className: "bg-white border border-purple-100 text-[#703d92] font-black text-[10px] px-3 py-2 rounded-xl shadow-sm"
+    }, "← Aplikasi"), React.createElement("div", {
+      className: "text-center"
+    }, React.createElement("div", {
+      className: "text-[8px] font-black text-[#D4AF37] uppercase tracking-[0.28em]"
+    }, "Toko Hana"), React.createElement("h2", {
+      className: "font-black text-[#2d1242] text-base leading-tight"
+    }, "Hitung Harga Jual")), React.createElement("div", {
+      className: "w-[66px]"
+    })), React.createElement("div", {
+      className: "bg-white rounded-3xl border border-emerald-100 shadow-sm p-4 space-y-3"
+    }, React.createElement("p", {
+      className: "text-[10px] text-gray-500 font-semibold leading-relaxed"
+    }, "Mode ribuan warung: 305.6 = Rp305.600, 0.3 = Rp300. Untuk minyak, beras, gula, tepung, dan barang curah."), field('Nama barang', 'itemName'), React.createElement("div", {
+      className: "grid grid-cols-2 gap-2"
+    }, field('Modal total (rb)', 'totalCost', {
+      type: 'number'
+    }), field('Isi total', 'totalQty', {
+      type: 'number'
+    })), React.createElement("div", {
+      className: "grid grid-cols-3 gap-2"
+    }, field('Unit', 'unit'), field('Margin %', 'margin', {
+      type: 'number'
+    }), field('Bulat ke', 'rounding', {
+      type: 'number'
+    })), React.createElement("div", {
+      className: "grid grid-cols-2 gap-2"
+    }, field('Kemasan (rb)', 'packaging', {
+      type: 'number'
+    }), field('1 liter=? unit', 'literFactor', {
+      type: 'number'
+    })), React.createElement("div", {
+      className: "rounded-2xl bg-[#2d1242] text-white p-3"
+    }, React.createElement("span", {
+      className: "block text-[9px] text-amber-200 font-black uppercase tracking-wider"
+    }, "Modal per ", priceCalcForm.unit || 'unit'), React.createElement("strong", {
+      className: "block text-2xl font-black mt-1"
+    }, formatCalcNumber(priceCalcResult.modalPerUnit))), React.createElement("div", {
+      className: "space-y-2"
+    }, priceCalcResult.rows.map((row, idx) => React.createElement("div", {
+      key: idx,
+      className: "rounded-2xl border border-emerald-100 bg-emerald-50/40 p-3"
+    }, React.createElement("div", {
+      className: "flex items-start justify-between gap-2"
+    }, React.createElement("div", null, React.createElement("h5", {
+      className: "font-black text-[#2d1242] text-[12px]"
+    }, row.label), React.createElement("p", {
+      className: "text-[9px] text-gray-500 font-semibold mt-0.5 leading-snug"
+    }, "Modal ", formatCalcNumber(row.modal), " + kemasan ", formatCalcNumber(row.packaging), " • laba est. ", formatCalcNumber(row.profit)), React.createElement("span", {
+      className: `inline-block mt-1 text-[8px] font-black px-2 py-0.5 rounded-full ${row.status === 'RUGI' ? 'bg-red-100 text-red-700' : row.status === 'TIPIS' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`
+    }, row.status)), React.createElement("div", {
+      className: "text-right flex-shrink-0"
+    }, React.createElement("span", {
+      className: "block text-[8px] font-black text-emerald-700 uppercase"
+    }, "Rekomendasi"), React.createElement("strong", {
+      className: "block text-lg font-black text-emerald-700"
+    }, formatCalcNumber(row.suggested))))))))));
+  };
   return React.createElement("div", {
     className: `flex-1 flex flex-col relative transition-colors duration-300 ${darkMode ? 'bg-[#11091d]' : 'bg-[#2d1242]'}`,
     style: {
@@ -5751,31 +5883,53 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: `font-black text-[11px] ${selectedJelajahCategory === item.key ? 'text-[#FFD700]' : 'text-[#703d92]'}`
   }, item.title), React.createElement("p", {
     className: `text-[9px] font-semibold leading-snug mt-0.5 ${selectedJelajahCategory === item.key ? 'text-white/75' : 'text-gray-500'}`
-  }, item.desc)))), React.createElement("button", {
-    type: "button",
-    onClick: () => setCurrentTab('WarungCalc'),
-    className: "mt-2.5 w-full text-left rounded-2xl border border-[#FFD700]/50 bg-gradient-to-br from-[#2d1242] via-[#703d92] to-[#553C9A] p-2.5 text-white active:scale-[0.99] transition-all shadow-sm"
-  }, React.createElement("div", {
-    className: "flex items-center gap-2"
-  }, React.createElement("div", {
-    className: "w-8 h-8 rounded-xl bg-[#FFD700] text-[#2d1242] flex items-center justify-center text-base shadow-sm"
-  }, "🧮"), React.createElement("div", {
-    className: "min-w-0"
-  }, React.createElement("h5", {
-    className: "font-black text-[#FFD700] text-[12px]"
-  }, "Kalkulator Warung"), React.createElement("p", {
-    className: "text-[9px] text-white/75 font-semibold leading-snug"
-  }, "Hitung cepat total belanja dan kembalian.")))), React.createElement("div", {
+  }, item.desc)))), React.createElement("div", {
     className: "mt-3 space-y-2"
   }, React.createElement("div", {
     className: "flex items-center justify-between"
   }, React.createElement("h5", {
     className: "font-black text-[#703d92] text-[11px] uppercase tracking-wider"
-  }, "Postingan Jelajah"), React.createElement("button", {
+  }, "Info Jelajah"), React.createElement("button", {
     type: "button",
     onClick: () => setSelectedJelajahCategory('Semua'),
     className: "text-[9px] font-black text-[#703d92] bg-purple-50 px-2 py-1 rounded-full"
-  }, selectedJelajahCategory === 'Semua' ? `${(sponsorBanners || []).length} tulisan` : `Lihat semua`)), (filteredJelajahPosts || []).map(post => React.createElement("button", {
+  }, selectedJelajahCategory === 'Semua' ? `${(sponsorBanners || []).length} tulisan` : `Lihat semua`)), selectedJelajahCategory === 'Aplikasi' && React.createElement("button", {
+    type: "button",
+    onClick: () => setCurrentTab('WarungCalc'),
+    className: "w-full text-left rounded-2xl border border-[#FFD700]/50 bg-gradient-to-br from-[#2d1242] via-[#703d92] to-[#553C9A] p-3 text-white active:scale-[0.99] transition-all shadow-sm"
+  }, React.createElement("div", {
+    className: "flex gap-2.5 items-center"
+  }, React.createElement("div", {
+    className: "w-9 h-9 rounded-xl bg-[#FFD700] text-[#2d1242] flex items-center justify-center text-lg shadow-sm flex-shrink-0"
+  }, "🧮"), React.createElement("div", {
+    className: "min-w-0 flex-1"
+  }, React.createElement("div", {
+    className: "flex items-center gap-1.5 min-w-0"
+  }, React.createElement("h6", {
+    className: "font-black text-[#FFD700] text-[11px] truncate"
+  }, "Kalkulator Warung"), React.createElement("span", {
+    className: "text-[7px] font-black text-[#2d1242] bg-[#FFD700] px-1.5 py-0.5 rounded-full flex-shrink-0"
+  }, "Aplikasi")), React.createElement("p", {
+    className: "text-[10px] text-white/75 font-semibold leading-snug mt-0.5"
+  }, "Hitung cepat total belanja dan kembalian.")))), selectedJelajahCategory === 'Aplikasi' && React.createElement("button", {
+    type: "button",
+    onClick: () => setCurrentTab('PriceCalc'),
+    className: "w-full text-left rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-amber-50 p-3 active:scale-[0.99] transition-all shadow-sm"
+  }, React.createElement("div", {
+    className: "flex gap-2.5 items-center"
+  }, React.createElement("div", {
+    className: "w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-sm flex-shrink-0"
+  }, "💹"), React.createElement("div", {
+    className: "min-w-0 flex-1"
+  }, React.createElement("div", {
+    className: "flex items-center gap-1.5 min-w-0"
+  }, React.createElement("h6", {
+    className: "font-black text-[#2d1242] text-[11px] truncate"
+  }, "Hitung Harga Jual"), React.createElement("span", {
+    className: "text-[7px] font-black text-white bg-emerald-600 px-1.5 py-0.5 rounded-full flex-shrink-0"
+  }, "Aplikasi")), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold leading-snug mt-0.5"
+  }, "Rekomendasi harga jual dari modal, kemasan, margin dan pembulatan warung.")))), (filteredJelajahPosts || []).map(post => React.createElement("button", {
     key: post.id,
     type: "button",
     onClick: () => {
@@ -8546,7 +8700,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       onClick: () => setShowQrisModal(false),
       className: "w-full mt-4 bg-gradient-to-r from-[#703d92] to-[#553C9A] text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md active:scale-95"
     }, lang === 'id' ? 'Selesai Pembayaran' : 'Finish Payment')));
-  })(), currentTab === 'WarungCalc' && React.createElement("div", {
+  })(), currentTab === 'PriceCalc' && renderPriceCalcPage(), currentTab === 'WarungCalc' && React.createElement("div", {
     className: "fixed inset-0 z-[9999] bg-[#F5F3F7] animate-fade-in overflow-hidden flex flex-col",
     style: {
       paddingTop: 'calc(env(safe-area-inset-top) + 10px)'
@@ -8801,5 +8955,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b1c881e9e189aa',t:'MTc4NDA0NTI3Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b1fd1c481b9c27',t:'MTc4NDA0NzQzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

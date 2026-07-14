@@ -5433,21 +5433,21 @@ ${TOKO_HANA_PUBLIC_URL}`;
     }, key)))));
   };
   const renderAdminJelajahTabs = () => React.createElement("div", {
-    className: "grid grid-cols-[1fr_1fr_auto] gap-1 w-full"
+    className: "grid grid-cols-3 gap-1 w-full"
   }, React.createElement("button", {
     type: "button",
     onClick: () => setAdminJelajahView('posts'),
-    className: `rounded-xl px-2 py-2 text-[9px] font-black ${adminJelajahView === 'posts' ? 'bg-[#703d92] text-white' : 'bg-purple-50 text-[#703d92]'}`
+    className: `rounded-xl px-1.5 py-1.5 text-[8.5px] font-black ${adminJelajahView === 'posts' ? 'bg-[#703d92] text-white' : 'bg-purple-50 text-[#703d92]'}`
   }, "Info Jelajah"), React.createElement("button", {
     type: "button",
     onClick: () => setAdminJelajahView('partners'),
-    className: `rounded-xl px-2 py-2 text-[9px] font-black ${adminJelajahView === 'partners' ? 'bg-[#703d92] text-white' : 'bg-purple-50 text-[#703d92]'}`
+    className: `rounded-xl px-1.5 py-1.5 text-[8.5px] font-black ${adminJelajahView === 'partners' ? 'bg-[#703d92] text-white' : 'bg-purple-50 text-[#703d92]'}`
   }, "Data Mitra"), React.createElement("button", {
     type: "button",
     onClick: () => setAdminJelajahView('applications'),
-    className: `relative rounded-xl px-3 py-2 text-[13px] font-black ${adminJelajahView === 'applications' ? 'bg-[#703d92] text-[#FFD700]' : 'bg-amber-50 text-[#703d92]'}`,
+    className: `relative rounded-xl px-1.5 py-1.5 text-[8.5px] font-black ${adminJelajahView === 'applications' ? 'bg-[#703d92] text-white' : 'bg-amber-50 text-[#703d92]'}`,
     title: "Pendaftaran Mitra Masuk"
-  }, "📥", (partnerApplications || []).filter(a => (a.status || 'new') === 'new').length > 0 && React.createElement("span", {
+  }, "Mitra Masuk", (partnerApplications || []).filter(a => (a.status || 'new') === 'new').length > 0 && React.createElement("span", {
     className: "absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[8px] flex items-center justify-center"
   }, (partnerApplications || []).filter(a => (a.status || 'new') === 'new').length)));
   const renderPartnerApplicationsAdmin = () => React.createElement("div", {
@@ -9372,5 +9372,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b3e7ffa9f1dc13',t:'MTc4NDA2NzUzNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b3f6a1bf7d8b16',t:'MTc4NDA2ODEzNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

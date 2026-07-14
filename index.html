@@ -7601,8 +7601,10 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
   }, editingProduct ? '✏️ Edit Produk' : '✨ Tambah Produk Baru'), React.createElement("form", {
     onSubmit: handleSaveProduct,
-    className: "space-y-3 text-xs"
-  }, React.createElement("input", {
+    className: "space-y-2 text-xs"
+  }, React.createElement("div", {
+    className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-purple-50 border border-purple-100 rounded-xl px-2.5 py-1.5"
+  }, "Data Dasar"), React.createElement("input", {
     type: "text",
     required: true,
     value: prodForm.name,
@@ -7613,6 +7615,8 @@ ${TOKO_HANA_PUBLIC_URL}`;
     placeholder: "Nama Produk *",
     className: "w-full border rounded-xl p-2.5"
   }), React.createElement("div", {
+    className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-amber-50 border border-amber-100 rounded-xl px-2.5 py-1.5"
+  }, "Harga & Stok"), React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, React.createElement("input", {
     type: "number",
@@ -7656,6 +7660,8 @@ ${TOKO_HANA_PUBLIC_URL}`;
     placeholder: "Terjual *",
     className: "w-full border rounded-xl p-2.5"
   })), React.createElement("div", {
+    className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-purple-50 border border-purple-100 rounded-xl px-2.5 py-1.5"
+  }, "Etalase"), React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, React.createElement("select", {
     value: prodForm.category,
@@ -7688,6 +7694,8 @@ ${TOKO_HANA_PUBLIC_URL}`;
     placeholder: "Deskripsi Singkat 1 Baris *",
     className: "w-full border rounded-xl p-2.5"
   }), React.createElement("div", {
+    className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-emerald-50 border border-emerald-100 rounded-xl px-2.5 py-1.5"
+  }, "Satuan Beli/Jual"), React.createElement("div", {
     className: "grid grid-cols-3 gap-2"
   }, React.createElement("input", {
     value: prodForm.base_unit,
@@ -7734,7 +7742,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
       allow_fraction: e.target.checked
     }),
     className: "accent-[#703d92]"
-  }), React.createElement("span", null, "Boleh pecahan"))), React.createElement("textarea", {
+  }), React.createElement("span", null, "Boleh pecahan"))), React.createElement("div", {
+    className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-amber-50 border border-amber-100 rounded-xl px-2.5 py-1.5"
+  }, "Tier Harga"), React.createElement("textarea", {
     value: prodForm.price_tiers,
     onChange: e => setProdForm({
       ...prodForm,
@@ -9381,5 +9391,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b42c54b860fcf0',t:'MTc4NDA3MDMzNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b445219e24135a',t:'MTc4NDA3MTM1Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

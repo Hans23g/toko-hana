@@ -5139,7 +5139,16 @@ ${TOKO_HANA_PUBLIC_URL}`;
       [key]: val
     });
     const press = key => {
-      if (key === 'C') return setField(priceCalcActiveField, '');
+      if (key === 'C') return setPriceCalcForm({
+        itemName: 'Minyak Sayur Curah',
+        totalCost: '305.6',
+        totalQty: '16',
+        unit: 'kg',
+        margin: '10',
+        packaging: '0.3',
+        rounding: '0.5',
+        literFactor: '0.8'
+      });
       if (key === '←') return setField(priceCalcActiveField, String(priceCalcForm[priceCalcActiveField] || '').slice(0, -1));
       if (key === 'Unit') {
         const list = ['kg', 'liter', 'pcs', 'lembar'];
@@ -5211,30 +5220,30 @@ ${TOKO_HANA_PUBLIC_URL}`;
     }, priceCalcForm.unit || 'kg')), React.createElement("div", {
       className: "grid grid-cols-3 gap-1.5"
     }, miniField('totalCost', 'Modal'), miniField('totalQty', 'Isi'), miniField('margin', 'Margin'), miniField('packaging', 'Kemasan'), miniField('rounding', 'Bulat'), miniField('literFactor', 'Liter'))), React.createElement("div", {
-      className: "rounded-2xl bg-[#2d1242] text-white p-2.5 flex-shrink-0"
+      className: "rounded-2xl bg-[#2d1242] text-white px-3 py-2 flex-shrink-0"
     }, React.createElement("span", {
       className: "block text-[8px] text-amber-200 font-black uppercase tracking-wider"
     }, "Modal per ", priceCalcForm.unit || 'unit'), React.createElement("strong", {
-      className: "block text-lg font-black mt-0.5"
+      className: "block text-base font-black mt-0.5"
     }, formatCalcNumber(priceCalcResult.modalPerUnit))), React.createElement("div", {
-      className: "flex-1 min-h-0 overflow-y-auto space-y-1.5"
+      className: "grid grid-cols-2 gap-1.5 flex-shrink-0"
     }, priceCalcResult.rows.map((row, idx) => React.createElement("div", {
       key: idx,
-      className: "rounded-2xl border border-emerald-100 bg-emerald-50/50 p-2.5"
+      className: "rounded-xl border border-emerald-100 bg-emerald-50/50 p-2"
     }, React.createElement("div", {
-      className: "flex items-center justify-between gap-2"
+      className: "flex flex-col gap-1"
     }, React.createElement("div", {
       className: "min-w-0"
     }, React.createElement("h5", {
-      className: "font-black text-[#2d1242] text-[11px]"
+      className: "font-black text-[#2d1242] text-[10px] leading-tight"
     }, row.label), React.createElement("p", {
-      className: "text-[8.5px] text-gray-500 font-semibold leading-snug"
+      className: "text-[7.5px] text-gray-500 font-semibold leading-tight"
     }, "Modal ", formatCalcNumber(row.modal), " + kemasan ", formatCalcNumber(row.packaging), " • laba ", formatCalcNumber(row.profit))), React.createElement("div", {
-      className: "text-right flex-shrink-0"
+      className: "flex items-end justify-between gap-1"
     }, React.createElement("span", {
       className: `inline-block text-[7px] font-black px-1.5 py-0.5 rounded-full mb-0.5 ${row.status === 'RUGI' ? 'bg-red-100 text-red-700' : row.status === 'TIPIS' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`
     }, row.status), React.createElement("strong", {
-      className: "block text-[16px] font-black text-emerald-700"
+      className: "block text-[14px] font-black text-emerald-700"
     }, formatCalcNumber(row.suggested))))))), React.createElement("div", {
       className: "grid grid-cols-4 gap-1.5 flex-shrink-0 pb-[calc(env(safe-area-inset-bottom)+8px)]"
     }, keys.map(key => React.createElement("button", {
@@ -5242,7 +5251,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       type: "button",
       onClick: () => press(key),
       className: `rounded-2xl py-3 text-[15px] font-black border active:scale-95 shadow-sm ${key === 'Unit' ? 'bg-emerald-600 text-white border-emerald-600' : key === 'C' || key === '←' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-emerald-100'}`
-    }, key)))));
+    }, key === 'C' ? 'Reset' : key)))));
   };
   return React.createElement("div", {
     className: `flex-1 flex flex-col relative transition-colors duration-300 ${darkMode ? 'bg-[#11091d]' : 'bg-[#2d1242]'}`,
@@ -8991,5 +9000,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b216906b0fa1b5',t:'MTc4NDA0ODQ3Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

@@ -1223,6 +1223,54 @@ const supabaseService = {
       };
     }
   },
+  getPartnerApplications: async () => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('partner_applications').select('*').order('created_at', {
+        ascending: false
+      });
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
+  updatePartnerApplicationStatus: async (id, status) => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const {
+        data,
+        error
+      } = await client.from('partner_applications').update({
+        status
+      }).eq('id', id).select();
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
   getCustomers: async () => {
     const client = getSupabaseClient();
     if (!client) return {
@@ -2440,6 +2488,7 @@ function App() {
     notes: ''
   });
   const [partnerApplicationSubmitted, setPartnerApplicationSubmitted] = useState(false);
+  const [partnerApplications, setPartnerApplications] = useState([]);
   const [cart, setCart] = useState(() => {
     try {
       const local = safeStorage.getItem('toko_hana_cart');
@@ -2670,6 +2719,19 @@ function App() {
     }) => {
       if (!mounted) return;
       if (!error && Array.isArray(data)) setPartners(data);else if (error) console.warn('Partners Supabase skipped:', error.message || error);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+  useEffect(() => {
+    let mounted = true;
+    supabaseService.getPartnerApplications().then(({
+      data,
+      error
+    }) => {
+      if (!mounted) return;
+      if (!error && Array.isArray(data)) setPartnerApplications(data);else if (error) console.warn('Partner applications skipped:', error.message || error);
     });
     return () => {
       mounted = false;
@@ -5008,6 +5070,7 @@ function App() {
       return;
     }
     setPartnerApplicationSubmitted(true);
+    if (data && data[0]) setPartnerApplications(prev => [data[0], ...prev]);
     showToast('🤝 Terima kasih! Form Mitra Toko Hana sudah terkirim.');
     setPartnerApplicationForm(prev => ({
       ...prev,
@@ -5017,6 +5080,22 @@ function App() {
       area: '',
       notes: ''
     }));
+  };
+  const handleUpdatePartnerApplicationStatus = async (id, status) => {
+    setPartnerApplications(prev => prev.map(item => item.id === id ? {
+      ...item,
+      status
+    } : item));
+    const {
+      data,
+      error
+    } = await supabaseService.updatePartnerApplicationStatus(id, status);
+    if (!error && data && data[0]) {
+      setPartnerApplications(prev => prev.map(item => item.id === id ? data[0] : item));
+      showToast('🤝 Status pendaftar mitra diperbarui.');
+    } else {
+      showToast('☕ Status berubah lokal. Database belum menerima.');
+    }
   };
   const shareJelajahPost = post => {
     const title = post?.title || 'Postingan Jelajah Toko Hana';
@@ -5352,6 +5431,63 @@ ${TOKO_HANA_PUBLIC_URL}`;
       className: `rounded-2xl py-3 text-[15px] font-black border active:scale-95 shadow-sm ${key === 'Unit' ? 'bg-emerald-600 text-white border-emerald-600' : key === 'C' || key === '←' || key === 'Reset' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-emerald-100'}`
     }, key)))));
   };
+  const renderPartnerApplicationsAdmin = () => React.createElement("div", {
+    className: "space-y-4 text-xs"
+  }, React.createElement("div", {
+    className: "bg-white rounded-2xl p-4 border shadow-sm space-y-3"
+  }, React.createElement("div", {
+    className: "flex items-start gap-3"
+  }, React.createElement("div", {
+    className: "w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-sm flex-shrink-0"
+  }, "📥"), React.createElement("div", null, React.createElement("h5", {
+    className: "font-extrabold text-[#703d92] uppercase tracking-wider text-[11px]"
+  }, "Pendaftaran Mitra Masuk"), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold mt-1 leading-relaxed"
+  }, "Daftar calon mitra dari Jelajah. Ubah status setelah dihubungi/ngopi kebutuhan."))), React.createElement("div", {
+    className: "space-y-2 max-h-80 overflow-y-auto no-scrollbar"
+  }, (partnerApplications || []).length ? (partnerApplications || []).map(item => {
+    const typeMeta = (partnerApplicationTypes || []).find(t => t.key === item.partner_type) || {
+      label: item.partner_type || 'Mitra',
+      icon: '🤝'
+    };
+    const statusTone = item.status === 'approved' ? 'bg-emerald-50 text-emerald-700' : item.status === 'rejected' ? 'bg-red-50 text-red-700' : item.status === 'contacted' || item.status === 'in_discussion' ? 'bg-amber-50 text-amber-700' : 'bg-purple-50 text-[#703d92]';
+    return React.createElement("div", {
+      key: item.id,
+      className: "rounded-2xl border border-gray-100 bg-gradient-to-br from-white to-purple-50/30 p-2.5"
+    }, React.createElement("div", {
+      className: "flex items-start gap-2"
+    }, React.createElement("div", {
+      className: "w-9 h-9 rounded-xl bg-[#703d92] text-[#FFD700] flex items-center justify-center flex-shrink-0"
+    }, typeMeta.icon), React.createElement("div", {
+      className: "min-w-0 flex-1"
+    }, React.createElement("div", {
+      className: "flex items-center gap-1.5 min-w-0"
+    }, React.createElement("h6", {
+      className: "font-black text-[#2d1242] text-[11px] truncate"
+    }, item.name || 'Calon Mitra'), React.createElement("span", {
+      className: "text-[7px] font-black bg-[#FFD700] text-[#2d1242] px-1.5 py-0.5 rounded-full flex-shrink-0"
+    }, typeMeta.label), React.createElement("span", {
+      className: `text-[7px] font-black px-1.5 py-0.5 rounded-full flex-shrink-0 ${statusTone}`
+    }, item.status || 'new')), React.createElement("p", {
+      className: "text-[9px] text-gray-500 font-semibold mt-0.5 truncate"
+    }, item.phone || '-', " • ", item.area || 'Area belum diisi'), item.notes && React.createElement("p", {
+      className: "text-[9px] text-gray-400 font-semibold mt-1 line-clamp-2"
+    }, item.notes), item.partner_type === 'warung_partner' && React.createElement("div", {
+      className: "flex flex-wrap gap-1 mt-1.5"
+    }, [['needs_pos_offline', 'POS'], ['needs_online_catalog', 'Online'], ['needs_stock_report', 'Laporan'], ['needs_consignment', 'Titipan'], ['needs_multi_cashier', 'Kasir'], ['needs_delivery', 'Delivery']].filter(([key]) => item[key]).map(([key, label]) => React.createElement("span", {
+      key: key,
+      className: "text-[7px] font-black bg-white border border-purple-100 text-[#703d92] px-1.5 py-0.5 rounded-full"
+    }, label))), React.createElement("select", {
+      value: item.status || 'new',
+      onChange: e => handleUpdatePartnerApplicationStatus(item.id, e.target.value),
+      className: "mt-2 w-full border border-gray-200 rounded-xl p-2 bg-white font-bold text-[10px] text-gray-600"
+    }, ['new', 'contacted', 'in_discussion', 'approved', 'rejected', 'archived'].map(st => React.createElement("option", {
+      key: st,
+      value: st
+    }, st))))));
+  }) : React.createElement("div", {
+    className: "rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center text-[10px] text-gray-400 font-bold"
+  }, "Belum ada pendaftaran mitra masuk."))));
   return React.createElement("div", {
     className: `flex-1 flex flex-col relative transition-colors duration-300 ${darkMode ? 'bg-[#11091d]' : 'bg-[#2d1242]'}`,
     style: {
@@ -7969,7 +8105,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, React.createElement(LucideIcon, {
     name: "Trash2",
     size: 12
-  }))))))), adminActiveSubMenu === 'restok' && React.createElement("div", {
+  }))))))), adminActiveSubMenu === 'promo' && renderPartnerApplicationsAdmin(), adminActiveSubMenu === 'restok' && React.createElement("div", {
     className: "space-y-4 text-xs"
   }, React.createElement("div", {
     className: "bg-white rounded-2xl p-4 border shadow-sm"
@@ -9210,5 +9346,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b37ecdec000fe2',t:'MTc4NDA2MzIyOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b38f470d00f146',t:'MTc4NDA2MzkwMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

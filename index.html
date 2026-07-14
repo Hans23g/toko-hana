@@ -5139,7 +5139,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       [key]: val
     });
     const press = key => {
-      if (key === 'C') return setPriceCalcForm({
+      if (key === 'Reset') return setPriceCalcForm({
         itemName: 'Minyak Sayur Curah',
         totalCost: '305.6',
         totalQty: '16',
@@ -5149,6 +5149,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
         rounding: '0.5',
         literFactor: '0.8'
       });
+      if (key === 'C') return setField(priceCalcActiveField, '');
       if (key === '←') return setField(priceCalcActiveField, String(priceCalcForm[priceCalcActiveField] || '').slice(0, -1));
       if (key === 'Unit') {
         const list = ['kg', 'liter', 'pcs', 'lembar'];
@@ -5168,7 +5169,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     }, label), React.createElement("strong", {
       className: "block text-[13px] font-black truncate"
     }, priceCalcForm[key] || '0'));
-    const keys = ['7', '8', '9', '←', '4', '5', '6', 'Unit', '1', '2', '3', 'C', '0', '00', '.', '5'];
+    const keys = ['7', '8', '9', '←', '4', '5', '6', 'Unit', '1', '2', '3', 'C', '0', '00', '.', 'Reset'];
     return React.createElement("div", {
       className: "fixed inset-0 z-[9999] bg-[#F5F3F7] animate-fade-in overflow-hidden flex flex-col",
       style: {
@@ -5226,7 +5227,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     }, "Modal per ", priceCalcForm.unit || 'unit'), React.createElement("strong", {
       className: "block text-base font-black mt-0.5"
     }, formatCalcNumber(priceCalcResult.modalPerUnit))), React.createElement("div", {
-      className: "grid grid-cols-2 gap-1.5 flex-shrink-0"
+      className: "grid grid-cols-2 gap-1.5 flex-1 min-h-0 overflow-y-auto content-start"
     }, priceCalcResult.rows.map((row, idx) => React.createElement("div", {
       key: idx,
       className: "rounded-xl border border-emerald-100 bg-emerald-50/50 p-2"
@@ -5250,8 +5251,8 @@ ${TOKO_HANA_PUBLIC_URL}`;
       key,
       type: "button",
       onClick: () => press(key),
-      className: `rounded-2xl py-3 text-[15px] font-black border active:scale-95 shadow-sm ${key === 'Unit' ? 'bg-emerald-600 text-white border-emerald-600' : key === 'C' || key === '←' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-emerald-100'}`
-    }, key === 'C' ? 'Reset' : key)))));
+      className: `rounded-2xl py-3 text-[15px] font-black border active:scale-95 shadow-sm ${key === 'Unit' ? 'bg-emerald-600 text-white border-emerald-600' : key === 'C' || key === '←' || key === 'Reset' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-emerald-100'}`
+    }, key)))));
   };
   return React.createElement("div", {
     className: `flex-1 flex flex-col relative transition-colors duration-300 ${darkMode ? 'bg-[#11091d]' : 'bg-[#2d1242]'}`,
@@ -9000,6 +9001,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b24edf685e1edc',t:'MTc4NDA1MDc4MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

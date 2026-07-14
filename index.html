@@ -8522,9 +8522,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
       className: "w-full mt-4 bg-gradient-to-r from-[#703d92] to-[#553C9A] text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md active:scale-95"
     }, lang === 'id' ? 'Selesai Pembayaran' : 'Finish Payment')));
   })(), currentTab === 'WarungCalc' && React.createElement("div", {
-    className: "animate-fade-in p-4 pb-24"
+    className: "fixed inset-0 z-40 bg-[#F5F3F7] animate-fade-in p-4 pt-[calc(env(safe-area-inset-top)+14px)] pb-6 overflow-y-auto"
   }, React.createElement("div", {
-    className: "bg-[#FFFDF6] rounded-3xl p-4 border border-[#E8D9A0] shadow-sm"
+    className: "bg-[#FFFDF6] rounded-3xl p-4 border border-[#E8D9A0] shadow-sm min-h-[calc(100vh-40px)]"
   }, React.createElement("div", {
     className: "flex items-center justify-between mb-3"
   }, React.createElement("div", null, React.createElement("span", {
@@ -8543,16 +8543,21 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-[9px] text-gray-400 font-semibold mt-1 mb-2"
   }, "Contoh: 11000 x 2.5 lalu Enter, 9000 x 3.5, + 5000, atau 10000 % 10."), React.createElement("div", {
     className: "grid grid-cols-4 gap-1.5 mb-3"
-  }, ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '+', '0', '000', '.', '↵', '-', '%'].map(key => React.createElement("button", {
+  }, ['7', '8', '9', '⌫', '4', '5', '6', 'x', '1', '2', '3', '+', '0', '000', '.', '↵', '-', '%', 'C'].map(key => React.createElement("button", {
     key: key,
     type: "button",
     onClick: () => {
+      if (key === 'C') {
+        setWarungCalcText('');
+        setWarungCalcPaid('');
+        return;
+      }
       if (key === '⌫') return setWarungCalcText(prev => prev.slice(0, -1));
       if (key === '↵') return setWarungCalcText(prev => prev + '\n');
       setWarungCalcText(prev => prev + key);
     },
-    className: `rounded-xl py-2.5 text-sm font-black border active:scale-95 ${key === 'x' || key === '+' || key === '-' || key === '%' ? 'bg-[#703d92] text-white border-[#703d92]' : key === '↵' ? 'bg-[#FFD700] text-[#2d1242] border-amber-200' : key === '⌫' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-purple-100'}`
-  }, key === '↵' ? 'Enter' : key))), React.createElement("div", {
+    className: `rounded-xl py-2.5 text-sm font-black border active:scale-95 ${key === 'x' || key === '+' || key === '-' || key === '%' || key === 'C' ? 'bg-[#703d92] text-white border-[#703d92]' : key === '↵' ? 'bg-[#FFD700] text-[#2d1242] border-amber-200' : key === '⌫' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-[#2d1242] border-purple-100'}`
+  }, key === '↵' ? 'Enter' : key === 'C' ? 'Clear' : key))), React.createElement("div", {
     className: "rounded-2xl bg-purple-50/60 border border-purple-100 p-3 space-y-1.5 mb-3"
   }, warungCalcRows.length ? warungCalcRows.map((row, idx) => React.createElement("div", {
     key: idx,
@@ -8593,7 +8598,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       setWarungCalcText('');
       setWarungCalcPaid('');
     },
-    className: "w-full bg-gray-100 text-gray-600 font-black text-[10px] py-2.5 rounded-xl mb-24"
+    className: "hidden"
   }, "Bersihkan"))), selectedProductDetail && React.createElement("div", {
     className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center animate-fade-in",
     onClick: () => setSelectedProductDetail(null)
@@ -8779,5 +8784,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ac39a35a83fcee',t:'MTc4Mzk4Njk5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ac4b55cdc435a4',t:'MTc4Mzk4NzcyMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

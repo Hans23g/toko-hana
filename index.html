@@ -5542,20 +5542,36 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "Belum ada pendaftaran mitra masuk."))));
   const renderFinanceAdmin = () => {
     const completedOrders = (orders || []).filter(o => o && o.status === 'Selesai');
-    const last7Days = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      last7Days.push(d.toISOString().split('T')[0]);
-    }
-    const bars = last7Days.map(date => {
-      const total = completedOrders.filter(o => o.date === date).reduce((sum, o) => sum + (o.total || 0), 0);
-      const day = new Date(date + 'T00:00:00').toLocaleDateString('id-ID', {
-        weekday: 'short'
-      });
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const weekRanges = [{
+      label: 'M1',
+      start: 1,
+      end: 7
+    }, {
+      label: 'M2',
+      start: 8,
+      end: 14
+    }, {
+      label: 'M3',
+      start: 15,
+      end: 21
+    }, {
+      label: 'M4',
+      start: 22,
+      end: daysInMonth
+    }];
+    const bars = weekRanges.map(w => {
+      const total = completedOrders.filter(o => {
+        if (!o.date) return false;
+        const d = new Date(o.date + 'T00:00:00');
+        return d.getFullYear() === year && d.getMonth() === month && d.getDate() >= w.start && d.getDate() <= w.end;
+      }).reduce((sum, o) => sum + (o.total || 0), 0);
       return {
-        date,
-        day,
+        date: `${year}-${month + 1}-${w.start}`,
+        day: w.label,
         total
       };
     });
@@ -5627,9 +5643,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
       className: "flex items-center justify-between mb-2"
     }, React.createElement("span", {
       className: "text-[9px] text-[#703d92] uppercase tracking-widest font-black"
-    }, "Grafik 7 Hari"), React.createElement("span", {
+    }, "Grafik Bulan Ini"), React.createElement("span", {
       className: "text-[8px] text-gray-400 font-bold"
-    }, "pesanan selesai")), React.createElement("div", {
+    }, "per minggu")), React.createElement("div", {
       className: "flex items-end gap-1.5 h-24"
     }, bars.map((bar, idx) => React.createElement("div", {
       key: bar.date || idx,
@@ -9588,5 +9604,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b58261cdd08b8a',t:'MTc4NDA4NDM0Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b59262fce689bc',t:'MTc4NDA4NTAwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

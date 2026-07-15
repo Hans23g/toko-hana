@@ -7556,21 +7556,21 @@ ${TOKO_HANA_PUBLIC_URL}`;
     onChange: e => updateBulkImportRow(idx, {
       purchase_unit: e.target.value
     }),
-    placeholder: "Beli per",
+    placeholder: "Beli dari agen per (dus/renceng)",
     className: "w-full border rounded-lg p-2 text-[10px] font-bold"
   }), React.createElement("input", {
     value: row.units_per_purchase || '',
     onChange: e => updateBulkImportRow(idx, {
       units_per_purchase: e.target.value
     }),
-    placeholder: "Isi/beli",
+    placeholder: "Isi per dus/renceng/pack",
     className: "w-full border rounded-lg p-2 text-[10px] font-bold"
   })), React.createElement("input", {
     value: row.price_tiers || '',
     onChange: e => updateBulkImportRow(idx, {
       price_tiers: e.target.value
     }),
-    placeholder: "Tier: label|qty|unit|harga|default|card",
+    placeholder: "Contoh: 1 butir|0.0625|kg|1500|false|false",
     className: "w-full border rounded-lg p-2 text-[10px] font-semibold mb-1.5"
   }), React.createElement("textarea", {
     value: row.desc,
@@ -7604,7 +7604,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "space-y-2 text-xs"
   }, React.createElement("div", {
     className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-purple-50 border border-purple-100 rounded-xl px-2.5 py-1.5"
-  }, "Data Dasar"), React.createElement("input", {
+  }, "1. Barangnya Apa?"), React.createElement("p", {
+    className: "text-[9px] text-gray-400 font-semibold -mt-1"
+  }, "Isi yang penting dulu. Kalau bingung, pakai contoh harga di bawah."), React.createElement("input", {
     type: "text",
     required: true,
     value: prodForm.name,
@@ -7616,7 +7618,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "w-full border rounded-xl p-2.5"
   }), React.createElement("div", {
     className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-amber-50 border border-amber-100 rounded-xl px-2.5 py-1.5"
-  }, "Harga & Stok"), React.createElement("div", {
+  }, "2. Harga & Stoknya"), React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, React.createElement("input", {
     type: "number",
@@ -7626,7 +7628,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       ...prodForm,
       price: e.target.value
     }),
-    placeholder: "Harga Promo *",
+    placeholder: "Harga jual utama *",
     className: "w-full border rounded-xl p-2.5"
   }), React.createElement("input", {
     type: "number",
@@ -7635,7 +7637,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       ...prodForm,
       original_price: e.target.value
     }),
-    placeholder: "Harga Slashed",
+    placeholder: "Harga coret/promo",
     className: "w-full border rounded-xl p-2.5"
   })), React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
@@ -7661,7 +7663,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "w-full border rounded-xl p-2.5"
   })), React.createElement("div", {
     className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-purple-50 border border-purple-100 rounded-xl px-2.5 py-1.5"
-  }, "Etalase"), React.createElement("div", {
+  }, "3. Tampil di Etalase"), React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, React.createElement("select", {
     value: prodForm.category,
@@ -7681,7 +7683,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       ...prodForm,
       image: e.target.value
     }),
-    placeholder: "URL Gambar *",
+    placeholder: "Foto/gambar produk *",
     className: "w-full border rounded-xl p-2.5"
   })), React.createElement("input", {
     type: "text",
@@ -7691,11 +7693,13 @@ ${TOKO_HANA_PUBLIC_URL}`;
       ...prodForm,
       desc: e.target.value
     }),
-    placeholder: "Deskripsi Singkat 1 Baris *",
+    placeholder: "Cerita singkat produk *",
     className: "w-full border rounded-xl p-2.5"
   }), React.createElement("div", {
     className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-emerald-50 border border-emerald-100 rounded-xl px-2.5 py-1.5"
-  }, "Satuan Beli/Jual"), React.createElement("div", {
+  }, "4. Beli dari Agen"), React.createElement("p", {
+    className: "text-[9px] text-gray-400 font-semibold -mt-1"
+  }, "Kalau belum tahu, biarkan standar. Bisa dirapikan nanti."), React.createElement("div", {
     className: "grid grid-cols-3 gap-2"
   }, React.createElement("input", {
     value: prodForm.base_unit,
@@ -7703,7 +7707,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       ...prodForm,
       base_unit: e.target.value
     }),
-    placeholder: "Satuan stok",
+    placeholder: "Stok dihitung dalam (pcs/kg/batang)",
     className: "w-full border rounded-xl p-2.5"
   }), React.createElement("input", {
     value: prodForm.purchase_unit,
@@ -7730,7 +7734,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       ...prodForm,
       purchase_price: e.target.value
     }),
-    placeholder: "Harga beli pack/dus",
+    placeholder: "Harga beli dari agen",
     className: "w-full border rounded-xl p-2.5"
   }), React.createElement("label", {
     className: "flex items-center gap-2 border rounded-xl p-2.5 bg-white text-[10px] font-bold text-gray-600"
@@ -7744,7 +7748,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "accent-[#703d92]"
   }), React.createElement("span", null, "Boleh pecahan"))), React.createElement("div", {
     className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-amber-50 border border-amber-100 rounded-xl px-2.5 py-1.5"
-  }, "Tier Harga"), React.createElement("div", {
+  }, "5. Pilihan Harga Jual"), React.createElement("p", {
+    className: "text-[9px] text-gray-400 font-semibold -mt-1"
+  }, "Kalau barang cuma satu harga, bagian ini boleh dikosongkan."), React.createElement("div", {
     className: "grid grid-cols-4 gap-1.5"
   }, [{
     label: 'Telur',
@@ -7829,7 +7835,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     type: "button",
     onClick: () => fillWithRandomUnsplash('product'),
     className: "bg-purple-100 text-[#703d92] px-4 py-2.5 rounded-xl font-bold"
-  }, "Gambar Acak"), React.createElement("button", {
+  }, "Cari Gambar"), React.createElement("button", {
     type: "submit",
     className: "flex-1 bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
   }, editingProduct ? 'Simpan' : 'Tambah')))), React.createElement("div", {
@@ -9462,5 +9468,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b46c1aa842a8e5',t:'MTc4NDA3Mjk0OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b487157c29fd6f',t:'MTc4NDA3NDA1Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

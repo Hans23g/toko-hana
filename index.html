@@ -5107,7 +5107,22 @@ function App() {
       ...partnerApplicationForm,
       status: 'new'
     };
+    if (payload.partner_type !== 'courier') {
+      payload.has_driver_license = false;
+      payload.driver_license_type = null;
+      payload.driver_license_image_url = null;
+      payload.vehicle_type = null;
+      payload.vehicle_plate = null;
+      payload.active_hours = null;
+    }
+    if (payload.partner_type !== 'supplier') {
+      payload.catalog_url = null;
+      payload.offered_products = null;
+      payload.minimum_order_note = null;
+      payload.delivery_area_note = null;
+    }
     const {
+      data,
       error
     } = await supabaseService.insertPartnerApplication(payload);
     if (error) {
@@ -6519,7 +6534,17 @@ ${TOKO_HANA_PUBLIC_URL}`;
       setPartnerApplicationSubmitted(false);
       setPartnerApplicationForm(prev => ({
         ...prev,
-        partner_type: t.key
+        partner_type: t.key,
+        has_driver_license: t.key === 'courier' ? prev.has_driver_license : false,
+        driver_license_type: t.key === 'courier' ? prev.driver_license_type || 'SIM C' : '',
+        driver_license_image_url: t.key === 'courier' ? prev.driver_license_image_url : '',
+        vehicle_type: t.key === 'courier' ? prev.vehicle_type : '',
+        vehicle_plate: t.key === 'courier' ? prev.vehicle_plate : '',
+        active_hours: t.key === 'courier' ? prev.active_hours : '',
+        catalog_url: t.key === 'supplier' ? prev.catalog_url : '',
+        offered_products: t.key === 'supplier' ? prev.offered_products : '',
+        minimum_order_note: t.key === 'supplier' ? prev.minimum_order_note : '',
+        delivery_area_note: t.key === 'supplier' ? prev.delivery_area_note : ''
       }));
     },
     className: `text-left rounded-2xl border p-2 active:scale-[0.99] transition-all ${partnerApplicationForm.partner_type === t.key ? 'bg-gradient-to-br from-[#703d92] to-[#2d1242] border-[#FFD700] text-white shadow-sm' : 'bg-white border-amber-100 text-[#2d1242]'}`
@@ -9795,6 +9820,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b92b776a45f90e',t:'MTc4NDEyMjczMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b93aabfe2122a1',t:'MTc4NDEyMzM1Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

@@ -2543,6 +2543,12 @@ function App() {
     ad_design_url: '',
     ad_duration_note: '',
     ad_goal_note: '',
+    community_role: '',
+    content_interest: '',
+    content_area_note: '',
+    information_source: '',
+    sample_content_url: '',
+    content_responsibility_agreed: false,
     notes: ''
   });
   const [partnerApplicationSubmitted, setPartnerApplicationSubmitted] = useState(false);
@@ -5146,6 +5152,14 @@ function App() {
       payload.ad_duration_note = null;
       payload.ad_goal_note = null;
     }
+    if (payload.partner_type !== 'content') {
+      payload.community_role = null;
+      payload.content_interest = null;
+      payload.content_area_note = null;
+      payload.information_source = null;
+      payload.sample_content_url = null;
+      payload.content_responsibility_agreed = false;
+    }
     const {
       data,
       error
@@ -5189,6 +5203,12 @@ function App() {
       ad_design_url: '',
       ad_duration_note: '',
       ad_goal_note: '',
+      community_role: '',
+      content_interest: '',
+      content_area_note: '',
+      information_source: '',
+      sample_content_url: '',
+      content_responsibility_agreed: false,
       notes: ''
     });
   };
@@ -6599,7 +6619,13 @@ ${TOKO_HANA_PUBLIC_URL}`;
         consignment_schedule_note: t.key === 'umkm' ? prev.consignment_schedule_note : '',
         ad_design_url: t.key === 'advertiser' ? prev.ad_design_url : '',
         ad_duration_note: t.key === 'advertiser' ? prev.ad_duration_note : '',
-        ad_goal_note: t.key === 'advertiser' ? prev.ad_goal_note : ''
+        ad_goal_note: t.key === 'advertiser' ? prev.ad_goal_note : '',
+        community_role: t.key === 'content' ? prev.community_role : '',
+        content_interest: t.key === 'content' ? prev.content_interest : '',
+        content_area_note: t.key === 'content' ? prev.content_area_note : '',
+        information_source: t.key === 'content' ? prev.information_source : '',
+        sample_content_url: t.key === 'content' ? prev.sample_content_url : '',
+        content_responsibility_agreed: t.key === 'content' ? prev.content_responsibility_agreed : false
       }));
     },
     className: `text-left rounded-2xl border p-2 active:scale-[0.99] transition-all ${partnerApplicationForm.partner_type === t.key ? 'bg-gradient-to-br from-[#703d92] to-[#2d1242] border-[#FFD700] text-white shadow-sm' : 'bg-white border-amber-100 text-[#2d1242]'}`
@@ -6852,7 +6878,65 @@ ${TOKO_HANA_PUBLIC_URL}`;
     }),
     placeholder: "Tujuan iklan",
     className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
-  }))), React.createElement("textarea", {
+  }))), partnerApplicationForm.partner_type === 'content' && React.createElement("div", {
+    className: "bg-white/70 rounded-2xl border border-purple-100 p-2 space-y-2"
+  }, React.createElement("div", {
+    className: "text-[9px] text-[#703d92] font-bold leading-relaxed"
+  }, "Konten warga akan dicek dulu sebelum tampil di Jelajah, supaya info tetap aman dan bermanfaat."), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5"
+  }, React.createElement("input", {
+    value: partnerApplicationForm.community_role,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      community_role: e.target.value
+    }),
+    placeholder: "Peran/status (RT/Panitia/Warga)",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  }), React.createElement("input", {
+    value: partnerApplicationForm.content_area_note,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      content_area_note: e.target.value
+    }),
+    placeholder: "Area info (RT/RW/Kampung)",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  })), React.createElement("textarea", {
+    value: partnerApplicationForm.content_interest,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      content_interest: e.target.value
+    }),
+    placeholder: "Jenis konten: info warga, undangan, himbauan, edukasi...",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white min-h-[52px]"
+  }), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5"
+  }, React.createElement("input", {
+    value: partnerApplicationForm.information_source,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      information_source: e.target.value
+    }),
+    placeholder: "Sumber info",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  }), React.createElement("input", {
+    value: partnerApplicationForm.sample_content_url,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      sample_content_url: e.target.value
+    }),
+    placeholder: "Link contoh/poster",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  })), React.createElement("label", {
+    className: "flex items-start gap-2 text-[9px] font-bold text-gray-600 bg-purple-50/70 border border-purple-100 rounded-xl p-2"
+  }, React.createElement("input", {
+    type: "checkbox",
+    checked: partnerApplicationForm.content_responsibility_agreed === true,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      content_responsibility_agreed: e.target.checked
+    }),
+    className: "accent-[#703d92] mt-0.5"
+  }), React.createElement("span", null, "Saya bersedia memastikan info benar, bermanfaat, dan tidak merugikan pihak lain."))), React.createElement("textarea", {
     value: partnerApplicationForm.notes,
     onChange: e => setPartnerApplicationForm({
       ...partnerApplicationForm,
@@ -9953,6 +10037,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b97885cd5bdaa5',t:'MTc4NDEyNTg4Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b993748842ce85',t:'MTc4NDEyNjk4OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

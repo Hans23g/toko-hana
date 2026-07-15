@@ -2812,6 +2812,7 @@ function App() {
   const [showQrisModal, setShowQrisModal] = useState(false);
   const [qrisModalStartTab, setQrisModalStartTab] = useState('qris');
   const [paymentChoice, setPaymentChoice] = useState('Transfer QRIS');
+  const [deliveryOption, setDeliveryOption] = useState('near');
   const [guestPaymentChoice, setGuestPaymentChoice] = useState('Cash');
   const [authActiveTab, setAuthActiveTab] = useState('login');
   const [authEmail, setAuthEmail] = useState('');
@@ -3808,7 +3809,39 @@ function App() {
   }, [cart]);
   const deliveryFee = cartSubtotal >= 50000 ? 0 : cartSubtotal > 0 ? 5000 : 0;
   const isCartCashInStore = currentUser?.role === 'customer' && paymentChoice === 'Cash di Toko';
-  const displayDeliveryFee = currentUser?.role === 'guest' || isCartCashInStore ? 0 : deliveryFee;
+  const deliveryOptions = [{
+    key: 'pickup',
+    label: 'Ambil di Toko',
+    fee: 0,
+    courierFee: 0,
+    note: 'Barang diambil langsung di toko.'
+  }, {
+    key: 'near',
+    label: 'Dekat',
+    fee: cartSubtotal >= 50000 ? 0 : 5000,
+    courierFee: 5000,
+    note: 'Sekitar warung / area dekat.'
+  }, {
+    key: 'medium',
+    label: 'Sedang',
+    fee: 8000,
+    courierFee: 8000,
+    note: 'Area sedang sekitar Toko Hana.'
+  }, {
+    key: 'far',
+    label: 'Jauh',
+    fee: 12000,
+    courierFee: 12000,
+    note: 'Area jauh lokal.'
+  }, {
+    key: 'confirm_admin',
+    label: 'Tanya Admin',
+    fee: 0,
+    courierFee: 0,
+    note: 'Ongkir menunggu konfirmasi admin via WA.'
+  }];
+  const selectedDelivery = deliveryOptions.find(opt => opt.key === deliveryOption) || deliveryOptions[1];
+  const displayDeliveryFee = currentUser?.role === 'guest' || isCartCashInStore ? 0 : selectedDelivery.fee;
   const cartTotal = cartSubtotal + displayDeliveryFee;
   const handleCheckoutWhatsApp = e => {
     e.preventDefault();
@@ -3826,7 +3859,11 @@ function App() {
       quantity: item.quantity,
       price: item.product.price
     }));
-    const effectiveDeliveryFee = isGuestCheckout || isMemberCashInStore ? 0 : deliveryFee;
+    const checkoutDelivery = isGuestCheckout || isMemberCashInStore ? deliveryOptions[0] : selectedDelivery;
+    const effectiveDeliveryFee = isGuestCheckout || isMemberCashInStore ? 0 : checkoutDelivery.fee;
+    const checkoutCourierFee = isGuestCheckout || isMemberCashInStore ? 0 : checkoutDelivery.courierFee;
+    const checkoutDeliveryZone = isGuestCheckout || isMemberCashInStore ? 'pickup' : checkoutDelivery.key;
+    const checkoutDeliveryNote = isGuestCheckout || isMemberCashInStore ? 'Ambil/bayar langsung di toko.' : checkoutDelivery.note;
     const isMemberCheckout = !isGuestCheckout && currentUser && currentUser.role === 'customer' && myCustomerRecord;
     const appliedRedeem = isMemberCheckout && redeemPointsChecked && canRedeem ? REDEEM_UNIT_VALUE : 0;
     const effectiveTotal = Math.max(0, cartSubtotal + effectiveDeliveryFee - appliedRedeem);
@@ -3851,6 +3888,9 @@ function App() {
       items: orderItems,
       subtotal: cartSubtotal,
       delivery_fee: effectiveDeliveryFee,
+      delivery_zone: checkoutDeliveryZone,
+      delivery_note: checkoutDeliveryNote,
+      courier_fee: checkoutCourierFee,
       total: effectiveTotal,
       payment_method: dbPaymentMethod,
       channel: isGuestCheckout || isMemberCashInStore ? 'Offline' : 'Online',
@@ -3918,6 +3958,10 @@ function App() {
         address: buyerAddress,
         total: effectiveTotal,
         payment_method: dbPaymentMethod,
+        delivery_zone: checkoutDeliveryZone,
+        delivery_fee_customer: effectiveDeliveryFee,
+        courier_fee: checkoutCourierFee,
+        delivery_note: checkoutDeliveryNote,
         status: 'Belum Bayar',
         items: orderItems,
         resi: null,
@@ -7324,7 +7368,27 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "bg-white rounded-2xl p-4 border space-y-2"
   }, React.createElement("div", {
     className: "flex justify-between text-xs text-gray-500"
-  }, React.createElement("span", null, lang === 'id' ? 'Subtotal Belanja' : 'Shopping Subtotal'), React.createElement("span", null, "Rp ", cartSubtotal.toLocaleString('id-ID'))), React.createElement("div", {
+  }, React.createElement("span", null, lang === 'id' ? 'Subtotal Belanja' : 'Shopping Subtotal'), React.createElement("span", null, "Rp ", cartSubtotal.toLocaleString('id-ID'))), currentUser?.role === 'customer' && React.createElement("div", {
+    className: "rounded-2xl bg-amber-50/50 border border-amber-100 p-2.5 space-y-2"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between"
+  }, React.createElement("span", {
+    className: "font-black text-[10px] text-[#703d92]"
+  }, "Cara Terima Barang"), React.createElement("span", {
+    className: "text-[8px] text-gray-400 font-bold"
+  }, isCartCashInStore ? 'Cash di toko' : 'pilih area')), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5"
+  }, deliveryOptions.map(opt => React.createElement("button", {
+    key: opt.key,
+    type: "button",
+    disabled: isCartCashInStore,
+    onClick: () => setDeliveryOption(opt.key),
+    className: `text-left rounded-xl border px-2 py-1.5 active:scale-[0.99] ${!isCartCashInStore && deliveryOption === opt.key || isCartCashInStore && opt.key === 'pickup' ? 'bg-[#703d92] text-white border-[#703d92]' : 'bg-white text-gray-600 border-amber-100'} ${isCartCashInStore && opt.key !== 'pickup' ? 'opacity-50' : ''}`
+  }, React.createElement("span", {
+    className: "block text-[9px] font-black"
+  }, opt.label), React.createElement("span", {
+    className: "block text-[8px] font-bold opacity-80"
+  }, opt.fee === 0 ? 'Gratis/konfirmasi' : `Rp ${opt.fee.toLocaleString('id-ID')}`))))), React.createElement("div", {
     className: "flex justify-between text-xs text-gray-500"
   }, React.createElement("span", null, lang === 'id' ? 'Ongkir' : 'Shipping Fee'), React.createElement("span", null, currentUser?.role === 'guest' || isCartCashInStore ? lang === 'id' ? 'Gratis (Ambil di Toko)' : 'Free (In-Store Pickup)' : displayDeliveryFee === 0 ? lang === 'id' ? 'Gratis' : 'Free' : `Rp ${displayDeliveryFee.toLocaleString('id-ID')}`)), currentUser?.role === 'customer' && myCustomerRecord && React.createElement("div", {
     className: `flex items-center justify-between gap-2 p-2.5 rounded-xl border-2 transition-all ${canRedeem ? redeemPointsChecked ? 'border-[#FFD700] bg-amber-50' : 'border-amber-200 bg-amber-50/40' : 'border-gray-100 bg-gray-50 opacity-70'}`
@@ -10103,5 +10167,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ba0b2ffa2ab65f',t:'MTc4NDEzMTg5Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ba2d8f5932ce3b',t:'MTc4NDEzMzMwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

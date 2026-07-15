@@ -3817,17 +3817,18 @@ function App() {
     const buyerPhone = (form.elements.buyerPhone ? form.elements.buyerPhone.value.trim() : '') || '-';
     const buyerAddress = (form.elements.buyerAddress ? form.elements.buyerAddress.value.trim() : '') || (isGuestCheckout ? lang === 'id' ? 'Pembelian Langsung di Toko' : 'In-Store Purchase' : 'Alamat Toko');
     const paymentMethod = isGuestCheckout ? guestPaymentChoice : paymentChoice;
+    const isMemberCashInStore = !isGuestCheckout && paymentMethod === 'Cash di Toko';
     const newOrderId = "HNA-" + Math.floor(Math.random() * 900000 + 100000);
     const orderItems = cart.map(item => ({
       product_name: item.product.name,
       quantity: item.quantity,
       price: item.product.price
     }));
-    const effectiveDeliveryFee = isGuestCheckout ? 0 : deliveryFee;
+    const effectiveDeliveryFee = isGuestCheckout || isMemberCashInStore ? 0 : deliveryFee;
     const isMemberCheckout = !isGuestCheckout && currentUser && currentUser.role === 'customer' && myCustomerRecord;
     const appliedRedeem = isMemberCheckout && redeemPointsChecked && canRedeem ? REDEEM_UNIT_VALUE : 0;
     const effectiveTotal = Math.max(0, cartSubtotal + effectiveDeliveryFee - appliedRedeem);
-    const dbPaymentMethod = isGuestCheckout ? `${paymentMethod} (Offline)` : paymentMethod;
+    const dbPaymentMethod = isGuestCheckout ? `${paymentMethod} (Offline)` : isMemberCashInStore ? 'Cash di Toko (Member)' : paymentMethod;
     let pointsEarned = 0;
     if (isMemberCheckout) {
       pointsEarned = calcPointsEarned(effectiveTotal, paymentMethod);
@@ -3850,7 +3851,7 @@ function App() {
       delivery_fee: effectiveDeliveryFee,
       total: effectiveTotal,
       payment_method: dbPaymentMethod,
-      channel: isGuestCheckout ? 'Offline' : 'Online',
+      channel: isGuestCheckout || isMemberCashInStore ? 'Offline' : 'Online',
       status: "Baru",
       date: new Date().toISOString().split('T')[0],
       kurir: "",
@@ -3941,6 +3942,11 @@ function App() {
       }
       return;
     }
+    if (isMemberCashInStore) {
+      setCart([]);
+      showToast(lang === 'id' ? `🧾 Pesanan member ${newOrderId} tercatat. Silakan bayar Cash di kasir dan HanaPoin tetap diproses.` : `🧾 Member order ${newOrderId} recorded. Please pay cash at the counter; HanaPoints are still processed.`);
+      return;
+    }
     let message = `*Halo Toko Hana, saya mau pesan (Event Solo Host Pi Network):*\n`;
     message += `------------------------------------------\n`;
     cart.forEach((item, idx) => {
@@ -3950,7 +3956,7 @@ function App() {
     });
     message += `------------------------------------------\n`;
     message += `*Subtotal:* Rp ${cartSubtotal.toLocaleString('id-ID')} (${convertRpToPi(cartSubtotal).toFixed(4)} π)\n`;
-    message += `*Ongkir:* ${deliveryFee === 0 ? 'Gratis (Promo Pi)' : `Rp ${deliveryFee.toLocaleString('id-ID')} (${convertRpToPi(deliveryFee).toFixed(4)} π)`}\n`;
+    message += `*Ongkir:* ${effectiveDeliveryFee === 0 ? 'Gratis' : `Rp ${effectiveDeliveryFee.toLocaleString('id-ID')} (${convertRpToPi(effectiveDeliveryFee).toFixed(4)} π)`}\n`;
     if (appliedRedeem > 0) {
       message += `*⭐ Potongan HanaPoin:* -Rp ${appliedRedeem.toLocaleString('id-ID')} (${REDEEM_UNIT_POINTS} poin)\n`;
     }
@@ -7344,7 +7350,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-[#703d92]"
   }, "Rp ", (currentUser?.role === 'guest' ? cartSubtotal : Math.max(0, cartTotal - (currentUser?.role === 'customer' ? redeemDiscount : 0))).toLocaleString('id-ID'))), currentUser?.role === 'customer' && myCustomerRecord && cartSubtotal > 0 && React.createElement("div", {
     className: "text-center text-[9px] font-bold text-emerald-600 bg-emerald-50 rounded-lg py-1.5"
-  }, lang === 'id' ? `⭐ Anda akan mendapat ± ${calcPointsEarned(Math.max(0, cartTotal - redeemDiscount), paymentChoice)} HanaPoin dari belanja ini${paymentChoice === 'Koin Pi' ? ' (program tukar Koin Pi)' : ''}` : `⭐ You'll earn ± ${calcPointsEarned(Math.max(0, cartTotal - redeemDiscount), paymentChoice)} HanaPoints from this order${paymentChoice === 'Koin Pi' ? ' (Pi Coin redeem program)' : ''}`)), currentUser && currentUser.role === 'guest' ? React.createElement("form", {
+  }, lang === 'id' ? `⭐ Anda akan mendapat ± ${calcPointsEarned(Math.max(0, cartTotal - redeemDiscount), paymentChoice)} HanaPoin dari belanja ini${paymentChoice === 'Tukar Koin Pi' ? ' (program tukar Koin Pi)' : ''}` : `⭐ You'll earn ± ${calcPointsEarned(Math.max(0, cartTotal - redeemDiscount), paymentChoice)} HanaPoints from this order${paymentChoice === 'Tukar Koin Pi' ? ' (Pi Coin redeem program)' : ''}`)), currentUser && currentUser.role === 'guest' ? React.createElement("form", {
     onSubmit: handleCheckoutWhatsApp,
     className: "bg-white p-4 rounded-2xl space-y-3 text-xs border shadow-sm"
   }, React.createElement("div", {
@@ -7365,7 +7371,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }), React.createElement("div", null, React.createElement("span", {
     className: "block text-gray-600 font-bold mb-1.5"
   }, lang === 'id' ? 'Pilih Pembayaran Rupiah di Kasir' : 'Choose Payment Method at Counter'), React.createElement("div", {
-    className: "grid grid-cols-3 gap-2"
+    className: "grid grid-cols-4 gap-1.5"
   }, React.createElement("button", {
     type: "button",
     onClick: () => setGuestPaymentChoice('Cash'),
@@ -7474,9 +7480,28 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: `font-extrabold text-[9px] leading-tight text-center ${paymentChoice === 'Transfer QRIS' ? 'text-[#703d92]' : 'text-gray-500'}`
   }, "QRIS")), React.createElement("button", {
     type: "button",
+    onClick: () => setPaymentChoice('Cash di Toko'),
+    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${paymentChoice === 'Cash di Toko' ? 'border-emerald-500 bg-emerald-50 shadow-md' : 'border-gray-200 bg-white hover:border-emerald-300'}`
+  }, paymentChoice === 'Cash di Toko' && React.createElement("span", {
+    className: "absolute top-1 right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center"
+  }, React.createElement(LucideIcon, {
+    name: "Check",
+    size: 10,
+    className: "text-white",
+    strokeWidth: 3.5
+  })), React.createElement("div", {
+    className: `w-9 h-9 rounded-full flex items-center justify-center ${paymentChoice === 'Cash di Toko' ? 'bg-emerald-500' : 'bg-gray-100'}`
+  }, React.createElement(LucideIcon, {
+    name: "Banknote",
+    size: 18,
+    className: paymentChoice === 'Cash di Toko' ? 'text-white' : 'text-gray-400'
+  })), React.createElement("span", {
+    className: `font-extrabold text-[9px] leading-tight text-center ${paymentChoice === 'Cash di Toko' ? 'text-emerald-700' : 'text-gray-500'}`
+  }, "Cash")), React.createElement("button", {
+    type: "button",
     onClick: () => setPaymentChoice('Tukar Koin Pi'),
-    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${paymentChoice === 'Koin Pi' ? 'border-[#D4AF37] bg-amber-50 shadow-md' : 'border-gray-200 bg-white hover:border-amber-300'}`
-  }, paymentChoice === 'Koin Pi' && React.createElement("span", {
+    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${paymentChoice === 'Tukar Koin Pi' ? 'border-[#D4AF37] bg-amber-50 shadow-md' : 'border-gray-200 bg-white hover:border-amber-300'}`
+  }, paymentChoice === 'Tukar Koin Pi' && React.createElement("span", {
     className: "absolute top-1 right-1 w-4 h-4 bg-[#D4AF37] rounded-full flex items-center justify-center"
   }, React.createElement(LucideIcon, {
     name: "Check",
@@ -7484,13 +7509,13 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-white",
     strokeWidth: 3.5
   })), React.createElement("div", {
-    className: `w-9 h-9 rounded-full flex items-center justify-center ${paymentChoice === 'Koin Pi' ? 'bg-gradient-to-tr from-[#D4AF37] to-[#FFD700]' : 'bg-gray-100'}`
+    className: `w-9 h-9 rounded-full flex items-center justify-center ${paymentChoice === 'Tukar Koin Pi' ? 'bg-gradient-to-tr from-[#D4AF37] to-[#FFD700]' : 'bg-gray-100'}`
   }, React.createElement(LucideIcon, {
     name: "Coins",
     size: 18,
-    className: paymentChoice === 'Koin Pi' ? 'text-[#2d1242]' : 'text-gray-400'
+    className: paymentChoice === 'Tukar Koin Pi' ? 'text-[#2d1242]' : 'text-gray-400'
   })), React.createElement("span", {
-    className: `font-extrabold text-[9px] leading-tight text-center ${paymentChoice === 'Koin Pi' ? 'text-[#B8860B]' : 'text-gray-500'}`
+    className: `font-extrabold text-[9px] leading-tight text-center ${paymentChoice === 'Tukar Koin Pi' ? 'text-[#B8860B]' : 'text-gray-500'}`
   }, "Tukar Koin Pi")), React.createElement("button", {
     type: "button",
     onClick: () => setPaymentChoice('COD'),
@@ -7510,7 +7535,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: paymentChoice === 'COD' ? 'text-white' : 'text-gray-400'
   })), React.createElement("span", {
     className: `font-extrabold text-[9px] leading-tight text-center ${paymentChoice === 'COD' ? 'text-emerald-700' : 'text-gray-500'}`
-  }, "COD"))), paymentChoice === 'Koin Pi' && renderPiEducationBanner(false)), React.createElement("button", {
+  }, "COD"))), paymentChoice === 'Tukar Koin Pi' && renderPiEducationBanner(false)), React.createElement("button", {
     type: "submit",
     className: "w-full bg-[#703d92] text-white font-bold py-3 rounded-xl shadow"
   }, lang === 'id' ? 'Kirim Pesanan' : 'Place Order')))), currentTab === 'Profil' && React.createElement("div", {
@@ -10076,6 +10101,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b9e69e49ff7373',t:'MTc4NDEzMDM5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b9ff528d4c0a9d',t:'MTc4NDEzMTQwNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

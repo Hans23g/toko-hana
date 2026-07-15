@@ -5590,6 +5590,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
     const weekMiniMax = Math.max(1, ...weekMiniBars.map(b => b.total || 0));
     const maxBar = Math.max(1, ...bars.map(b => b.total || 0));
     const todayWheelPct = Math.min(100, Math.round((financeRecap?.omzetHariIni || 0) / Math.max(financeRecap?.omzetMingguan || 1, 1) * 100));
+    const channelTotal = Math.max((financeRecap?.omzetOnline || 0) + (financeRecap?.omzetOffline || 0), 1);
+    const onlineWheelPct = Math.min(100, Math.round((financeRecap?.omzetOnline || 0) / channelTotal * 100));
+    const offlineWheelPct = Math.min(100, Math.round((financeRecap?.omzetOffline || 0) / channelTotal * 100));
     const money = v => `Rp ${(v || 0).toLocaleString('id-ID')}`;
     return React.createElement("div", {
       className: "space-y-3 text-xs"
@@ -5647,7 +5650,16 @@ ${TOKO_HANA_PUBLIC_URL}`;
     }, "7 hari terakhir")))), React.createElement("div", {
       className: "grid grid-cols-2 gap-2"
     }, React.createElement("div", {
-      className: "bg-gradient-to-br from-blue-50 to-white p-3 rounded-2xl border border-blue-100"
+      className: "relative overflow-hidden bg-gradient-to-br from-blue-50 to-white p-3 rounded-2xl border border-blue-100"
+    }, React.createElement("div", {
+      className: "absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-70 pointer-events-none",
+      style: {
+        background: `conic-gradient(#2563eb ${onlineWheelPct}%, rgba(37,99,235,0.12) 0)`
+      }
+    }, React.createElement("div", {
+      className: "absolute inset-[4px] rounded-full bg-white/95 flex items-center justify-center text-[7px] font-black text-blue-700"
+    }, onlineWheelPct, "%")), React.createElement("div", {
+      className: "relative pr-10"
     }, React.createElement("div", {
       className: "flex items-center gap-1.5 mb-1"
     }, React.createElement(LucideIcon, {
@@ -5660,8 +5672,17 @@ ${TOKO_HANA_PUBLIC_URL}`;
       className: "text-sm font-black text-blue-700"
     }, money(financeRecap?.omzetOnline)), React.createElement("span", {
       className: "text-[9px] text-blue-500 font-bold"
-    }, financeRecap?.countOnline || 0, " transaksi")), React.createElement("div", {
-      className: "bg-gradient-to-br from-amber-50 to-white p-3 rounded-2xl border border-amber-100"
+    }, financeRecap?.countOnline || 0, " transaksi"))), React.createElement("div", {
+      className: "relative overflow-hidden bg-gradient-to-br from-amber-50 to-white p-3 rounded-2xl border border-amber-100"
+    }, React.createElement("div", {
+      className: "absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-70 pointer-events-none",
+      style: {
+        background: `conic-gradient(#d97706 ${offlineWheelPct}%, rgba(217,119,6,0.14) 0)`
+      }
+    }, React.createElement("div", {
+      className: "absolute inset-[4px] rounded-full bg-white/95 flex items-center justify-center text-[7px] font-black text-amber-700"
+    }, offlineWheelPct, "%")), React.createElement("div", {
+      className: "relative pr-10"
     }, React.createElement("div", {
       className: "flex items-center gap-1.5 mb-1"
     }, React.createElement(LucideIcon, {
@@ -5674,7 +5695,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       className: "text-sm font-black text-amber-700"
     }, money(financeRecap?.omzetOffline)), React.createElement("span", {
       className: "text-[9px] text-amber-500 font-bold"
-    }, financeRecap?.countOffline || 0, " transaksi"))), React.createElement("div", {
+    }, financeRecap?.countOffline || 0, " transaksi")))), React.createElement("div", {
       className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
     }, React.createElement("div", {
       className: "flex items-center justify-between mb-2"
@@ -9641,5 +9662,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b5b62219bafd0a',t:'MTc4NDA4NjQ2Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b8d03b18adfdc3',t:'MTc4NDExODk5Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

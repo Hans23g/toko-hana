@@ -7327,7 +7327,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }), React.createElement("span", {
     className: "text-[7px] font-black text-[#FFD700] uppercase leading-none mt-0.5 drop-shadow-sm"
   }, "Top"))) : React.createElement("div", {
-    className: "flex-1 flex flex-col min-h-0 overflow-hidden bg-[#F5F3F7] animate-fade-in text-xs"
+    className: "flex-1 flex flex-col min-h-0 overflow-hidden bg-[#F8F2E9] animate-fade-in text-xs"
   }, React.createElement("div", {
     className: "relative text-white px-4 pb-3 pt-[calc(env(safe-area-inset-top,20px)+10px)] flex items-end justify-between shadow-md flex-shrink-0 overflow-hidden",
     style: {
@@ -7351,9 +7351,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "w-full h-full object-contain"
   })), React.createElement("div", null, React.createElement("h3", {
     className: "font-extrabold"
-  }, "Backoffice Toko Hana"), React.createElement("p", {
+  }, "Ruang Admin Toko Hana"), React.createElement("p", {
     className: "text-[8px] text-purple-200"
-  }, "CTO Dashboard v1.0"))), React.createElement("div", {
+  }, "Ruang kerja warung digital"))), React.createElement("div", {
     className: "relative flex items-center space-x-2"
   }, React.createElement("button", {
     onClick: () => {
@@ -7371,7 +7371,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     name: "LogOut",
     size: 12
   }), React.createElement("span", null, lang === 'id' ? 'Keluar' : 'Logout')))), React.createElement("div", {
-    className: "grid grid-cols-5 bg-white p-1 gap-1 border-b flex-shrink-0"
+    className: "grid grid-cols-5 bg-[#FFFDF6] p-1.5 gap-1 border-b border-amber-100 flex-shrink-0 shadow-[0_4px_14px_rgba(112,61,146,0.06)]"
   }, [{
     id: 'produk',
     label: 'Produk',
@@ -7416,15 +7416,15 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }].map(tab => React.createElement("button", {
     key: tab.id,
     onClick: () => setAdminActiveSubMenu(tab.id),
-    className: `relative px-1 py-1 rounded-lg text-[7.5px] font-extrabold transition-all flex flex-col items-center justify-center gap-0.5 border min-h-[35px] ${adminActiveSubMenu === tab.id ? 'bg-[#703d92] text-white border-[#703d92] shadow-sm' : 'bg-[#F5F3F7] text-gray-600 border-transparent'}`
+    className: `relative px-1 py-1 rounded-lg text-[7.5px] font-extrabold transition-all flex flex-col items-center justify-center gap-0.5 border min-h-[35px] ${adminActiveSubMenu === tab.id ? 'bg-[#703d92] text-white border-[#703d92] shadow-sm' : 'bg-[#F9F1E6] text-gray-600 border-amber-100/60'}`
   }, React.createElement(LucideIcon, {
     name: tab.icon,
     size: 9,
-    className: adminActiveSubMenu === tab.id ? 'text-amber-300' : 'text-[#703d92]'
+    className: adminActiveSubMenu === tab.id ? 'text-amber-300' : 'text-[#8A5BA6]'
   }), React.createElement("span", null, tab.label), tab.badge > 0 && React.createElement("span", {
     className: "absolute top-0.5 right-0.5 bg-red-500 text-white font-black text-[8px] min-w-[13px] h-[13px] px-1 rounded-full flex items-center justify-center animate-pulse"
   }, tab.badge)))), React.createElement("div", {
-    className: "flex-1 min-h-0 p-3 overflow-y-auto pb-28"
+    className: "flex-1 min-h-0 p-3 overflow-y-auto pb-28 bg-[#F8F2E9]"
   }, adminActiveSubMenu === 'produk' && React.createElement("div", {
     className: "space-y-4"
   }, React.createElement("div", {
@@ -7596,7 +7596,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     onClick: handleImportBulkProducts,
     className: `font-extrabold py-2.5 rounded-xl ${bulkImportBusy || bulkImportRows.some(r => r.errors.length) ? 'bg-gray-200 text-gray-400' : 'bg-emerald-600 text-white shadow'}`
   }, bulkImportBusy ? 'Mengimpor...' : 'Import Produk')))), React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
   }, editingProduct ? '✏️ Edit Produk' : '✨ Tambah Produk Baru'), React.createElement("form", {
@@ -7839,7 +7839,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     type: "submit",
     className: "flex-1 bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
   }, editingProduct ? 'Simpan' : 'Tambah')))), React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2"
   }, "Daftar Produk (", (products || []).length, ")"), React.createElement("div", {
@@ -7906,7 +7906,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "Pusat Jelajah Toko Hana"), React.createElement("p", {
     className: "text-[10px] text-gray-500 font-semibold mt-1 leading-relaxed"
   }, "Kelola isi Jelajah: ruang mitra, edukasi, info warga, dan cerita warung. Promo produk otomatis tetap tampil dari data produk di Home.")))), React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm space-y-3"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm space-y-3"
   }, renderAdminJelajahTabs(), React.createElement("form", {
     onSubmit: handleSaveSponsor,
     className: "space-y-2 bg-amber-50/40 p-3 rounded-2xl border border-dashed border-amber-200"
@@ -8062,7 +8062,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }))))))), adminActiveSubMenu === 'promo' && adminJelajahView === 'partners' && React.createElement("div", {
     className: "space-y-4 text-xs"
   }, React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm space-y-3"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm space-y-3"
   }, React.createElement("div", {
     className: "flex items-start gap-3"
   }, React.createElement("div", {
@@ -8222,7 +8222,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }))))))), adminActiveSubMenu === 'promo' && adminJelajahView === 'applications' && renderPartnerApplicationsAdmin(), adminActiveSubMenu === 'restok' && React.createElement("div", {
     className: "space-y-4 text-xs"
   }, React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3 flex items-center gap-1.5"
   }, React.createElement(LucideIcon, {
@@ -8277,7 +8277,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, lang === 'id' ? '✅ Semua stok aman! Tidak ada barang di bawah ambang batas.' : '✅ All stock is healthy! No items below the threshold.'), React.createElement("span", {
     className: "text-[9px] text-emerald-600"
   }, lang === 'id' ? `Ambang batas saat ini: ≤ ${lowStockThreshold} pcs. Naikkan di pengaturan jika ingin daftar lebih luas.` : `Current threshold: ≤ ${lowStockThreshold} pcs. Raise it in settings for a broader list.`)), lowStockProducts.length > 0 && React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("div", {
     className: "flex items-center justify-between mb-3"
   }, React.createElement("h4", {
@@ -8363,7 +8363,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, lang === 'id' ? '⚠️ Isi dulu No. WA Agen di pengaturan atas agar bisa kirim!' : '⚠️ Set the Agent WA number in settings above to send!'))), adminActiveSubMenu === 'kategori' && React.createElement("div", {
     className: "space-y-4"
   }, React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm text-xs"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
   }, editingCategory ? '✏️ Edit Kategori' : '✨ Tambah Kategori Baru'), React.createElement("form", {
@@ -8414,7 +8414,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     type: "submit",
     className: "w-full bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
   }, editingCategory ? 'Simpan' : 'Tambah'))), React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm text-xs"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2.5"
   }, "Urutan & Manajemen Kategori"), React.createElement("div", {
@@ -8459,7 +8459,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     name: "Trash2",
     size: 13
   })))))))), adminActiveSubMenu === 'pelanggan' && React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm text-xs"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
   }, "Daftar Pelanggan Setia"), React.createElement("div", {
@@ -8484,7 +8484,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, React.createElement("span", null, "Kontribusi Omzet"), React.createElement("span", {
     className: "text-[#703d92]"
   }, "Rp ", (c.total_spending || 0).toLocaleString('id-ID'))))))), adminActiveSubMenu === 'orderan' && React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm text-xs"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
   }, "Status Pemesanan"), React.createElement("div", {
@@ -8569,7 +8569,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "Kirim & Input Resi")))))), adminActiveSubMenu === 'pengiriman' && React.createElement("div", {
     className: "space-y-4 text-xs"
   }, selectedOrderToShip && React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-[#703d92] mb-3"
   }, "Input Pengiriman Order ", selectedOrderToShip.id), React.createElement("form", {
@@ -8616,7 +8616,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     type: "submit",
     className: "flex-1 bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
   }, "Kirim Paket")))), React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
   }, "Daftar Paket Terkirim"), React.createElement("div", {
@@ -8633,7 +8633,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "Kurir: ", o.kurir, " | Resi: ", o.resi), React.createElement("div", {
     className: "text-[10px] text-gray-400"
   }, "Penerima: ", o.customer_name, " (", o.address, ")")))))), adminActiveSubMenu === 'keuangan' && React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm text-xs space-y-4"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs space-y-4"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2"
   }, "Rekap Keuangan Harian/Mingguan"), React.createElement("div", {
@@ -8720,7 +8720,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, React.createElement("span", null, "🏪"), React.createElement("span", null, "Status Warung")), React.createElement("p", {
     className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1"
   }, "Atur status tampilan toko tanpa ubah kode. Cocok untuk libur, restok, atau buka/tutup manual.")), React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm space-y-3"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm space-y-3"
   }, React.createElement("label", {
     className: "block font-bold text-gray-600"
   }, "Mode Status"), React.createElement("select", {
@@ -8775,7 +8775,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "Simpan Status")))), adminActiveSubMenu === 'branding' && React.createElement("div", {
     className: "space-y-4 text-xs"
   }, React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm space-y-4"
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm space-y-4"
   }, React.createElement("div", {
     className: "grid grid-cols-2 gap-1 border-b pb-2"
   }, React.createElement("button", {
@@ -9468,5 +9468,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b487157c29fd6f',t:'MTc4NDA3NDA1Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b49d1d5a0240c7',t:'MTc4NDA3NDk1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

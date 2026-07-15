@@ -2521,6 +2521,12 @@ function App() {
     needs_consignment: false,
     needs_multi_cashier: false,
     needs_delivery: false,
+    has_driver_license: false,
+    driver_license_type: 'SIM C',
+    driver_license_image_url: '',
+    vehicle_type: '',
+    vehicle_plate: '',
+    active_hours: '',
     notes: ''
   });
   const [partnerApplicationSubmitted, setPartnerApplicationSubmitted] = useState(false);
@@ -6588,7 +6594,65 @@ ${TOKO_HANA_PUBLIC_URL}`;
       [key]: e.target.checked
     }),
     className: "accent-[#703d92]"
-  }), label))), React.createElement("textarea", {
+  }), label))), partnerApplicationForm.partner_type === 'courier' && React.createElement("div", {
+    className: "bg-white/70 rounded-2xl border border-amber-100 p-2 space-y-2"
+  }, React.createElement("div", {
+    className: "text-[9px] text-amber-700 font-bold leading-relaxed"
+  }, "Data SIM hanya untuk verifikasi calon kurir dan tidak ditampilkan ke publik."), React.createElement("label", {
+    className: "flex items-center gap-2 text-[10px] font-bold text-gray-600"
+  }, React.createElement("input", {
+    type: "checkbox",
+    checked: partnerApplicationForm.has_driver_license === true,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      has_driver_license: e.target.checked
+    }),
+    className: "accent-[#703d92]"
+  }), "Saya punya SIM"), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5"
+  }, React.createElement("input", {
+    value: partnerApplicationForm.driver_license_type,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      driver_license_type: e.target.value
+    }),
+    placeholder: "Jenis SIM",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  }), React.createElement("input", {
+    value: partnerApplicationForm.vehicle_type,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      vehicle_type: e.target.value
+    }),
+    placeholder: "Kendaraan",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  })), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5"
+  }, React.createElement("input", {
+    value: partnerApplicationForm.vehicle_plate,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      vehicle_plate: e.target.value
+    }),
+    placeholder: "Plat nomor",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  }), React.createElement("input", {
+    value: partnerApplicationForm.active_hours,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      active_hours: e.target.value
+    }),
+    placeholder: "Jam aktif",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  })), React.createElement("input", {
+    value: partnerApplicationForm.driver_license_image_url,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      driver_license_image_url: e.target.value
+    }),
+    placeholder: "Link foto SIM (opsional / bisa via WA)",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  })), React.createElement("textarea", {
     value: partnerApplicationForm.notes,
     onChange: e => setPartnerApplicationForm({
       ...partnerApplicationForm,
@@ -9689,5 +9753,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b8e9c80e12d25b',t:'MTc4NDEyMDAzOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b90c98deb3fdc7',t:'MTc4NDEyMTQ2NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

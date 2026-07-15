@@ -3809,6 +3809,8 @@ function App() {
   }, [cart]);
   const deliveryFee = cartSubtotal >= 50000 ? 0 : cartSubtotal > 0 ? 5000 : 0;
   const isCartCashInStore = currentUser?.role === 'customer' && paymentChoice === 'Cash di Toko';
+  const isCartStoreExchange = currentUser?.role === 'customer' && paymentChoice === 'Tukar Koin Pi';
+  const isCartInStore = isCartCashInStore || isCartStoreExchange;
   const deliveryOptions = [{
     key: 'pickup',
     label: 'Ambil di Toko',
@@ -3857,7 +3859,7 @@ function App() {
     }
   }, [currentUser?.address, currentUser?.role]);
   const selectedDelivery = deliveryOptions.find(opt => opt.key === deliveryOption) || deliveryOptions[1];
-  const displayDeliveryFee = currentUser?.role === 'guest' || isCartCashInStore ? 0 : selectedDelivery.fee;
+  const displayDeliveryFee = currentUser?.role === 'guest' || isCartInStore ? 0 : selectedDelivery.fee;
   const cartTotal = cartSubtotal + displayDeliveryFee;
   const handleCheckoutWhatsApp = e => {
     e.preventDefault();
@@ -3869,21 +3871,23 @@ function App() {
     const buyerAddress = (form.elements.buyerAddress ? form.elements.buyerAddress.value.trim() : '') || (isGuestCheckout ? lang === 'id' ? 'Pembelian Langsung di Toko' : 'In-Store Purchase' : 'Alamat Toko');
     const paymentMethod = isGuestCheckout ? guestPaymentChoice : paymentChoice;
     const isMemberCashInStore = !isGuestCheckout && paymentMethod === 'Cash di Toko';
+    const isMemberStoreExchange = !isGuestCheckout && paymentMethod === 'Tukar Koin Pi';
+    const isMemberInStore = isMemberCashInStore || isMemberStoreExchange;
     const newOrderId = "HNA-" + Math.floor(Math.random() * 900000 + 100000);
     const orderItems = cart.map(item => ({
       product_name: item.product.name,
       quantity: item.quantity,
       price: item.product.price
     }));
-    const checkoutDelivery = isGuestCheckout || isMemberCashInStore ? deliveryOptions[0] : selectedDelivery;
-    const effectiveDeliveryFee = isGuestCheckout || isMemberCashInStore ? 0 : checkoutDelivery.fee;
-    const checkoutCourierFee = isGuestCheckout || isMemberCashInStore ? 0 : checkoutDelivery.courierFee;
-    const checkoutDeliveryZone = isGuestCheckout || isMemberCashInStore ? 'pickup' : checkoutDelivery.key;
-    const checkoutDeliveryNote = isGuestCheckout || isMemberCashInStore ? 'Ambil/bayar langsung di toko.' : checkoutDelivery.note;
+    const checkoutDelivery = isGuestCheckout || isMemberInStore ? deliveryOptions[0] : selectedDelivery;
+    const effectiveDeliveryFee = isGuestCheckout || isMemberInStore ? 0 : checkoutDelivery.fee;
+    const checkoutCourierFee = isGuestCheckout || isMemberInStore ? 0 : checkoutDelivery.courierFee;
+    const checkoutDeliveryZone = isGuestCheckout || isMemberInStore ? 'pickup' : checkoutDelivery.key;
+    const checkoutDeliveryNote = isGuestCheckout || isMemberInStore ? 'Ambil/bayar langsung di toko.' : checkoutDelivery.note;
     const isMemberCheckout = !isGuestCheckout && currentUser && currentUser.role === 'customer' && myCustomerRecord;
     const appliedRedeem = isMemberCheckout && redeemPointsChecked && canRedeem ? REDEEM_UNIT_VALUE : 0;
     const effectiveTotal = Math.max(0, cartSubtotal + effectiveDeliveryFee - appliedRedeem);
-    const dbPaymentMethod = isGuestCheckout ? `${paymentMethod} (Offline)` : isMemberCashInStore ? 'Cash di Toko (Member)' : paymentMethod;
+    const dbPaymentMethod = isGuestCheckout ? `${paymentMethod} (Offline)` : isMemberCashInStore ? 'Cash di Toko (Member)' : isMemberStoreExchange ? 'Tukar Koin Pi (Member di Toko)' : paymentMethod;
     let pointsEarned = 0;
     if (isMemberCheckout) {
       pointsEarned = calcPointsEarned(effectiveTotal, paymentMethod);
@@ -3909,7 +3913,7 @@ function App() {
       courier_fee: checkoutCourierFee,
       total: effectiveTotal,
       payment_method: dbPaymentMethod,
-      channel: isGuestCheckout || isMemberCashInStore ? 'Offline' : 'Online',
+      channel: isGuestCheckout || isMemberInStore ? 'Offline' : 'Online',
       status: "Baru",
       date: new Date().toISOString().split('T')[0],
       kurir: "",
@@ -4004,9 +4008,15 @@ function App() {
       }
       return;
     }
-    if (isMemberCashInStore) {
+    if (isMemberInStore) {
       setCart([]);
-      showToast(lang === 'id' ? `🧾 Pesanan member ${newOrderId} tercatat. Silakan bayar Cash di kasir dan HanaPoin tetap diproses.` : `🧾 Member order ${newOrderId} recorded. Please pay cash at the counter; HanaPoints are still processed.`);
+      if (isMemberStoreExchange) {
+        setQrisModalStartTab('pi');
+        setShowQrisModal(true);
+        showToast(lang === 'id' ? `🧾 Pesanan member ${newOrderId} tercatat. Tukar Koin Pi dilakukan di kasir; tidak ada ongkir.` : `🧾 Member order ${newOrderId} recorded. Pi Coin exchange is handled at the counter; no delivery fee.`);
+      } else {
+        showToast(lang === 'id' ? `🧾 Pesanan member ${newOrderId} tercatat. Silakan bayar Cash di kasir dan HanaPoin tetap diproses.` : `🧾 Member order ${newOrderId} recorded. Please pay cash at the counter; HanaPoints are still processed.`);
+      }
       return;
     }
     let message = `*Halo Toko Hana, saya mau pesan (Event Solo Host Pi Network):*\n`;
@@ -7394,11 +7404,11 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "block font-black text-[10px] text-[#703d92]"
   }, "Area Antar Otomatis"), React.createElement("span", {
     className: "block text-[8.5px] text-gray-500 font-semibold leading-snug"
-  }, isCartCashInStore ? 'Ambil/bayar langsung di toko.' : selectedDelivery.note)), React.createElement("span", {
+  }, isCartInStore ? isCartStoreExchange ? 'Tukar Koin Pi dilakukan di kasir. Tidak ada ongkir.' : 'Ambil/bayar langsung di toko.' : selectedDelivery.note)), React.createElement("span", {
     className: "flex-shrink-0 bg-white border border-amber-100 text-amber-700 rounded-full px-2 py-1 text-[8px] font-black"
-  }, isCartCashInStore ? 'Ambil di Toko' : selectedDelivery.label))), React.createElement("div", {
+  }, isCartInStore ? 'Ambil di Toko' : selectedDelivery.label))), React.createElement("div", {
     className: "flex justify-between text-xs text-gray-500"
-  }, React.createElement("span", null, lang === 'id' ? 'Ongkir' : 'Shipping Fee'), React.createElement("span", null, currentUser?.role === 'guest' || isCartCashInStore ? lang === 'id' ? 'Gratis (Ambil di Toko)' : 'Free (In-Store Pickup)' : displayDeliveryFee === 0 ? lang === 'id' ? 'Gratis' : 'Free' : `Rp ${displayDeliveryFee.toLocaleString('id-ID')}`)), currentUser?.role === 'customer' && myCustomerRecord && React.createElement("div", {
+  }, React.createElement("span", null, lang === 'id' ? 'Ongkir' : 'Shipping Fee'), React.createElement("span", null, currentUser?.role === 'guest' || isCartInStore ? lang === 'id' ? 'Gratis (Ambil di Toko)' : 'Free (In-Store Pickup)' : displayDeliveryFee === 0 ? lang === 'id' ? 'Gratis' : 'Free' : `Rp ${displayDeliveryFee.toLocaleString('id-ID')}`)), currentUser?.role === 'customer' && myCustomerRecord && React.createElement("div", {
     className: `flex items-center justify-between gap-2 p-2.5 rounded-xl border-2 transition-all ${canRedeem ? redeemPointsChecked ? 'border-[#FFD700] bg-amber-50' : 'border-amber-200 bg-amber-50/40' : 'border-gray-100 bg-gray-50 opacity-70'}`
   }, React.createElement("div", {
     className: "flex items-center gap-2"
@@ -10180,6 +10190,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ba495a4f06ce05',t:'MTc4NDEzNDQ0MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ba5531eab5fcdf',t:'MTc4NDEzNDkyNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

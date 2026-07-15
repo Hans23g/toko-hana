@@ -7300,7 +7300,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: `px-2 py-0.5 rounded-full text-[8px] uppercase ${o.status === 'Selesai' ? 'bg-green-100 text-green-700' : o.status === 'Diproses' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'}`
   }, o.status)), React.createElement("div", {
     className: "text-[10px] text-gray-400"
-  }, "Tanggal: ", o.date, " | Metode: ", o.payment_method), React.createElement("div", {
+  }, "Tanggal: ", o.date, " | Bayar: ", o.payment_method), React.createElement("div", {
     className: "border-t border-dashed py-1.5 my-1 text-[10px] text-gray-500 space-y-0.5"
   }, o.items?.map((item, idx) => React.createElement("div", {
     key: idx
@@ -8489,7 +8489,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "space-y-2 max-h-[calc(100vh-260px)] min-h-[420px] overflow-y-auto no-scrollbar pb-20"
   }, (customers || []).map(c => React.createElement("div", {
     key: c.id,
-    className: "p-3 border rounded-xl space-y-1 bg-gray-50"
+    className: "p-3 border border-amber-100/70 rounded-2xl space-y-1 bg-[#FFFDF6]"
   }, React.createElement("div", {
     className: "flex items-center justify-between"
   }, React.createElement("span", {
@@ -8510,7 +8510,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
-  }, "Status Pemesanan"), React.createElement("div", {
+  }, "Pesanan Masuk"), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold -mt-1 mb-3"
+  }, "Cek pesanan yang masuk. Jika barang siap, ubah status pelan-pelan."), React.createElement("div", {
     className: "space-y-2 max-h-[calc(100vh-260px)] min-h-[420px] overflow-y-auto no-scrollbar pb-20"
   }, (orders || []).map(o => React.createElement("div", {
     key: o.id,
@@ -8527,7 +8529,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: `font-black text-[8px] uppercase px-2 py-0.5 rounded-full ${o.status === 'Selesai' ? 'bg-green-100 text-green-700' : o.status === 'Diproses' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'}`
   }, o.status))), React.createElement("div", {
     className: "text-[10px] font-bold text-gray-700"
-  }, "Pelanggan: ", o.customer_name, " (", o.phone, ")"), React.createElement("div", {
+  }, "Pembeli: ", o.customer_name, " (", o.phone, ")"), React.createElement("div", {
     className: "text-[10px] text-gray-500"
   }, "Tanggal: ", o.date, " | Metode: ", o.payment_method), React.createElement("div", {
     className: "text-[10px] text-gray-500"
@@ -8535,7 +8537,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "border-t border-dashed my-1.5 pt-1.5"
   }, React.createElement("span", {
     className: "text-[9px] text-gray-400 block font-bold"
-  }, "Daftar Barang Belanja:"), (o.items || []).map((item, idx) => React.createElement("div", {
+  }, "Barang yang dipesan:"), (o.items || []).map((item, idx) => React.createElement("div", {
     key: idx,
     className: "text-[9px] text-gray-600 font-medium"
   }, "- ", item.product_name || 'Item', " (x", item.quantity || 1, ") = Rp ", ((item.quantity || 1) * (item.price || 0)).toLocaleString('id-ID')))), React.createElement("div", {
@@ -8563,7 +8565,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       showToast(`Order ${o.id} diproses!`);
     },
     className: "flex-1 bg-blue-600 text-white font-bold py-1.5 rounded-lg text-[10px]"
-  }, "Proses Orderan")), o.status === 'Diproses' && React.createElement("div", {
+  }, "Siapkan Pesanan")), o.status === 'Diproses' && React.createElement("div", {
     className: "flex gap-2 pt-2"
   }, o.channel === 'Offline' || (o.payment_method || '').includes('Offline') ? React.createElement("button", {
     onClick: () => {
@@ -8589,7 +8591,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "✅ Selesaikan (Lunas di Kasir)") : React.createElement("button", {
     onClick: () => setSelectedOrderToShip(o),
     className: "flex-1 bg-amber-500 text-white font-bold py-1.5 rounded-lg text-[10px]"
-  }, "Kirim & Input Resi")))))), adminActiveSubMenu === 'pengiriman' && React.createElement("div", {
+  }, "Antar / Input Resi")))))), adminActiveSubMenu === 'pengiriman' && React.createElement("div", {
     className: "space-y-4 text-xs"
   }, selectedOrderToShip && React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
@@ -9491,5 +9493,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b4c19b1943fd3c',t:'MTc4NDA3NjQ1MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b4d68259420bfb',t:'MTc4NDA3NzMwNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

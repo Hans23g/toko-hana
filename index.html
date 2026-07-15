@@ -8251,14 +8251,14 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, React.createElement(LucideIcon, {
     name: "ClipboardList",
     size: 13
-  }), React.createElement("span", null, lang === 'id' ? 'POS Restok — Belanja ke Agen' : 'Restock POS — Order from Agent')), React.createElement("form", {
+  }), React.createElement("span", null, lang === 'id' ? 'Belanja ke Agen' : 'Order from Agent')), React.createElement("form", {
     onSubmit: handleSaveRestockSettings,
     className: "grid grid-cols-2 gap-2.5"
   }, React.createElement("div", {
     className: "col-span-2 sm:col-span-1"
   }, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
-  }, lang === 'id' ? 'No. WA Agen/Supplier (62...)' : 'Agent/Supplier WA Number (62...)'), React.createElement("input", {
+  }, lang === 'id' ? 'Nomor WA Agen/Supplier (62...)' : 'Agent/Supplier WA Number (62...)'), React.createElement("input", {
     type: "text",
     name: "agentWa",
     defaultValue: agentWaNumber,
@@ -8268,7 +8268,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "col-span-2 sm:col-span-1"
   }, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
-  }, lang === 'id' ? 'Alert Stok Menipis ≤' : 'Low Stock Alert ≤'), React.createElement("input", {
+  }, lang === 'id' ? 'Barang dianggap menipis jika stok ≤' : 'Low stock when stock ≤'), React.createElement("input", {
     type: "number",
     name: "threshold",
     defaultValue: lowStockThreshold,
@@ -8277,7 +8277,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   })), React.createElement("button", {
     type: "submit",
     className: "col-span-2 bg-[#703d92] text-white font-bold py-2.5 rounded-xl text-xs shadow-sm active:scale-95 transition-all"
-  }, lang === 'id' ? '💾 Simpan Pengaturan Restok' : '💾 Save Restock Settings'))), lowStockProducts.length > 0 ? React.createElement("div", {
+  }, lang === 'id' ? '💾 Simpan Aturan Belanja Agen' : '💾 Save Restock Settings'))), lowStockProducts.length > 0 ? React.createElement("div", {
     className: "bg-red-50 border border-red-200 rounded-2xl p-3.5 flex items-start gap-2.5"
   }, React.createElement("div", {
     className: "w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse"
@@ -8287,9 +8287,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-white"
   })), React.createElement("div", null, React.createElement("span", {
     className: "block font-extrabold text-red-700 text-[11px]"
-  }, lang === 'id' ? `⚠️ ${lowStockProducts.length} barang stoknya menipis (≤ ${lowStockThreshold} pcs)!` : `⚠️ ${lowStockProducts.length} items running low (≤ ${lowStockThreshold} pcs)!`), React.createElement("span", {
+  }, lang === 'id' ? `⚠️ ${lowStockProducts.length} barang mulai menipis (≤ ${lowStockThreshold} pcs)` : `⚠️ ${lowStockProducts.length} items running low (≤ ${lowStockThreshold} pcs)!`), React.createElement("span", {
     className: "text-[9px] text-red-500 font-semibold"
-  }, lang === 'id' ? 'Centang barang di bawah, atur jumlah pesan, lalu kirim ke WA agen.' : 'Check items below, set order qty, then send to your agent\'s WA.'))) : React.createElement("div", {
+  }, lang === 'id' ? 'Pilih barang yang mau dibeli, ubah jumlahnya, lalu kirim daftar ke WA agen.' : 'Check items below, set order qty, then send to your agent\'s WA.'))) : React.createElement("div", {
     className: "bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center"
   }, React.createElement(LucideIcon, {
     name: "PackageSearch",
@@ -8297,9 +8297,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-emerald-500 mx-auto mb-1.5"
   }), React.createElement("span", {
     className: "block font-extrabold text-emerald-700 text-[11px]"
-  }, lang === 'id' ? '✅ Semua stok aman! Tidak ada barang di bawah ambang batas.' : '✅ All stock is healthy! No items below the threshold.'), React.createElement("span", {
+  }, lang === 'id' ? '✅ Stok aman. Belum ada barang yang perlu dibeli ke agen.' : '✅ All stock is healthy! No items below the threshold.'), React.createElement("span", {
     className: "text-[9px] text-emerald-600"
-  }, lang === 'id' ? `Ambang batas saat ini: ≤ ${lowStockThreshold} pcs. Naikkan di pengaturan jika ingin daftar lebih luas.` : `Current threshold: ≤ ${lowStockThreshold} pcs. Raise it in settings for a broader list.`)), lowStockProducts.length > 0 && React.createElement("div", {
+  }, lang === 'id' ? `Aturan saat ini: stok ≤ ${lowStockThreshold} akan masuk daftar belanja.` : `Current threshold: ≤ ${lowStockThreshold} pcs. Raise it in settings for a broader list.`)), lowStockProducts.length > 0 && React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("div", {
     className: "flex items-center justify-between mb-3"
@@ -8308,7 +8308,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, React.createElement(LucideIcon, {
     name: "ListChecks",
     size: 13
-  }), React.createElement("span", null, lang === 'id' ? 'Daftar Belanja' : 'Shopping List', " (", Object.keys(restockSelection).length, "/", lowStockProducts.length, ")")), React.createElement("div", {
+  }), React.createElement("span", null, lang === 'id' ? 'Daftar Belanja ke Agen' : 'Shopping List', " (", Object.keys(restockSelection).length, "/", lowStockProducts.length, ")")), React.createElement("div", {
     className: "flex gap-1.5"
   }, React.createElement("button", {
     type: "button",
@@ -8356,7 +8356,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       className: "flex flex-col items-end gap-0.5 flex-shrink-0"
     }, React.createElement("span", {
       className: "text-[8px] text-gray-400 font-bold uppercase"
-    }, lang === 'id' ? 'Pesan' : 'Order'), React.createElement("div", {
+    }, lang === 'id' ? 'Beli' : 'Order'), React.createElement("div", {
       className: "flex items-center gap-1"
     }, React.createElement("button", {
       type: "button",
@@ -8381,9 +8381,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, React.createElement(LucideIcon, {
     name: "Send",
     size: 14
-  }), React.createElement("span", null, lang === 'id' ? `📤 Kirim Daftar Belanja ke WA Agen (${Object.keys(restockSelection).length})` : `📤 Send Shopping List to Agent WA (${Object.keys(restockSelection).length})`)), !agentWaNumber && React.createElement("p", {
+  }), React.createElement("span", null, lang === 'id' ? `📤 Kirim Daftar ke WA Agen (${Object.keys(restockSelection).length})` : `📤 Send Shopping List to Agent WA (${Object.keys(restockSelection).length})`)), !agentWaNumber && React.createElement("p", {
     className: "text-center text-[9px] text-red-400 font-bold mt-1.5"
-  }, lang === 'id' ? '⚠️ Isi dulu No. WA Agen di pengaturan atas agar bisa kirim!' : '⚠️ Set the Agent WA number in settings above to send!'))), adminActiveSubMenu === 'kategori' && React.createElement("div", {
+  }, lang === 'id' ? '⚠️ Isi dulu nomor WA agen di atas agar daftar belanja bisa dikirim.' : '⚠️ Set the Agent WA number in settings above to send!'))), adminActiveSubMenu === 'kategori' && React.createElement("div", {
     className: "space-y-4"
   }, React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs"
@@ -9491,5 +9491,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b4b86e29eafe0d',t:'MTc4NDA3NjA3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b4c19b1943fd3c',t:'MTc4NDA3NjQ1MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

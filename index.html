@@ -8597,12 +8597,14 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-[#703d92] mb-3"
-  }, "Input Pengiriman Order ", selectedOrderToShip.id), React.createElement("form", {
+  }, "Antar Pesanan ", selectedOrderToShip.id), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold -mt-2 mb-3"
+  }, "Pilih cara antar, isi resi/catatan, lalu tandai pesanan sudah dikirim."), React.createElement("form", {
     onSubmit: handleShipOrder,
     className: "space-y-3"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block text-gray-600 font-bold mb-1"
-  }, "Kurir Pengiriman"), React.createElement("select", {
+  }, "Pilih kurir / cara antar"), React.createElement("select", {
     value: shipForm.kurir,
     onChange: e => setShipForm({
       ...shipForm,
@@ -8619,12 +8621,16 @@ ${TOKO_HANA_PUBLIC_URL}`;
     value: "GoSend / GrabExpress"
   }, "GoSend / GrabExpress"), React.createElement("option", {
     value: "Kurir Toko Hana"
-  }, "Kurir Toko Hana"))), React.createElement("div", null, React.createElement("label", {
+  }, "Kurir Toko Hana"), React.createElement("option", {
+    value: "Kurir Warga"
+  }, "Kurir Warga"), React.createElement("option", {
+    value: "Ambil di Toko"
+  }, "Ambil di Toko"))), React.createElement("div", null, React.createElement("label", {
     className: "block text-gray-600 font-bold mb-1"
-  }, "Nomor Resi / Bukti Antar"), React.createElement("input", {
+  }, "Nomor resi / catatan antar"), React.createElement("input", {
     type: "text",
     required: true,
-    placeholder: "Masukkan no resi...",
+    placeholder: "Contoh: JNT123 / Diantar Kurir Warga",
     value: shipForm.resi,
     onChange: e => setShipForm({
       ...shipForm,
@@ -8640,24 +8646,24 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "Batal"), React.createElement("button", {
     type: "submit",
     className: "flex-1 bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
-  }, "Kirim Paket")))), React.createElement("div", {
+  }, "Catat Pengiriman")))), React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
-  }, "Daftar Paket Terkirim"), React.createElement("div", {
+  }, "Catatan Pesanan Terkirim"), React.createElement("div", {
     className: "space-y-2"
   }, (orders || []).filter(o => o && o.status === 'Selesai' && o.resi).map(o => React.createElement("div", {
     key: o.id,
-    className: "p-3 border rounded-xl bg-gray-50 space-y-1"
+    className: "p-3 border border-amber-100/70 rounded-2xl bg-[#FFFDF6] space-y-1"
   }, React.createElement("div", {
     className: "flex items-center justify-between font-bold"
   }, React.createElement("span", null, o.id), React.createElement("span", {
     className: "text-green-600 font-black uppercase text-[8px]"
   }, "Terkirim")), React.createElement("div", {
     className: "text-[10px] text-gray-600 font-bold"
-  }, "Kurir: ", o.kurir, " | Resi: ", o.resi), React.createElement("div", {
+  }, "Cara antar: ", o.kurir, " | Catatan: ", o.resi), React.createElement("div", {
     className: "text-[10px] text-gray-400"
-  }, "Penerima: ", o.customer_name, " (", o.address, ")")))))), adminActiveSubMenu === 'keuangan' && React.createElement("div", {
+  }, "Diterima oleh: ", o.customer_name, " (", o.address, ")")))))), adminActiveSubMenu === 'keuangan' && React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs space-y-4"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2"
@@ -9493,5 +9499,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b4d68259420bfb',t:'MTc4NDA3NzMwNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b4e12c69c0ff7f',t:'MTc4NDA3Nzc0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

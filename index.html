@@ -1795,9 +1795,6 @@ const defaultCategories = [{
   name: 'Semua',
   icon: 'LayoutGrid'
 }, {
-  name: 'Digital',
-  icon: 'Smartphone'
-}, {
   name: 'Sembako',
   icon: 'ShoppingBag'
 }, {
@@ -1807,20 +1804,26 @@ const defaultCategories = [{
   name: 'Jajanan',
   icon: 'Cookie'
 }, {
-  name: 'Kosmetik',
-  icon: 'Sparkles'
-}, {
-  name: 'Makanan Instan',
-  icon: 'Soup'
+  name: 'Rumah Tangga',
+  icon: 'Home'
 }, {
   name: 'Bumbu Dapur',
   icon: 'ChefHat'
 }, {
-  name: 'Rumah Tangga',
-  icon: 'Home'
+  name: 'Personal Care',
+  icon: 'Sparkles'
+}, {
+  name: 'Obat Warung',
+  icon: 'Cross'
 }, {
   name: 'Rokok 18+',
   icon: 'Cigarette'
+}, {
+  name: 'Digital',
+  icon: 'Smartphone'
+}, {
+  name: 'Mainan',
+  icon: 'Gamepad2'
 }];
 const defaultCustomers = [{
   id: 1,
@@ -2180,6 +2183,9 @@ function App() {
       'Jajanan': 'catSnack',
       'Kosmetik': 'catKosmetik',
       'Makanan Instan': 'catInstant',
+      'Personal Care': 'Personal Care',
+      'Obat Warung': 'Obat Warung',
+      'Mainan': 'Mainan',
       'Bumbu Dapur': 'catSpices',
       'Rumah Tangga': 'catHousehold',
       'Rokok 18+': 'catCigarettes'
@@ -2278,6 +2284,33 @@ function App() {
         border: 'border-teal-400',
         text: 'text-teal-700'
       },
+      'Personal Care': {
+        emoji: '🧴',
+        shelf: 'Rawat Diri',
+        note: 'Sabun, odol, bedak',
+        tone: 'from-pink-500 to-fuchsia-500',
+        bg: 'bg-pink-50',
+        border: 'border-pink-400',
+        text: 'text-pink-700'
+      },
+      'Obat Warung': {
+        emoji: '💊',
+        shelf: 'P3K Warung',
+        note: 'Obat ringan',
+        tone: 'from-red-500 to-rose-500',
+        bg: 'bg-red-50',
+        border: 'border-red-400',
+        text: 'text-red-700'
+      },
+      'Mainan': {
+        emoji: '🧸',
+        shelf: 'Bocil',
+        note: 'Mainan kecil',
+        tone: 'from-indigo-500 to-purple-500',
+        bg: 'bg-indigo-50',
+        border: 'border-indigo-400',
+        text: 'text-indigo-700'
+      },
       'Rokok 18+': {
         emoji: '🔞',
         shelf: 'Khusus',
@@ -2300,6 +2333,9 @@ function App() {
   };
   const normalizeCategoryName = catName => {
     if (catName === 'Snack') return 'Jajanan';
+    if (catName === 'Kosmetik') return 'Personal Care';
+    if (catName === 'Makanan Instan') return 'Sembako';
+    if (catName === 'Rokok') return 'Rokok 18+';
     return catName;
   };
   const getDefaultCategoryIcon = catName => {
@@ -8389,7 +8425,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
-  }, editingCategory ? '✏️ Edit Kategori' : '✨ Tambah Kategori Baru'), React.createElement("form", {
+  }, editingCategory ? '✏️ Ubah Rak Barang' : '✨ Tambah Rak Barang'), React.createElement("form", {
     onSubmit: handleSaveCategory,
     className: "space-y-3"
   }, React.createElement("input", {
@@ -8400,11 +8436,11 @@ ${TOKO_HANA_PUBLIC_URL}`;
       ...catForm,
       name: e.target.value
     }),
-    placeholder: "Nama Kategori *",
+    placeholder: "Nama Rak / Kategori *",
     className: "w-full border rounded-xl p-2.5"
   }), React.createElement("div", null, React.createElement("label", {
     className: "block text-gray-600 font-bold mb-1"
-  }, "Pilih Ikon Kategori"), React.createElement("select", {
+  }, "Pilih Ikon Rak"), React.createElement("select", {
     value: catForm.icon,
     onChange: e => setCatForm({
       ...catForm,
@@ -8436,11 +8472,13 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "Package (Lainnya)"))), React.createElement("button", {
     type: "submit",
     className: "w-full bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
-  }, editingCategory ? 'Simpan' : 'Tambah'))), React.createElement("div", {
+  }, 'Simpan Rak'))), React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2.5"
-  }, "Urutan & Manajemen Kategori"), React.createElement("div", {
+  }, "Susun Rak Warung"), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold -mt-1 mb-3"
+  }, "Rak membantu pembeli menemukan barang. Susun yang paling sering dicari di depan."), React.createElement("div", {
     className: "space-y-2"
   }, (categories || []).map((cat, idx) => React.createElement("div", {
     key: cat.name + '-' + idx,
@@ -9501,5 +9539,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b4ed135a29fd29',t:'MTc4NDA3ODIzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b5223c79de8beb',t:'MTc4NDA4MDQwOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -2494,15 +2494,20 @@ function App() {
     icon: '🛵',
     desc: 'Antar pesanan sekitar.'
   }, {
-    key: 'umkm_ads',
-    label: 'UMKM & Iklan',
+    key: 'umkm',
+    label: 'UMKM',
     icon: '🏪',
-    desc: 'Titip produk atau promosi.'
+    desc: 'Titip produk warga.'
   }, {
     key: 'warung_partner',
     label: 'Mitra Warung',
     icon: '🤝',
     desc: 'POS offline/online dan sistem warung.'
+  }, {
+    key: 'advertiser',
+    label: 'Pemasang Iklan',
+    icon: '📣',
+    desc: 'Banner, sponsor, dan promosi.'
   }, {
     key: 'content',
     label: 'Konten Warga',
@@ -2531,6 +2536,13 @@ function App() {
     offered_products: '',
     minimum_order_note: '',
     delivery_area_note: '',
+    business_field: '',
+    expected_sell_price: '',
+    settlement_price_note: '',
+    consignment_schedule_note: '',
+    ad_design_url: '',
+    ad_duration_note: '',
+    ad_goal_note: '',
     notes: ''
   });
   const [partnerApplicationSubmitted, setPartnerApplicationSubmitted] = useState(false);
@@ -5117,9 +5129,22 @@ function App() {
     }
     if (payload.partner_type !== 'supplier') {
       payload.catalog_url = null;
-      payload.offered_products = null;
       payload.minimum_order_note = null;
       payload.delivery_area_note = null;
+    }
+    if (payload.partner_type !== 'supplier' && payload.partner_type !== 'umkm') {
+      payload.offered_products = null;
+    }
+    if (payload.partner_type !== 'umkm') {
+      payload.business_field = null;
+      payload.expected_sell_price = null;
+      payload.settlement_price_note = null;
+      payload.consignment_schedule_note = null;
+    }
+    if (payload.partner_type !== 'advertiser') {
+      payload.ad_design_url = null;
+      payload.ad_duration_note = null;
+      payload.ad_goal_note = null;
     }
     const {
       data,
@@ -5157,6 +5182,13 @@ function App() {
       offered_products: '',
       minimum_order_note: '',
       delivery_area_note: '',
+      business_field: '',
+      expected_sell_price: '',
+      settlement_price_note: '',
+      consignment_schedule_note: '',
+      ad_design_url: '',
+      ad_duration_note: '',
+      ad_goal_note: '',
       notes: ''
     });
   };
@@ -6558,9 +6590,16 @@ ${TOKO_HANA_PUBLIC_URL}`;
         vehicle_plate: t.key === 'courier' ? prev.vehicle_plate : '',
         active_hours: t.key === 'courier' ? prev.active_hours : '',
         catalog_url: t.key === 'supplier' ? prev.catalog_url : '',
-        offered_products: t.key === 'supplier' ? prev.offered_products : '',
+        offered_products: t.key === 'supplier' || t.key === 'umkm' ? prev.offered_products : '',
         minimum_order_note: t.key === 'supplier' ? prev.minimum_order_note : '',
-        delivery_area_note: t.key === 'supplier' ? prev.delivery_area_note : ''
+        delivery_area_note: t.key === 'supplier' ? prev.delivery_area_note : '',
+        business_field: t.key === 'umkm' ? prev.business_field : '',
+        expected_sell_price: t.key === 'umkm' ? prev.expected_sell_price : '',
+        settlement_price_note: t.key === 'umkm' ? prev.settlement_price_note : '',
+        consignment_schedule_note: t.key === 'umkm' ? prev.consignment_schedule_note : '',
+        ad_design_url: t.key === 'advertiser' ? prev.ad_design_url : '',
+        ad_duration_note: t.key === 'advertiser' ? prev.ad_duration_note : '',
+        ad_goal_note: t.key === 'advertiser' ? prev.ad_goal_note : ''
       }));
     },
     className: `text-left rounded-2xl border p-2 active:scale-[0.99] transition-all ${partnerApplicationForm.partner_type === t.key ? 'bg-gradient-to-br from-[#703d92] to-[#2d1242] border-[#FFD700] text-white shadow-sm' : 'bg-white border-amber-100 text-[#2d1242]'}`
@@ -6734,6 +6773,84 @@ ${TOKO_HANA_PUBLIC_URL}`;
       delivery_area_note: e.target.value
     }),
     placeholder: "Area pengiriman",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  }))), partnerApplicationForm.partner_type === 'umkm' && React.createElement("div", {
+    className: "bg-white/70 rounded-2xl border border-amber-100 p-2 space-y-2"
+  }, React.createElement("div", {
+    className: "text-[9px] text-amber-700 font-bold leading-relaxed"
+  }, "Untuk titip produk, tulis jenis usaha, produk, harga jual, dan harga setor ke pemilik produk."), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5"
+  }, React.createElement("input", {
+    value: partnerApplicationForm.business_field,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      business_field: e.target.value
+    }),
+    placeholder: "Bidang usaha",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  }), React.createElement("input", {
+    value: partnerApplicationForm.expected_sell_price,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      expected_sell_price: e.target.value
+    }),
+    placeholder: "Harga jual",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  })), React.createElement("textarea", {
+    value: partnerApplicationForm.offered_products,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      offered_products: e.target.value
+    }),
+    placeholder: "Produk yang ingin dititipkan",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white min-h-[52px]"
+  }), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5"
+  }, React.createElement("input", {
+    value: partnerApplicationForm.settlement_price_note,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      settlement_price_note: e.target.value
+    }),
+    placeholder: "Harga setor / bagi hasil",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  }), React.createElement("input", {
+    value: partnerApplicationForm.consignment_schedule_note,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      consignment_schedule_note: e.target.value
+    }),
+    placeholder: "Jadwal titip/setor",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  }))), partnerApplicationForm.partner_type === 'advertiser' && React.createElement("div", {
+    className: "bg-white/70 rounded-2xl border border-purple-100 p-2 space-y-2"
+  }, React.createElement("div", {
+    className: "text-[9px] text-[#703d92] font-bold leading-relaxed"
+  }, "Untuk iklan, boleh sertakan link desain/poster. Kalau belum ada, tulis 'dikirim via WA'."), React.createElement("input", {
+    value: partnerApplicationForm.ad_design_url,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      ad_design_url: e.target.value
+    }),
+    placeholder: "Link desain iklan / poster",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  }), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5"
+  }, React.createElement("input", {
+    value: partnerApplicationForm.ad_duration_note,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      ad_duration_note: e.target.value
+    }),
+    placeholder: "Durasi iklan",
+    className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
+  }), React.createElement("input", {
+    value: partnerApplicationForm.ad_goal_note,
+    onChange: e => setPartnerApplicationForm({
+      ...partnerApplicationForm,
+      ad_goal_note: e.target.value
+    }),
+    placeholder: "Tujuan iklan",
     className: "w-full border border-gray-200 rounded-xl px-2.5 py-2 bg-white"
   }))), React.createElement("textarea", {
     value: partnerApplicationForm.notes,
@@ -9836,6 +9953,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b95cf78fe45fcd',t:'MTc4NDEyNDc1Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b97885cd5bdaa5',t:'MTc4NDEyNTg4Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

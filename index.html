@@ -3631,7 +3631,7 @@ function App() {
   }, [myPoints]);
   const calcPointsEarned = (totalRp, paymentMethod) => {
     let pts = Math.floor(totalRp / 1000) * pointsPerThousand;
-    if (paymentMethod === 'Koin Pi') pts = pts * 2;
+    if (paymentMethod === 'Tukar Koin Pi') pts = pts;
     pts = Math.floor(pts * loyaltyLevel.multiplier);
     return pts;
   };
@@ -3646,7 +3646,7 @@ function App() {
   }, [customers, myCustomerRecord]);
   const shareReferralCode = () => {
     if (!myReferralCode) return;
-    const shareMsg = lang === 'id' ? `Halo! 👋 Aku belanja kebutuhan sehari-hari di *Toko Hana* — warung digital yang bisa bayar pakai QRIS bahkan Koin Pi! 🪙\n\nDaftar pakai kode referalku ya:\n🎁 *${myReferralCode}*\n\nKamu langsung dapat *${REFERRAL_BONUS_NEWBIE} HanaPoin GRATIS* buat potongan belanja! ⭐` : `Hi! 👋 I shop daily needs at *Toko Hana* — a digital store that accepts QRIS and even Pi Coin! 🪙\n\nSign up with my referral code:\n🎁 *${myReferralCode}*\n\nYou'll instantly get *${REFERRAL_BONUS_NEWBIE} FREE HanaPoints* for shopping discounts! ⭐`;
+    const shareMsg = lang === 'id' ? `Halo! 👋 Aku belanja kebutuhan sehari-hari di *Toko Hana* — warung digital yang bisa belanja via QRIS/Rupiah dan ikut edukasi komunitas Koin Pi! 🪙\n\nDaftar pakai kode referalku ya:\n🎁 *${myReferralCode}*\n\nKamu langsung dapat *${REFERRAL_BONUS_NEWBIE} HanaPoin GRATIS* buat potongan belanja! ⭐` : `Hi! 👋 I shop daily needs at *Toko Hana* — a digital store that supports QRIS/Rupiah checkout and Pi Coin community education! 🪙\n\nSign up with my referral code:\n🎁 *${myReferralCode}*\n\nYou'll instantly get *${REFERRAL_BONUS_NEWBIE} FREE HanaPoints* for shopping discounts! ⭐`;
     window.open(`https://wa.me/?text=${encodeURIComponent(shareMsg)}`, '_blank');
     showToast(lang === 'id' ? '📤 Ajakan referal siap dikirim via WhatsApp!' : '📤 Referral invite ready to share via WhatsApp!');
   };
@@ -3750,6 +3750,12 @@ function App() {
     }), 2500);
   };
   const handleAddToCart = (product, qty = 1) => {
+    if (!currentUser) {
+      showToast('☕ Daftar/Login dulu untuk belanja online. Kalau tidak ingin daftar, silakan lewat kasir di toko.');
+      setCurrentTab('Profil');
+      setAuthActiveTab('register');
+      return;
+    }
     setCart(prevCart => {
       const existing = prevCart.find(item => item.product.id === product.id);
       if (existing) {
@@ -3830,7 +3836,7 @@ function App() {
       if (appliedRedeem > 0) {
         showToast(`⭐ ${REDEEM_UNIT_POINTS} poin ditukar potongan Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')}! +${pointsEarned} poin baru.`);
       } else {
-        showToast(`⭐ Selamat! Anda mendapat +${pointsEarned} HanaPoin${paymentMethod === 'Koin Pi' ? ' (2x bonus Pi! 🪙)' : ''}!`);
+        showToast(`⭐ Selamat! Anda mendapat +${pointsEarned} HanaPoin!`);
       }
       setRedeemPointsChecked(false);
     }
@@ -3926,7 +3932,7 @@ function App() {
         setQrisModalStartTab('qris');
         setShowQrisModal(true);
         showToast(lang === 'id' ? `🧾 Pesanan offline ${newOrderId} tercatat! Silakan pindai QRIS di kasir.` : `🧾 Offline order ${newOrderId} recorded! Please scan the QRIS at the counter.`);
-      } else if (paymentMethod === 'Koin Pi') {
+      } else if (paymentMethod === 'Tukar Koin Pi') {
         setQrisModalStartTab('pi');
         setShowQrisModal(true);
         showToast(lang === 'id' ? `🪙 Pesanan offline ${newOrderId} tercatat! Total: ${convertRpToPi(effectiveTotal).toFixed(4)} π — tunjukkan ke kasir.` : `🪙 Offline order ${newOrderId} recorded! Total: ${convertRpToPi(effectiveTotal).toFixed(4)} π — show it to the cashier.`);
@@ -3953,7 +3959,7 @@ function App() {
     message += `👤 *Nama:* ${buyerName}\n`;
     message += `📞 *WA/Telp:* ${buyerPhone}\n`;
     message += `📍 *Alamat:* ${buyerAddress}\n`;
-    message += `💳 *Metode:* ${paymentMethod}\n\n`;
+    message += `💳 *Pembayaran/Tukar:* ${paymentMethod}\n\n`;
     message += `Mohon segera diproses ya, terima kasih! ✨`;
     setCart([]);
     const waUrl = `https://wa.me/${merchantWaNumber}?text=${encodeURIComponent(message)}`;
@@ -4064,7 +4070,7 @@ function App() {
       role: 'guest'
     };
     setCurrentUser(guestSession);
-    showToast(lang === 'id' ? '🛍️ Mode Tamu aktif! Pembayaran: Cash / QRIS / Koin Pi π di toko.' : '🛍️ Guest mode active! Payment: Cash / QRIS / Pi Coin π in-store.');
+    showToast(lang === 'id' ? '🛍️ Mode Tamu aktif! Pembayaran Rupiah: Cash / QRIS di toko. Koin Pi hanya untuk tukar potongan bila tersedia.' : '🛍️ Guest mode active! Rupiah payment: Cash / QRIS in-store. Pi Coin is only for redeeming a discount when available.');
     setCurrentTab('Home');
     setAuthEmail('');
     setAuthPassword('');
@@ -5391,7 +5397,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-[#2d1242] font-black text-xs"
   }, "π")), React.createElement("div", null, React.createElement("span", {
     className: "block font-extrabold text-[#FFD700] text-[10px]"
-  }, lang === 'id' ? 'Apa itu Koin Pi? — Event Solo Host Pi Network!' : 'What is Pi Coin? — Pi Network Solo Host Event!'), React.createElement("span", {
+  }, lang === 'id' ? 'Apa itu Koin Pi? — Edukasi Komunitas Pi' : 'What is Pi Coin? — Pi Community Education'), React.createElement("span", {
     className: "block text-white/80 text-[9px] leading-relaxed mt-0.5"
   }, lang === 'id' ? `Pi adalah mata uang kripto yang ditambang gratis dari HP. Total belanja Anda setara ${convertRpToPi(cartSubtotal).toFixed(4)} π (kurs: 1 π = Rp ${piExchangeRate.toLocaleString('id-ID')}). ${isGuestVariant ? 'Transfer ke wallet toko & tunjukkan ke kasir — tanyakan cara mulai menambang Pi!' : 'Transfer ke wallet toko melalui aplikasi Pi Browser Anda setelah checkout.'}` : `Pi is a cryptocurrency mined free from your phone. Your total equals ${convertRpToPi(cartSubtotal).toFixed(4)} π (rate: 1 π = Rp ${piExchangeRate.toLocaleString('id-ID')}). ${isGuestVariant ? 'Transfer to the store wallet & show the cashier — ask how to start mining Pi!' : 'Transfer to the store wallet via your Pi Browser app after checkout.'}`))), React.createElement("div", {
     className: "bg-[#FFD700]/10 border border-dashed border-[#FFD700]/50 rounded-lg p-2.5"
@@ -5403,13 +5409,13 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-[#FFD700]"
   }), React.createElement("span", {
     className: "font-extrabold text-[#FFD700] text-[9.5px] uppercase tracking-wide"
-  }, lang === 'id' ? 'Bonus Koin Pi untuk Pelanggan Baru!' : 'Pi Coin Bonus for New Members!')), React.createElement("span", {
+  }, lang === 'id' ? 'Edukasi Koin Pi untuk Pelanggan Baru!' : 'Pi Coin Education for New Members!')), React.createElement("span", {
     className: "block text-white/80 text-[9px] leading-relaxed"
   }, lang === 'id' ? React.createElement(React.Fragment, null, "Belum punya Pi? Daftar Pi Network sekarang dengan kode referal ", React.createElement("strong", {
     className: "text-[#FFD700] font-black tracking-wider"
-  }, "\"", PI_REFERRAL_CODE, "\""), " dan dapatkan BONUS Koin Pi gratis sebagai modal awal menambang! 🎉") : React.createElement(React.Fragment, null, "Don't have Pi yet? Join Pi Network now with referral code ", React.createElement("strong", {
+  }, "\"", PI_REFERRAL_CODE, "\""), " dan dapatkan panduan Koin Pi sebagai edukasi komunitas! 🎉") : React.createElement(React.Fragment, null, "Don't have Pi yet? Join Pi Network now with referral code ", React.createElement("strong", {
     className: "text-[#FFD700] font-black tracking-wider"
-  }, "\"", PI_REFERRAL_CODE, "\""), " and get a FREE Pi Coin BONUS as your mining starter! 🎉")), React.createElement("a", {
+  }, "\"", PI_REFERRAL_CODE, "\""), " and get a Pi Coin guidance as community education! 🎉")), React.createElement("a", {
     href: PI_REFERRAL_LINK,
     target: "_blank",
     rel: "noopener noreferrer",
@@ -7338,7 +7344,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-[#703d92]"
   }, "Rp ", (currentUser?.role === 'guest' ? cartSubtotal : Math.max(0, cartTotal - (currentUser?.role === 'customer' ? redeemDiscount : 0))).toLocaleString('id-ID'))), currentUser?.role === 'customer' && myCustomerRecord && cartSubtotal > 0 && React.createElement("div", {
     className: "text-center text-[9px] font-bold text-emerald-600 bg-emerald-50 rounded-lg py-1.5"
-  }, lang === 'id' ? `⭐ Anda akan mendapat ± ${calcPointsEarned(Math.max(0, cartTotal - redeemDiscount), paymentChoice)} HanaPoin dari belanja ini${paymentChoice === 'Koin Pi' ? ' (2x bonus Koin Pi! 🪙)' : ''}` : `⭐ You'll earn ± ${calcPointsEarned(Math.max(0, cartTotal - redeemDiscount), paymentChoice)} HanaPoints from this order${paymentChoice === 'Koin Pi' ? ' (2x Pi Coin bonus! 🪙)' : ''}`)), currentUser && currentUser.role === 'guest' ? React.createElement("form", {
+  }, lang === 'id' ? `⭐ Anda akan mendapat ± ${calcPointsEarned(Math.max(0, cartTotal - redeemDiscount), paymentChoice)} HanaPoin dari belanja ini${paymentChoice === 'Koin Pi' ? ' (program tukar Koin Pi)' : ''}` : `⭐ You'll earn ± ${calcPointsEarned(Math.max(0, cartTotal - redeemDiscount), paymentChoice)} HanaPoints from this order${paymentChoice === 'Koin Pi' ? ' (Pi Coin redeem program)' : ''}`)), currentUser && currentUser.role === 'guest' ? React.createElement("form", {
     onSubmit: handleCheckoutWhatsApp,
     className: "bg-white p-4 rounded-2xl space-y-3 text-xs border shadow-sm"
   }, React.createElement("div", {
@@ -7358,7 +7364,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "w-full border rounded-xl p-2.5"
   }), React.createElement("div", null, React.createElement("span", {
     className: "block text-gray-600 font-bold mb-1.5"
-  }, lang === 'id' ? 'Pilih Metode Pembayaran di Kasir' : 'Choose Payment Method at Counter'), React.createElement("div", {
+  }, lang === 'id' ? 'Pilih Pembayaran Rupiah di Kasir' : 'Choose Payment Method at Counter'), React.createElement("div", {
     className: "grid grid-cols-3 gap-2"
   }, React.createElement("button", {
     type: "button",
@@ -7400,9 +7406,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: `font-extrabold text-[9px] leading-tight text-center ${guestPaymentChoice === 'QRIS' ? 'text-[#703d92]' : 'text-gray-500'}`
   }, "QRIS")), React.createElement("button", {
     type: "button",
-    onClick: () => setGuestPaymentChoice('Koin Pi'),
-    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${guestPaymentChoice === 'Koin Pi' ? 'border-[#D4AF37] bg-amber-50 shadow-md' : 'border-gray-200 bg-white hover:border-amber-300'}`
-  }, guestPaymentChoice === 'Koin Pi' && React.createElement("span", {
+    onClick: () => setGuestPaymentChoice('Tukar Koin Pi'),
+    className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${guestPaymentChoice === 'Tukar Koin Pi' ? 'border-[#D4AF37] bg-amber-50 shadow-md' : 'border-gray-200 bg-white hover:border-amber-300'}`
+  }, guestPaymentChoice === 'Tukar Koin Pi' && React.createElement("span", {
     className: "absolute top-1 right-1 w-4 h-4 bg-[#D4AF37] rounded-full flex items-center justify-center"
   }, React.createElement(LucideIcon, {
     name: "Check",
@@ -7410,14 +7416,14 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-white",
     strokeWidth: 3.5
   })), React.createElement("div", {
-    className: `w-9 h-9 rounded-full flex items-center justify-center ${guestPaymentChoice === 'Koin Pi' ? 'bg-gradient-to-tr from-[#D4AF37] to-[#FFD700]' : 'bg-gray-100'}`
+    className: `w-9 h-9 rounded-full flex items-center justify-center ${guestPaymentChoice === 'Tukar Koin Pi' ? 'bg-gradient-to-tr from-[#D4AF37] to-[#FFD700]' : 'bg-gray-100'}`
   }, React.createElement(LucideIcon, {
     name: "Coins",
     size: 18,
-    className: guestPaymentChoice === 'Koin Pi' ? 'text-[#2d1242]' : 'text-gray-400'
+    className: guestPaymentChoice === 'Tukar Koin Pi' ? 'text-[#2d1242]' : 'text-gray-400'
   })), React.createElement("span", {
-    className: `font-extrabold text-[9px] leading-tight text-center ${guestPaymentChoice === 'Koin Pi' ? 'text-[#B8860B]' : 'text-gray-500'}`
-  }, "Koin Pi π"))), guestPaymentChoice === 'Koin Pi' && renderPiEducationBanner(true)), React.createElement("button", {
+    className: `font-extrabold text-[9px] leading-tight text-center ${guestPaymentChoice === 'Tukar Koin Pi' ? 'text-[#B8860B]' : 'text-gray-500'}`
+  }, "Tukar Koin Pi"))), guestPaymentChoice === 'Tukar Koin Pi' && renderPiEducationBanner(true)), React.createElement("button", {
     type: "submit",
     className: "w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold py-3 rounded-xl shadow"
   }, lang === 'id' ? '🧾 Catat Pesanan Offline' : '🧾 Record Offline Order')) : React.createElement("form", {
@@ -7445,7 +7451,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "w-full border rounded-xl p-2.5"
   }), React.createElement("div", null, React.createElement("span", {
     className: "block text-gray-600 font-bold mb-1.5"
-  }, lang === 'id' ? 'Pilih Metode Pembayaran' : 'Choose Payment Method'), React.createElement("div", {
+  }, lang === 'id' ? 'Pilih Pembayaran Rupiah' : 'Choose Payment Method'), React.createElement("div", {
     className: "grid grid-cols-3 gap-2"
   }, React.createElement("button", {
     type: "button",
@@ -7468,7 +7474,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: `font-extrabold text-[9px] leading-tight text-center ${paymentChoice === 'Transfer QRIS' ? 'text-[#703d92]' : 'text-gray-500'}`
   }, "QRIS")), React.createElement("button", {
     type: "button",
-    onClick: () => setPaymentChoice('Koin Pi'),
+    onClick: () => setPaymentChoice('Tukar Koin Pi'),
     className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${paymentChoice === 'Koin Pi' ? 'border-[#D4AF37] bg-amber-50 shadow-md' : 'border-gray-200 bg-white hover:border-amber-300'}`
   }, paymentChoice === 'Koin Pi' && React.createElement("span", {
     className: "absolute top-1 right-1 w-4 h-4 bg-[#D4AF37] rounded-full flex items-center justify-center"
@@ -7485,7 +7491,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: paymentChoice === 'Koin Pi' ? 'text-[#2d1242]' : 'text-gray-400'
   })), React.createElement("span", {
     className: `font-extrabold text-[9px] leading-tight text-center ${paymentChoice === 'Koin Pi' ? 'text-[#B8860B]' : 'text-gray-500'}`
-  }, "Koin Pi π")), React.createElement("button", {
+  }, "Tukar Koin Pi")), React.createElement("button", {
     type: "button",
     onClick: () => setPaymentChoice('COD'),
     className: `relative flex flex-col items-center justify-center gap-1.5 py-3 rounded-2xl border-2 transition-all active:scale-95 ${paymentChoice === 'COD' ? 'border-emerald-500 bg-emerald-50 shadow-md' : 'border-gray-200 bg-white hover:border-emerald-300'}`
@@ -7642,7 +7648,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     size: 15
   }), React.createElement("span", null, lang === 'id' ? 'Masuk sebagai Tamu (Belanja di Toko)' : 'Continue as Guest (In-Store Shopping)')), React.createElement("p", {
     className: "text-center text-[9px] text-gray-400 mt-2 leading-relaxed"
-  }, lang === 'id' ? 'Khusus pelanggan langsung/offline — tanpa daftar & login. Pembayaran Cash, QRIS, atau Koin Pi π di kasir.' : 'For walk-in/offline customers — no registration needed. Payment via Cash, QRIS, or Pi Coin π at the counter.')))) : currentUser.role === 'guest' ? React.createElement("div", {
+  }, lang === 'id' ? 'Khusus pelanggan langsung/offline — tanpa daftar & login. Pembayaran Cash/QRIS di kasir. Koin Pi hanya untuk tukar potongan bila tersedia.' : 'For walk-in/offline customers — no registration needed. Payment via Cash/QRIS at the counter. Pi Coin is only for redeeming a discount when available.')))) : currentUser.role === 'guest' ? React.createElement("div", {
     className: "space-y-4 animate-fade-in"
   }, React.createElement("div", {
     className: "bg-gradient-to-tr from-amber-400 to-amber-500 text-[#2d1242] p-5 rounded-3xl shadow-md text-center relative overflow-hidden"
@@ -7664,7 +7670,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "bg-white rounded-2xl p-4 border shadow-sm text-[11px] text-gray-600 space-y-2"
   }, React.createElement("h4", {
     className: "font-extrabold text-[#703d92] uppercase tracking-wider text-[11px] border-b pb-2"
-  }, lang === 'id' ? 'ℹ️ Info Mode Tamu' : 'ℹ️ Guest Mode Info'), React.createElement("p", null, "• ", lang === 'id' ? 'Pembayaran Cash, QRIS, atau Koin Pi π langsung di kasir.' : 'Payment via Cash, QRIS, or Pi Coin π at the counter.'), React.createElement("p", null, "• ", lang === 'id' ? '🪙 Baru dengar Koin Pi? Tanyakan ke kasir cara menambang Pi gratis dari HP Anda!' : '🪙 New to Pi Coin? Ask our cashier how to mine Pi for free from your phone!'), React.createElement("p", null, "• ", lang === 'id' ? 'Tanpa ongkir — barang diambil langsung di toko.' : 'No shipping fee — items picked up in-store.'), React.createElement("p", null, "• ", lang === 'id' ? 'Ingin belanja online + pengiriman? Silakan daftar akun pelanggan!' : 'Want online shopping + delivery? Please register a customer account!')), React.createElement("button", {
+  }, lang === 'id' ? 'ℹ️ Info Mode Tamu' : 'ℹ️ Guest Mode Info'), React.createElement("p", null, "• ", lang === 'id' ? 'Pembayaran Cash/QRIS langsung di kasir. Koin Pi hanya untuk tukar potongan bila tersedia.' : 'Payment via Cash/QRIS at the counter. Pi Coin is only for redeeming a discount when available.'), React.createElement("p", null, "• ", lang === 'id' ? '🪙 Baru dengar Koin Pi? Tanyakan ke kasir cara menambang Pi gratis dari HP Anda!' : '🪙 New to Pi Coin? Ask our cashier how to mine Pi for free from your phone!'), React.createElement("p", null, "• ", lang === 'id' ? 'Tanpa ongkir — barang diambil langsung di toko.' : 'No shipping fee — items picked up in-store.'), React.createElement("p", null, "• ", lang === 'id' ? 'Ingin belanja online + pengiriman? Silakan daftar akun pelanggan!' : 'Want online shopping + delivery? Please register a customer account!')), React.createElement("button", {
     onClick: () => {
       setCurrentUser(null);
       setAuthActiveTab('register');
@@ -7769,7 +7775,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "flex items-start gap-2"
   }, React.createElement("span", {
     className: "text-amber-500"
-  }, "🪙"), React.createElement("span", null, lang === 'id' ? 'Bayar pakai Koin Pi mendapat bonus poin 2x sebagai simulasi edukasi komunitas.' : 'Paying with Pi Coin grants 2x point bonus as community education simulation.')), React.createElement("div", {
+  }, "🪙"), React.createElement("span", null, lang === 'id' ? 'Koin Pi dapat dipakai untuk program tukar potongan/edukasi komunitas, bukan alat pembayaran sah.' : 'Pi Coin may be used for redeeming discounts/community education, not as legal payment.')), React.createElement("div", {
     className: "flex items-start gap-2"
   }, React.createElement("span", {
     className: "text-amber-500"
@@ -10070,6 +10076,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b9b90c08870ad8',t:'MTc4NDEyODUyOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b9e0e96c8efe0b',t:'MTc4NDEzMDE2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

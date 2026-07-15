@@ -6427,7 +6427,34 @@ ${TOKO_HANA_PUBLIC_URL}`;
     type: "button",
     onClick: () => setSelectedJelajahCategory('Semua'),
     className: "text-[9px] font-black text-[#703d92] bg-purple-50 px-2 py-1 rounded-full"
-  }, selectedJelajahCategory === 'Semua' ? `${(sponsorBanners || []).length} tulisan` : `Lihat semua`)), selectedJelajahCategory === 'Aplikasi' && React.createElement("button", {
+  }, selectedJelajahCategory === 'Semua' ? `${(sponsorBanners || []).length} tulisan` : `Lihat semua`)), selectedJelajahCategory === 'Aplikasi' && (filteredJelajahPosts || []).filter(post => (post.title || '').toLowerCase().includes('aplikasi kecil')).map(post => React.createElement("button", {
+    key: `intro-${post.id}`,
+    type: "button",
+    onClick: () => {
+      setSelectedSponsor(post);
+      setCurrentTab('SponsorDetail');
+    },
+    className: "w-full text-left bg-white px-3 py-2 active:bg-purple-50/60 transition-all"
+  }, React.createElement("div", {
+    className: "flex gap-2 items-center"
+  }, React.createElement("img", {
+    src: post.image || BRAND_LOGO_DATA_URI,
+    alt: post.title,
+    className: "w-8 h-8 rounded-lg object-cover border border-amber-100 bg-white flex-shrink-0",
+    onError: e => {
+      e.currentTarget.src = BRAND_LOGO_DATA_URI;
+    }
+  }), React.createElement("div", {
+    className: "min-w-0 flex-1"
+  }, React.createElement("div", {
+    className: "flex items-center gap-1.5 min-w-0"
+  }, React.createElement("h6", {
+    className: "font-black text-[#2d1242] text-[10.5px] truncate"
+  }, post.title || 'Aplikasi Kecil Toko Hana'), React.createElement("span", {
+    className: "text-[7px] font-black text-[#703d92] bg-purple-50 px-1.5 py-0.5 rounded-full flex-shrink-0"
+  }, "Pembuka")), React.createElement("p", {
+    className: "text-[9px] text-gray-500 font-semibold leading-snug mt-0.5 line-clamp-1"
+  }, post.desc || post.body || 'Kumpulan alat kecil yang membantu pedagang.'))))), selectedJelajahCategory === 'Aplikasi' && React.createElement("button", {
     type: "button",
     onClick: () => setCurrentTab('WarungCalc'),
     className: "w-[calc(100%-1rem)] mx-2 my-1 text-left rounded-3xl border border-[#FFD700]/45 bg-gradient-to-br from-[#2d1242] via-[#703d92] to-[#553C9A] px-3.5 py-2.5 text-white active:scale-[0.99] transition-all shadow-sm"
@@ -6574,7 +6601,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, "✅ Form Mitra terkirim. Kami akan hubungi untuk ngobrol kebutuhan. ☕"), React.createElement("button", {
     type: "submit",
     className: "w-full bg-[#703d92] text-white font-black text-[11px] py-2.5 rounded-2xl shadow-sm"
-  }, "Kirim Form Mitra"))), (filteredJelajahPosts || []).map(post => React.createElement("button", {
+  }, "Kirim Form Mitra"))), (filteredJelajahPosts || []).filter(post => !(selectedJelajahCategory === 'Aplikasi' && (post.title || '').toLowerCase().includes('aplikasi kecil'))).map(post => React.createElement("button", {
     key: post.id,
     type: "button",
     onClick: () => {
@@ -9662,5 +9689,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b8d03b18adfdc3',t:'MTc4NDExODk5Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b8e9c80e12d25b',t:'MTc4NDEyMDAzOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

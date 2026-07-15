@@ -3840,6 +3840,22 @@ function App() {
     courierFee: 0,
     note: 'Ongkir menunggu konfirmasi admin via WA.'
   }];
+  const detectDeliveryZone = (address = '') => {
+    const text = String(address || '').toLowerCase();
+    if (!text.trim()) return 'confirm_admin';
+    const near = ['cilendek', 'sindang barang', 'sindangbarang', 'sempur', 'loji', 'curug', 'kayumanis', 'menteng bogor', 'taman cimanggu'];
+    const medium = ['dramaga', 'yasmin', 'gunung batu', 'laladon', 'bubulak', 'ciomas', 'cimanggu', 'pancasan', 'merdeka'];
+    const far = ['cibinong', 'ciawi', 'tajur', 'cilebut', 'bojong gede', 'bojonggede', 'sentul', 'parung', 'cijeruk', 'caringin'];
+    if (near.some(k => text.includes(k))) return 'near';
+    if (medium.some(k => text.includes(k))) return 'medium';
+    if (far.some(k => text.includes(k))) return 'far';
+    return 'confirm_admin';
+  };
+  useEffect(() => {
+    if (currentUser?.role === 'customer' && paymentChoice !== 'Cash di Toko' && currentUser?.address) {
+      setDeliveryOption(detectDeliveryZone(currentUser.address));
+    }
+  }, [currentUser?.address, currentUser?.role]);
   const selectedDelivery = deliveryOptions.find(opt => opt.key === deliveryOption) || deliveryOptions[1];
   const displayDeliveryFee = currentUser?.role === 'guest' || isCartCashInStore ? 0 : selectedDelivery.fee;
   const cartTotal = cartSubtotal + displayDeliveryFee;
@@ -7519,9 +7535,14 @@ ${TOKO_HANA_PUBLIC_URL}`;
     name: "buyerAddress",
     required: true,
     defaultValue: currentUser?.address || '',
+    onChange: e => {
+      if (paymentChoice !== 'Cash di Toko') setDeliveryOption(detectDeliveryZone(e.target.value));
+    },
     placeholder: t('formAddress') + ' *',
     className: "w-full border rounded-xl p-2.5"
-  }), React.createElement("div", null, React.createElement("span", {
+  }), currentUser?.role === 'customer' && paymentChoice !== 'Cash di Toko' && React.createElement("div", {
+    className: "text-[9px] text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-2.5 py-1.5 font-bold -mt-1"
+  }, deliveryOption === 'confirm_admin' ? 'Area belum dikenali. Admin akan konfirmasi ongkir lewat WA.' : `Area terdeteksi: ${(deliveryOptions.find(opt => opt.key === deliveryOption) || {}).label}. Zona bisa dicek ulang admin.`), React.createElement("div", null, React.createElement("span", {
     className: "block text-gray-600 font-bold mb-1.5"
   }, lang === 'id' ? 'Pilih Pembayaran Rupiah' : 'Choose Payment Method'), React.createElement("div", {
     className: "grid grid-cols-3 gap-2"
@@ -10167,6 +10188,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ba2d8f5932ce3b',t:'MTc4NDEzMzMwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ba3d857ba5b7a2',t:'MTc4NDEzMzk1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

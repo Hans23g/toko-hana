@@ -8444,7 +8444,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "space-y-2"
   }, (categories || []).map((cat, idx) => React.createElement("div", {
     key: cat.name + '-' + idx,
-    className: "flex items-center justify-between p-2 border rounded-xl"
+    className: "flex items-center justify-between p-2.5 border border-amber-100/70 rounded-2xl bg-[#FFFDF6]"
   }, React.createElement("div", {
     className: "flex items-center space-x-2"
   }, React.createElement(LucideIcon, {
@@ -8667,13 +8667,15 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs space-y-4"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2"
-  }, "Rekap Keuangan Harian/Mingguan"), React.createElement("div", {
+  }, "Ringkasan Uang Warung"), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold -mt-1 mb-3 leading-relaxed"
+  }, "Lihat uang masuk dari pesanan selesai. Laba nyata nanti dihitung bersama modal, plastik, susut, dan barang titipan."), React.createElement("div", {
     className: "space-y-3"
   }, React.createElement("div", {
-    className: "bg-purple-50 p-4 rounded-2xl border border-purple-100"
+    className: "bg-gradient-to-br from-purple-50 to-white p-4 rounded-2xl border border-purple-100 shadow-sm"
   }, React.createElement("span", {
     className: "text-gray-500 font-bold block uppercase text-[8px]"
-  }, "Perkiraan Omzet Hari Ini"), React.createElement("h2", {
+  }, "Uang Masuk Hari Ini"), React.createElement("h2", {
     className: "text-xl font-black text-[#703d92] mt-0.5"
   }, "Rp ", (financeRecap?.omzetHariIni || 0).toLocaleString('id-ID')), React.createElement("div", {
     className: "w-full bg-purple-200 h-1.5 rounded-full mt-2 overflow-hidden"
@@ -8683,10 +8685,10 @@ ${TOKO_HANA_PUBLIC_URL}`;
       width: '45%'
     }
   }))), React.createElement("div", {
-    className: "bg-emerald-50 p-4 rounded-2xl border border-emerald-100"
+    className: "bg-gradient-to-br from-emerald-50 to-white p-4 rounded-2xl border border-emerald-100 shadow-sm"
   }, React.createElement("span", {
     className: "text-gray-500 font-bold block uppercase text-[8px]"
-  }, "Perkiraan Omzet Minggu Ini"), React.createElement("h2", {
+  }, "Uang Masuk Minggu Ini"), React.createElement("h2", {
     className: "text-xl font-black text-emerald-700 mt-0.5"
   }, "Rp ", (financeRecap?.omzetMingguan || 0).toLocaleString('id-ID')), React.createElement("div", {
     className: "w-full bg-emerald-200 h-1.5 rounded-full mt-2 overflow-hidden"
@@ -8698,7 +8700,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }))), React.createElement("div", {
     className: "grid grid-cols-2 gap-3"
   }, React.createElement("div", {
-    className: "bg-blue-50 p-3.5 rounded-2xl border border-blue-100"
+    className: "bg-gradient-to-br from-blue-50 to-white p-3.5 rounded-2xl border border-blue-100"
   }, React.createElement("div", {
     className: "flex items-center gap-1.5 mb-1"
   }, React.createElement(LucideIcon, {
@@ -8707,12 +8709,12 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-blue-600"
   }), React.createElement("span", {
     className: "text-blue-600 font-black uppercase text-[8px] tracking-wider"
-  }, "Penjualan Online")), React.createElement("h3", {
+  }, "Pesanan Online")), React.createElement("h3", {
     className: "text-sm font-black text-blue-700"
   }, "Rp ", (financeRecap?.omzetOnline || 0).toLocaleString('id-ID')), React.createElement("span", {
     className: "text-[9px] text-blue-500 font-bold"
   }, financeRecap?.countOnline || 0, " transaksi")), React.createElement("div", {
-    className: "bg-amber-50 p-3.5 rounded-2xl border border-amber-100"
+    className: "bg-gradient-to-br from-amber-50 to-white p-3.5 rounded-2xl border border-amber-100"
   }, React.createElement("div", {
     className: "flex items-center gap-1.5 mb-1"
   }, React.createElement(LucideIcon, {
@@ -8721,7 +8723,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-amber-600"
   }), React.createElement("span", {
     className: "text-amber-600 font-black uppercase text-[8px] tracking-wider"
-  }, "Penjualan Offline")), React.createElement("h3", {
+  }, "Pesanan Offline")), React.createElement("h3", {
     className: "text-sm font-black text-amber-700"
   }, "Rp ", (financeRecap?.omzetOffline || 0).toLocaleString('id-ID')), React.createElement("span", {
     className: "text-[9px] text-amber-500 font-bold"
@@ -8729,7 +8731,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "border-t border-gray-100 pt-3"
   }, React.createElement("span", {
     className: "text-[9px] text-gray-400 uppercase tracking-widest font-black block mb-2"
-  }, "Riwayat Pendapatan Sukses"), React.createElement("div", {
+  }, "Catatan Pesanan Selesai"), React.createElement("div", {
     className: "space-y-2"
   }, (orders || []).filter(o => o && o.status === 'Selesai').map(o => React.createElement("div", {
     key: o.id,
@@ -8740,7 +8742,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "font-bold text-gray-700 text-[10px]"
   }, o.id, " - ", o.customer_name), React.createElement("span", {
     className: "text-[9px] text-gray-400"
-  }, o.date, " | ", o.payment_method)), React.createElement("span", {
+  }, o.date, " | Bayar: ", o.payment_method)), React.createElement("span", {
     className: "font-bold text-emerald-600 text-xs"
   }, "+ Rp ", (o.total || 0).toLocaleString('id-ID'))))))), adminActiveSubMenu === 'status' && React.createElement("div", {
     className: "space-y-4 text-xs"
@@ -9499,5 +9501,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b4e12c69c0ff7f',t:'MTc4NDA3Nzc0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b4ed135a29fd29',t:'MTc4NDA3ODIzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

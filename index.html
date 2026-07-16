@@ -2894,6 +2894,7 @@ function App() {
   const [showBonAgenDraft, setShowBonAgenDraft] = useState(false);
   const [bonAgenSubmissions, setBonAgenSubmissions] = useState([]);
   const [bonAgenSubmitStatus, setBonAgenSubmitStatus] = useState('');
+  const [lastRestockSummary, setLastRestockSummary] = useState(null);
   const [cashierLastClosedOrder, setCashierLastClosedOrder] = useState(null);
   const [authActiveTab, setAuthActiveTab] = useState('login');
   const [authEmail, setAuthEmail] = useState('');
@@ -4003,6 +4004,7 @@ Not recognized as active cashier/admin in staff_roles.`);
     setBonAgenSubmitStatus(lang === 'id' ? `⏳ Menerapkan restok bon #${item.id} ke stok...` : `⏳ Applying invoice #${item.id} to stock...`);
     let ok = 0;
     let failed = 0;
+    const summaryLines = [];
     for (const row of validRows) {
       const product = getBonRowProduct(row);
       if (!product) {
@@ -4041,8 +4043,23 @@ Not recognized as active cashier/admin in staff_roles.`);
       };
       const movementResult = await supabaseService.insertStockMovement(movement);
       if (movementResult?.error) console.warn('Stock movement gagal dicatat:', movementResult.error.message || movementResult.error);
+      summaryLines.push({
+        product_name: product.name,
+        qty: addQty,
+        unit: product.base_unit || product.unit || product.sell_unit || 'pcs',
+        unit_cost: unitCost || 0,
+        total_cost: Number(row.price || 0) || 0
+      });
       ok++;
     }
+    setLastRestockSummary({
+      id: item.id,
+      supplier_name: item.supplier_name || bonAgenDraft.supplier || 'Agen Warung',
+      ok,
+      failed,
+      lines: summaryLines,
+      created_at: new Date().toISOString()
+    });
     const nextStatus = failed ? 'reviewing' : 'applied';
     const patch = {
       status: nextStatus,
@@ -10218,7 +10235,30 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "text-[9px] text-gray-500 font-semibold mb-2"
   }, "Bon dari kasir masuk ke sini untuk direstok. Klik Review/Edit, koreksi baris, lalu Terapkan Restok & Selesai. Setelah selesai bon otomatis hilang dari daftar aktif."), bonAgenSubmitStatus && React.createElement("div", {
     className: `mb-2 rounded-2xl px-3 py-2 text-[10px] font-bold leading-relaxed ${bonAgenSubmitStatus.includes('❌') || bonAgenSubmitStatus.includes('⚠️') ? 'bg-red-50 text-red-700 border border-red-100' : bonAgenSubmitStatus.includes('⏳') || bonAgenSubmitStatus.includes('🔄') ? 'bg-amber-50 text-amber-700 border border-amber-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'}`
-  }, bonAgenSubmitStatus), React.createElement("div", {
+  }, bonAgenSubmitStatus), lastRestockSummary && React.createElement("div", {
+    className: "mb-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-[10px] text-emerald-800 shadow-sm"
+  }, React.createElement("div", {
+    className: "flex items-start justify-between gap-2 mb-2"
+  }, React.createElement("div", null, React.createElement("div", {
+    className: "font-black text-emerald-700 uppercase tracking-wider text-[10px]"
+  }, "✅ Restok Terakhir Selesai"), React.createElement("div", {
+    className: "font-semibold text-emerald-700 mt-0.5"
+  }, "Bon #", lastRestockSummary.id, " • ", lastRestockSummary.supplier_name, " • ", lastRestockSummary.ok, " barang masuk stok", lastRestockSummary.failed ? ` • ${lastRestockSummary.failed} gagal` : "")), React.createElement("button", {
+    type: "button",
+    onClick: () => setLastRestockSummary(null),
+    className: "bg-white/80 border border-emerald-100 text-emerald-700 rounded-full px-2 py-1 text-[8px] font-black flex-shrink-0"
+  }, "Tutup")), React.createElement("div", {
+    className: "space-y-1"
+  }, (lastRestockSummary.lines || []).slice(0, 6).map((line, idx) => React.createElement("div", {
+    key: `restock-summary-${idx}`,
+    className: "flex items-center justify-between gap-2 bg-white/80 border border-emerald-100 rounded-xl px-2 py-1"
+  }, React.createElement("span", {
+    className: "font-bold text-[#2d1242] truncate"
+  }, line.product_name), React.createElement("span", {
+    className: "font-black text-emerald-700 flex-shrink-0"
+  }, "+", Number(line.qty || 0).toLocaleString('id-ID'), " ", line.unit, " • Rp ", Number(line.unit_cost || 0).toLocaleString('id-ID'), "/unit")))), React.createElement("div", {
+    className: "mt-2 text-[9px] font-semibold text-emerald-700 leading-relaxed"
+  }, "Stok sudah diperbarui. Catatan pergerakan stok tersimpan agar laporan warung tetap jujur ☕")), React.createElement("div", {
     className: "space-y-2 max-h-72 overflow-y-auto no-scrollbar"
   }, bonAgenSubmissions.filter(item => !['cancelled', 'applied'].includes(item.status)).length === 0 ? React.createElement("div", {
     className: "rounded-2xl border border-dashed border-emerald-100 bg-emerald-50/35 p-3 text-center text-[10px] text-gray-500 font-semibold leading-relaxed"
@@ -11510,5 +11550,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c2f602bf5bff7e',t:'MTc4NDIyNTM5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c307f5eabba3d3',t:'MTc4NDIyNjEzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

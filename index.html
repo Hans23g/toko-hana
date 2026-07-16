@@ -3638,8 +3638,9 @@ function App() {
           safeStorage.setItem('toko_hana_admin', 'false');
         }
       } else {
-        if (safeStorage.getItem('toko_hana_admin') === 'true') {
-          console.warn('🛡️ Bendera admin lokal tanpa sesi server terdeteksi — dicabut paksa!');
+        const cachedUser = currentUserRef.current;
+        if (safeStorage.getItem('toko_hana_admin') === 'true' || ['admin', 'cashier', 'stock_staff'].includes(cachedUser?.role)) {
+          console.warn('🛡️ Sesi staff lokal tanpa sesi server terdeteksi — dicabut paksa!');
           setAdminLoggedIn(false);
           safeStorage.setItem('toko_hana_admin', 'false');
           setCurrentUser(null);
@@ -3880,6 +3881,20 @@ function App() {
       alert(lang === 'id' ? 'Tempel teks bon dulu ya kawan.' : 'Please paste invoice text first.');
       return;
     }
+    const { user: authUser } = await supabaseService.getUser();
+    if (!authUser?.email) {
+      setBonAgenSubmitStatus(lang === 'id' ? '⚠️ Sesi kasir belum aktif di server. Silakan logout lalu login ulang sebagai kasir.' : '⚠️ Cashier server session is not active. Please logout and login again as cashier.');
+      alert(lang === 'id' ? 'Sesi kasir di HP belum aktif di server. Logout lalu login ulang sebagai kasir ya kawan.' : 'Cashier session is not active on server. Please logout and login again.');
+      return;
+    }
+    const { data: activeStaffRole } = await supabaseService.getStaffRole(authUser.email);
+    if (!activeStaffRole || !['admin', 'cashier'].includes(activeStaffRole.role)) {
+      setBonAgenSubmitStatus(lang === 'id' ? `⚠️ Akun ${authUser.email} belum punya izin kirim bon sebagai kasir/admin.` : `⚠️ Account ${authUser.email} is not allowed to send invoice drafts.`);
+      alert(lang === 'id' ? `Akun login server: ${authUser.email}
+Belum terbaca sebagai kasir/admin aktif di staff_roles.` : `Server login: ${authUser.email}
+Not recognized as active cashier/admin in staff_roles.`);
+      return;
+    }
     const parsedItems = bonAgenRows.map(row => ({
       raw: row.raw,
       raw_name: row.rawName,
@@ -3895,9 +3910,9 @@ function App() {
       raw_text: bonAgenDraft.rawText,
       parsed_items: parsedItems,
       status: 'submitted',
-      submitted_by_email: currentUser?.email || null,
-      submitted_by_name: currentUser?.name || 'Kasir Toko Hana',
-      submitted_by_role: currentUser?.role || 'cashier',
+      submitted_by_email: authUser.email,
+      submitted_by_name: activeStaffRole.name || currentUser?.name || 'Kasir Toko Hana',
+      submitted_by_role: activeStaffRole.role || currentUser?.role || 'cashier',
       notes: 'Dikirim dari Bon Agen Draft Kasir Cepat.'
     };
     setBonAgenSubmitStatus(lang === 'id' ? '⏳ Mengirim bon ke meja admin...' : '⏳ Sending invoice draft to admin...');
@@ -3969,9 +3984,19 @@ function App() {
   const handleApplyBonAgenRestock = async item => {
     if (!item) return;
     const rows = Array.isArray(item.parsed_items) ? item.parsed_items : [];
-    const validRows = rows.filter(row => row && row.matched_product_id && Number(row.stock_add_qty || 0) > 0);
+    const getBonRowProduct = row => (products || []).find(p => String(p.id) === String(row?.matched_product_id || row?.product_id || '')) || null;
+    const getBonRowStockAdd = row => {
+      const explicit = Number(row?.stock_add_qty || 0);
+      if (explicit > 0) return explicit;
+      const product = getBonRowProduct(row);
+      if (!product) return 0;
+      const qtyBon = Number(row?.qty || 1);
+      const isiPerBeli = Number(row?.units_per_purchase || product.units_per_purchase || 1);
+      return Math.max(0, qtyBon * isiPerBeli);
+    };
+    const validRows = rows.filter(row => row && (row.matched_product_id || row.product_id) && getBonRowStockAdd(row) > 0);
     if (!validRows.length) {
-      alert(lang === 'id' ? 'Belum ada baris yang siap diterapkan. Pastikan produk cocok dan stok bertambah sudah diisi.' : 'No rows are ready to apply. Make sure matched product and stock add qty are filled.');
+      alert(lang === 'id' ? 'Belum ada baris yang siap diterapkan. Pastikan produk cocok sudah dipilih. Jika stok bertambah kosong, sistem akan pakai Qty bon × isi per pembelian produk.' : 'No rows are ready to apply. Make sure matched product is selected. If stock add is empty, system uses invoice qty × product units per purchase.');
       return;
     }
     if (!confirm(lang === 'id' ? `Terapkan ${validRows.length} baris bon ke stok?\n\nPastikan produk cocok, stok tambah, dan modal/unit sudah benar ya kawan.` : `Apply ${validRows.length} invoice rows to stock?`)) return;
@@ -3979,12 +4004,12 @@ function App() {
     let ok = 0;
     let failed = 0;
     for (const row of validRows) {
-      const product = (products || []).find(p => String(p.id) === String(row.matched_product_id));
+      const product = getBonRowProduct(row);
       if (!product) {
         failed++;
         continue;
       }
-      const addQty = Number(row.stock_add_qty || 0);
+      const addQty = getBonRowStockAdd(row);
       const unitCost = Number(row.cost_price || 0) || (addQty > 0 ? Math.round(Number(row.price || 0) / addQty) : 0);
       const newStock = Number(product.stock || 0) + addQty;
       const productPatch = {
@@ -11484,6 +11509,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c2b0696ec7ce7e',t:'MTc4NDIyMjU0Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c2efcedbcffe90',t:'MTc4NDIyNTE0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

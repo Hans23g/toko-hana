@@ -2838,6 +2838,7 @@ function App() {
   const [guestPaymentChoice, setGuestPaymentChoice] = useState('Cash');
   const [piExchangeChecked, setPiExchangeChecked] = useState(false);
   const [piRewardDiscountInput, setPiRewardDiscountInput] = useState('');
+  const [cashierOrderSearch, setCashierOrderSearch] = useState('');
   const [authActiveTab, setAuthActiveTab] = useState('login');
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
@@ -5550,12 +5551,19 @@ ${TOKO_HANA_PUBLIC_URL}`;
     return cart.reduce((total, item) => total + (item.quantity || 0), 0);
   }, [cart]);
   const cashierPendingOrders = useMemo(() => {
+    const q = String(cashierOrderSearch || '').trim().toLowerCase();
     return (orders || []).filter(o => {
       if (!o) return false;
       const status = o.status || '';
-      return ['Baru', 'Belum Bayar', 'Diproses', 'Siap Bayar'].includes(status);
+      if (!['Baru', 'Belum Bayar', 'Diproses', 'Siap Bayar'].includes(status)) return false;
+      if (!q) return true;
+      const haystack = [o.id, o.customer_name, o.phone, o.payment_method, o.status, o.payment_note].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(q);
+    }).sort((a, b) => {
+      const order = { 'Siap Bayar': 0, 'Belum Bayar': 1, 'Baru': 2, 'Diproses': 3 };
+      return (order[a.status] ?? 9) - (order[b.status] ?? 9);
     }).slice(0, 12);
-  }, [orders]);
+  }, [orders, cashierOrderSearch]);
   const handleCashierSetRewardDiscount = order => {
     if (!order) return;
     const raw = window.prompt(lang === 'id' ? `Masukkan potongan reward Pi untuk order ${order.id} (angka saja).\nSetelah disimpan, pelanggan melihat total baru dan membayar sisanya.` : `Enter Pi reward discount for order ${order.id} (numbers only).\nAfter saving, customer sees the new total and pays the remaining amount.`, '5000');
@@ -7458,10 +7466,26 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, lang === 'id' ? 'Konfirmasi Order Kasir' : 'Cashier Order Confirmation'), React.createElement("p", {
     className: "text-[9.5px] text-gray-500 font-semibold leading-relaxed mt-0.5"
   }, lang === 'id' ? 'Alur lembut: tetapkan potongan → minta pelanggan lihat sisa bayar → setelah QRIS/Tunai diterima, tutup pesanan dengan Tandai Lunas.' : 'For customer-phone orders: set discount first, customer pays the remaining amount, then mark paid.'))), React.createElement("div", {
+    className: "mb-2 bg-white/80 border border-purple-100 rounded-2xl px-3 py-2 flex items-center gap-2"
+  }, React.createElement(LucideIcon, {
+    name: "Search",
+    size: 13,
+    className: "text-[#703d92] flex-shrink-0"
+  }), React.createElement("input", {
+    type: "text",
+    value: cashierOrderSearch,
+    onChange: e => setCashierOrderSearch(e.target.value),
+    placeholder: lang === 'id' ? 'Cari kode order / nama / WA...' : 'Search order code / name / phone...',
+    className: "flex-1 bg-transparent text-[16px] font-normal outline-none text-gray-700 placeholder-gray-400"
+  }), cashierOrderSearch && React.createElement("button", {
+    type: "button",
+    onClick: () => setCashierOrderSearch(''),
+    className: "text-[9px] font-black text-gray-400 bg-gray-100 rounded-full px-2 py-1"
+  }, "Clear")), React.createElement("div", {
     className: "space-y-2 max-h-72 overflow-y-auto no-scrollbar"
   }, cashierPendingOrders.length === 0 ? React.createElement("div", {
     className: "bg-white border border-dashed border-amber-200 rounded-2xl p-3 text-center text-[10px] text-gray-500 font-semibold leading-relaxed"
-  }, lang === 'id' ? 'Belum ada order yang menunggu konfirmasi kasir. Buat order dari HP pelanggan atau checkout dari kasir dulu.' : 'No orders are waiting for cashier confirmation yet. Create an order from customer phone or cashier checkout first.') : cashierPendingOrders.map(o => React.createElement("div", {
+  }, cashierOrderSearch ? (lang === 'id' ? 'Tidak ada order yang cocok dengan pencarian ini.' : 'No orders match this search.') : (lang === 'id' ? 'Belum ada order yang menunggu konfirmasi kasir. Buat order dari HP pelanggan atau checkout dari kasir dulu.' : 'No orders are waiting for cashier confirmation yet. Create an order from customer phone or cashier checkout first.')) : cashierPendingOrders.map(o => React.createElement("div", {
     key: `cashier-${o.id}`,
     className: "bg-white border border-amber-100 rounded-2xl p-2.5 space-y-1.5"
   }, React.createElement("div", {
@@ -10424,5 +10448,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1be0e380cffff7e',t:'MTc4NDE3Mzk2MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1be4e644cd855fc',t:'MTc4NDE3NjU4OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

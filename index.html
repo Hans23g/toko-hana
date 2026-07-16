@@ -5544,12 +5544,8 @@ ${TOKO_HANA_PUBLIC_URL}`;
     return (orders || []).filter(o => {
       if (!o) return false;
       const status = o.status || '';
-      const method = o.payment_method || '';
-      const note = o.payment_note || '';
-      const isPending = ['Baru', 'Belum Bayar', 'Diproses', 'Siap Bayar'].includes(status);
-      const isInStore = o.channel === 'Offline' || method.includes('Toko') || method.includes('Offline') || note.includes('Tukar Koin Pi');
-      return isPending && isInStore;
-    }).slice(0, 8);
+      return ['Baru', 'Belum Bayar', 'Diproses', 'Siap Bayar'].includes(status);
+    }).slice(0, 12);
   }, [orders]);
   const handleCashierSetRewardDiscount = order => {
     if (!order) return;
@@ -7428,7 +7424,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     })))));
   })(), currentTab === 'Cart' && React.createElement("div", {
     className: "animate-fade-in p-4 pb-24"
-  }, canVerifyCashierReward && cashierPendingOrders.length > 0 && React.createElement("div", {
+  }, canVerifyCashierReward && React.createElement("div", {
     className: "mb-4 rounded-3xl border border-amber-200 bg-gradient-to-br from-white via-amber-50 to-purple-50 p-3 shadow-sm"
   }, React.createElement("div", {
     className: "flex items-start gap-2.5 mb-3"
@@ -7442,7 +7438,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "text-[9.5px] text-gray-500 font-semibold leading-relaxed mt-0.5"
   }, lang === 'id' ? 'Untuk order dari HP pelanggan: tetapkan potongan dulu, pelanggan bayar sisa, lalu tandai lunas.' : 'For customer-phone orders: set discount first, customer pays the remaining amount, then mark paid.'))), React.createElement("div", {
     className: "space-y-2 max-h-72 overflow-y-auto no-scrollbar"
-  }, cashierPendingOrders.map(o => React.createElement("div", {
+  }, cashierPendingOrders.length === 0 ? React.createElement("div", {
+    className: "bg-white border border-dashed border-amber-200 rounded-2xl p-3 text-center text-[10px] text-gray-500 font-semibold leading-relaxed"
+  }, lang === 'id' ? 'Belum ada order yang menunggu konfirmasi kasir. Buat order dari HP pelanggan atau checkout dari kasir dulu.' : 'No orders are waiting for cashier confirmation yet. Create an order from customer phone or cashier checkout first.') : cashierPendingOrders.map(o => React.createElement("div", {
     key: `cashier-${o.id}`,
     className: "bg-white border border-amber-100 rounded-2xl p-2.5 space-y-1.5"
   }, React.createElement("div", {
@@ -10401,5 +10399,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1bd3fcdd9db385d',t:'MTc4NDE2NTUwNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1bd4cf47e02fdaf',t:'MTc4NDE2NjA0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

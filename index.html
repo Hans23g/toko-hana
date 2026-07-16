@@ -4189,6 +4189,51 @@ function App() {
       tier
     };
   };
+  const handleCashierScanProduct = () => {
+    const raw = window.prompt(lang === 'id' ? 'Scan / ketik kode produk.\nFormat aman: HANA-PRODUCT:ID\nBisa juga pakai barcode / SKU jika sudah ada.' : 'Scan / type product code.\nSafe format: HANA-PRODUCT:ID\nBarcode / SKU also works if available.');
+    if (raw === null) return;
+    const code = String(raw || '').trim();
+    if (!code) {
+      showToast(lang === 'id' ? 'Kode produk masih kosong, kawan.' : 'Product code is empty.');
+      return;
+    }
+    const lower = code.toLowerCase();
+    const hanaMatch = lower.match(/hana-product\s*[:#-]\s*([^|;\s]+)/i);
+    const tierMatch = lower.match(/(?:tier|satuan)\s*[:#=]\s*([^|;]+)/i);
+    const lookupId = hanaMatch ? hanaMatch[1] : code;
+    const product = (products || []).find(p => String(p.id).toLowerCase() === String(lookupId).toLowerCase() || String(p.barcode || '').toLowerCase() === lower || String(p.sku || '').toLowerCase() === lower || String(p.name || '').toLowerCase() === lower);
+    if (!product) {
+      setCashierProductSearch(code.replace(/^hana-product\s*[:#-]\s*/i, ''));
+      showToast(lang === 'id' ? `📷 Kode “${code}” belum ketemu. Aku masukkan ke pencarian dulu ya.` : `📷 Code “${code}” not found. I put it into search.`);
+      return;
+    }
+    let chosen = product;
+    if (product.price_tiers && product.price_tiers.length > 0) {
+      const tierToken = tierMatch ? tierMatch[1].trim() : '';
+      if (tierToken) {
+        const tier = product.price_tiers.find((t, idx) => String(idx) === tierToken || String(t.label || '').toLowerCase().includes(tierToken) || String(t.unit || '').toLowerCase().includes(tierToken));
+        if (tier) {
+          const idx = product.price_tiers.indexOf(tier);
+          chosen = {
+            ...product,
+            id: `${product.id}-tier-${idx}`,
+            baseProductId: product.id,
+            baseProductName: product.name,
+            basePrice: product.price,
+            name: `${product.name} (${tier.label})`,
+            price: tier.price,
+            tier
+          };
+        }
+      } else {
+        setSelectedProductDetail(product);
+        showToast(lang === 'id' ? `📷 ${product.name} punya beberapa satuan. Pilih harga warung dulu ya.` : `📷 ${product.name} has multiple units. Please choose one.`);
+        return;
+      }
+    }
+    handleAddToCart(chosen, 1);
+    showToast(lang === 'id' ? `📷 ${chosen.name} masuk keranjang.` : `📷 ${chosen.name} added to cart.`);
+  };
   const handleCashierVoiceAdd = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -7646,6 +7691,14 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "flex-1 bg-transparent text-[16px] font-normal outline-none text-gray-700 placeholder-gray-400"
   }), React.createElement("button", {
     type: "button",
+    onClick: handleCashierScanProduct,
+    className: "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-white text-emerald-700 border border-emerald-100",
+    title: "Scan Produk"
+  }, React.createElement(LucideIcon, {
+    name: "Camera",
+    size: 14
+  })), React.createElement("button", {
+    type: "button",
     onClick: handleCashierVoiceAdd,
     className: `w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${voiceSearching ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-white text-[#703d92] border border-purple-100'}`,
     title: "Mic Kasir"
@@ -10724,6 +10777,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c14a604d909a98',t:'MTc4NDIwNzg4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c1720a9c4a9c3e',t:'MTc4NDIwOTUwNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

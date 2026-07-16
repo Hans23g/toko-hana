@@ -2840,6 +2840,7 @@ function App() {
   const [piRewardDiscountInput, setPiRewardDiscountInput] = useState('');
   const [cashierOrderSearch, setCashierOrderSearch] = useState('');
   const [cashierProductSearch, setCashierProductSearch] = useState('');
+  const [bonAgenDraft, setBonAgenDraft] = useState({ supplier: '', total: '', rawText: '' });
   const [cashierLastClosedOrder, setCashierLastClosedOrder] = useState(null);
   const [authActiveTab, setAuthActiveTab] = useState('login');
   const [authEmail, setAuthEmail] = useState('');
@@ -3766,6 +3767,36 @@ function App() {
       return text.includes(q);
     }).slice(0, 16);
   }, [products, cashierProductSearch]);
+  const bonAgenRows = useMemo(() => {
+    const lines = String(bonAgenDraft.rawText || '').split(/\n+/).map(x => x.trim()).filter(Boolean);
+    return lines.map((line, idx) => {
+      const nums = line.match(/\d[\d.,]*/g) || [];
+      const priceRaw = nums.length ? nums[nums.length - 1] : '';
+      const price = priceRaw ? parseInt(priceRaw.replace(/[^0-9]/g, ''), 10) || 0 : 0;
+      const unitMatch = line.toLowerCase().match(/\b(dus|box|renceng|renteng|pack|pak|peti|karung|kg|kilo|liter|botol|pcs|bungkus|slop|bal)\b/);
+      const unit = unitMatch ? unitMatch[1] : '';
+      const qtyMatch = line.toLowerCase().match(/\b(\d+[\d.,]*)\s*(dus|box|renceng|renteng|pack|pak|peti|karung|kg|kilo|liter|botol|pcs|bungkus|slop|bal)\b/);
+      const qty = qtyMatch ? parseFloat(qtyMatch[1].replace(',', '.')) || 1 : 1;
+      let rawName = line;
+      if (priceRaw) rawName = rawName.replace(priceRaw, '');
+      if (qtyMatch) rawName = rawName.replace(qtyMatch[0], '');
+      rawName = rawName.replace(/rp\.?/ig, '').replace(/[@x=:-]+/g, ' ').replace(/\s+/g, ' ').trim();
+      const scored = (products || []).map(p => ({
+        product: p,
+        score: scoreProductForSpeech(p, rawName || line)
+      })).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+      const match = scored[0]?.product || null;
+      return {
+        rowNo: idx + 1,
+        raw: line,
+        rawName: rawName || line,
+        qty,
+        unit,
+        price,
+        match
+      };
+    });
+  }, [bonAgenDraft.rawText, products]);
   const dynamicPromoHighlights = useMemo(() => {
     const safeProducts = Array.isArray(products) ? products : [];
     const promoItems = safeProducts.filter(p => p.original_price && p.original_price > p.price).slice(0, 3).map(p => ({
@@ -7791,8 +7822,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "Meja Kasir"), React.createElement("h2", {
     className: "font-black text-lg leading-tight mt-1"
   }, "Kasir Cepat Toko Hana"), React.createElement("p", {
-    className: "text-[10px] text-white/75 font-semibold leading-relaxed mt-1"
-  }, "Cari barang, tambah cepat, biar pelanggan tidak menunggu lama. Kasir santai, pelanggan senang ☕"))), React.createElement("div", {
+    className: "text-[10px] text-white/75 font-semibold leading-relaxed mt-1 pr-20"
+  }, "Cari barang, tambah cepat, biar pelanggan tidak menunggu lama. Kasir santai, pelanggan senang ☕"), React.createElement("button", {
+    type: "button",
+    onClick: handleLogout,
+    className: "absolute right-0 top-0 bg-white/12 border border-white/20 text-white rounded-full px-3 py-1.5 text-[9px] font-black active:scale-95 backdrop-blur-sm"
+  }, "Keluar"))), React.createElement("div", {
     className: "bg-white rounded-3xl border border-purple-100 shadow-sm p-3 space-y-3"
   }, React.createElement("div", {
     className: "bg-purple-50 border border-purple-100 rounded-2xl px-3 py-2 flex items-center gap-2"
@@ -7875,7 +7910,57 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "font-black text-[#703d92] flex-shrink-0"
   }, "Rp ", (item.quantity * item.product.price).toLocaleString('id-ID'))))) : React.createElement("div", {
     className: "text-[10px] text-gray-400 font-semibold text-center py-3"
-  }, "Keranjang masih kosong. Ketik nama barang atau pilih dari daftar cepat, kawan ☕"))), currentTab === 'Cart' && React.createElement("div", {
+  }, "Keranjang masih kosong. Ketik nama barang atau pilih dari daftar cepat, kawan ☕"))), React.createElement("div", {
+    className: "bg-white rounded-3xl border border-emerald-100 shadow-sm p-3 space-y-3"
+  }, React.createElement("div", {
+    className: "flex items-start gap-2.5"
+  }, React.createElement("div", {
+    className: "w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-sm flex-shrink-0"
+  }, "🧾"), React.createElement("div", {
+    className: "min-w-0"
+  }, React.createElement("h4", {
+    className: "font-black text-emerald-700 text-[12px] uppercase tracking-wider leading-tight"
+  }, "Bon Agen Draft"), React.createElement("p", {
+    className: "text-[9.5px] text-gray-500 font-semibold leading-relaxed mt-0.5"
+  }, "Tempel teks bon dari agen. Sistem bantu pecah baris dan tebak produk. Belum mengubah stok sebelum Juragan setujui."))), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("input", {
+    value: bonAgenDraft.supplier,
+    onChange: e => setBonAgenDraft({ ...bonAgenDraft, supplier: e.target.value }),
+    placeholder: "Nama agen/supplier",
+    className: "w-full border border-emerald-100 rounded-xl px-3 py-2 text-[16px] font-normal"
+  }), React.createElement("input", {
+    value: bonAgenDraft.total,
+    onChange: e => setBonAgenDraft({ ...bonAgenDraft, total: e.target.value.replace(/[^0-9]/g, '') }),
+    placeholder: "Total bon",
+    className: "w-full border border-emerald-100 rounded-xl px-3 py-2 text-[16px] font-normal"
+  })), React.createElement("textarea", {
+    value: bonAgenDraft.rawText,
+    onChange: e => setBonAgenDraft({ ...bonAgenDraft, rawText: e.target.value }),
+    placeholder: "Tempel teks bon di sini...\nContoh:\nINDOMIE GORENG 1 DUS 85000\nKAPAL API 2 RENCENG 26000",
+    className: "w-full border border-emerald-100 rounded-2xl px-3 py-2 text-[16px] font-normal min-h-[96px]"
+  }), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("button", {
+    type: "button",
+    onClick: () => setBonAgenDraft({ supplier: 'Agen Warung', total: '441000', rawText: 'INDOMIE GORENG 1 DUS 85000\nKAPAL API SPECIAL MIX 2 RENCENG 26000\nTELUR AYAM CURAH 1 PETI 330000' }),
+    className: "bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-xl py-2 text-[10px] font-black"
+  }, "Contoh Bon"), React.createElement("button", {
+    type: "button",
+    onClick: () => setBonAgenDraft({ supplier: '', total: '', rawText: '' }),
+    className: "bg-gray-50 border border-gray-100 text-gray-500 rounded-xl py-2 text-[10px] font-black"
+  }, "Bersihkan")), bonAgenRows.length > 0 && React.createElement("div", {
+    className: "space-y-2 max-h-56 overflow-y-auto no-scrollbar"
+  }, bonAgenRows.map(row => React.createElement("div", {
+    key: `bon-${row.rowNo}`,
+    className: "rounded-2xl border border-emerald-100 bg-emerald-50/45 p-2.5 text-[9.5px]"
+  }, React.createElement("div", {
+    className: "font-black text-[#2d1242]"
+  }, row.rawName), React.createElement("div", {
+    className: "text-gray-500 font-semibold mt-0.5"
+  }, "Qty ", row.qty, " ", row.unit || 'unit', " • harga bon Rp ", Number(row.price || 0).toLocaleString('id-ID')), React.createElement("div", {
+    className: `mt-1 font-bold ${row.match ? 'text-emerald-700' : 'text-amber-700'}`
+  }, row.match ? `Cocok: ${row.match.name}` : 'Belum cocok ke produk — nanti pilih manual'))))), currentTab === 'Cart' && React.createElement("div", {
     className: "animate-fade-in p-4 pb-24"
   }, canVerifyCashierReward && React.createElement("div", {
     className: "mb-4 rounded-3xl border border-amber-200 bg-gradient-to-br from-white via-amber-50 to-purple-50 p-3 shadow-sm"
@@ -11009,6 +11094,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c1bf208b04d4a5',t:'MTc4NDIxMjY2NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c1f3ea39f4d261',t:'MTc4NDIxNDgyNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

@@ -7863,7 +7863,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: () => setCashierProductSearch(''),
     className: "text-[9px] font-black text-gray-400 bg-white rounded-full px-2 py-1"
   }, "Clear")), React.createElement("div", {
-    className: "grid grid-cols-1 gap-1.5 max-h-[30vh] overflow-y-auto no-scrollbar"
+    className: "grid grid-cols-1 gap-1.5 max-h-[26vh] overflow-y-auto no-scrollbar"
   }, cashierQuickProducts.length ? cashierQuickProducts.map(product => React.createElement("button", {
     key: `cashier-prod-${product.id}`,
     type: "button",
@@ -7896,11 +7896,17 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "font-black text-[#703d92] text-[12px] uppercase tracking-wider"
   }, "Keranjang Kasir"), React.createElement("p", {
     className: "text-[9px] text-gray-400 font-semibold"
-  }, totalCartItems, " item • total Rp ", effectiveDisplayTotal.toLocaleString('id-ID'))), React.createElement("button", {
+  }, totalCartItems, " item • total Rp ", effectiveDisplayTotal.toLocaleString('id-ID'))), React.createElement("div", {
+    className: "flex items-center gap-1.5 flex-shrink-0"
+  }, React.createElement("button", {
+    type: "button",
+    onClick: () => setShowBonAgenDraft(true),
+    className: "bg-emerald-600 text-white rounded-xl px-2.5 py-2 text-[9px] font-black active:scale-95"
+  }, "Bon Agen"), React.createElement("button", {
     type: "button",
     onClick: () => setCurrentTab('Cart'),
     className: "bg-[#703d92] text-white rounded-xl px-3 py-2 text-[10px] font-black active:scale-95"
-  }, "Lanjut Bayar")), cart.length ? React.createElement("div", {
+  }, "Lanjut Bayar"))), cart.length ? React.createElement("div", {
     className: "space-y-1 max-h-24 overflow-y-auto no-scrollbar"
   }, cart.slice(0, 5).map(item => React.createElement("div", {
     key: `cashier-cart-${item.product.id}`,
@@ -7914,7 +7920,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "Keranjang masih kosong. Ketik nama barang atau pilih dari daftar cepat, kawan ☕"))), React.createElement("button", {
     type: "button",
     onClick: () => setShowBonAgenDraft(true),
-    className: "w-full rounded-3xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-white shadow-sm p-3 text-left active:scale-[0.99] transition-all flex items-center justify-between gap-3"
+    className: "hidden"
   }, React.createElement("div", {
     className: "flex items-center gap-2.5 min-w-0"
   }, React.createElement("div", {
@@ -11117,6 +11123,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c2055e7843a5d8',t:'MTc4NDIxNTU0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c20b748c0cce7f',t:'MTc4NDIxNTc5MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

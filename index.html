@@ -3915,7 +3915,7 @@ function App() {
     showToast(lang === 'id' ? '🧾 Bon agen terkirim ke admin untuk direview. Stok belum berubah sampai disetujui.' : '🧾 Supplier invoice sent to admin for review. Stock is not changed yet.');
   };
   const handleUpdateBonAgenStatus = async (id, status) => {
-    const label = status === 'reviewing' ? 'sedang direview' : status === 'approved' ? 'disetujui' : status === 'cancelled' ? 'dibatalkan' : status;
+    const label = status === 'reviewing' ? 'sedang direview' : status === 'approved' ? 'disetujui' : status === 'cancelled' ? 'diarsipkan' : status;
     setBonAgenSubmitStatus(lang === 'id' ? `⏳ Mengubah status bon #${id} menjadi ${label}...` : `⏳ Updating invoice #${id} to ${label}...`);
     const prevItems = bonAgenSubmissions;
     setBonAgenSubmissions(prev => prev.map(item => item.id === id ? { ...item, status } : item));
@@ -4028,7 +4028,7 @@ function App() {
       setBonAgenSubmitStatus(lang === 'id' ? `⚠️ Stok terupdate sebagian, tapi status bon gagal disimpan: ${error.message || error}` : `⚠️ Stock updated partially, but invoice status failed: ${error.message || error}`);
     } else {
       if (data && data[0]) setBonAgenSubmissions(prev => prev.map(x => x.id === item.id ? data[0] : x));
-      setBonAgenSubmitStatus(failed ? `⚠️ Restok bon #${item.id}: ${ok} berhasil, ${failed} gagal. Cek ulang.` : `✅ Restok bon #${item.id} diterapkan. ${ok} baris masuk stok.`);
+      setBonAgenSubmitStatus(failed ? `⚠️ Restok bon #${item.id}: ${ok} berhasil, ${failed} gagal. Cek ulang.` : `✅ Restok bon #${item.id} selesai. ${ok} baris masuk stok dan bon keluar dari daftar aktif.`);
       showToast(failed ? `⚠️ Restok sebagian: ${ok} berhasil, ${failed} gagal.` : `📦 Restok berhasil: ${ok} baris masuk stok.`);
     }
   };
@@ -10191,13 +10191,13 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "bg-emerald-600 text-white rounded-full px-3 py-1.5 text-[9px] font-black active:scale-95"
   }, "Refresh")), React.createElement("p", {
     className: "text-[9px] text-gray-500 font-semibold mb-2"
-  }, "Review dulu sebelum stok berubah. Sistem baru membaca dan menyarankan, admin tetap memutuskan."), bonAgenSubmitStatus && React.createElement("div", {
+  }, "Bon dari kasir masuk ke sini untuk direstok. Klik Review/Edit, koreksi baris, lalu Terapkan Restok & Selesai. Setelah selesai bon otomatis hilang dari daftar aktif."), bonAgenSubmitStatus && React.createElement("div", {
     className: `mb-2 rounded-2xl px-3 py-2 text-[10px] font-bold leading-relaxed ${bonAgenSubmitStatus.includes('❌') || bonAgenSubmitStatus.includes('⚠️') ? 'bg-red-50 text-red-700 border border-red-100' : bonAgenSubmitStatus.includes('⏳') || bonAgenSubmitStatus.includes('🔄') ? 'bg-amber-50 text-amber-700 border border-amber-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'}`
   }, bonAgenSubmitStatus), React.createElement("div", {
     className: "space-y-2 max-h-72 overflow-y-auto no-scrollbar"
-  }, bonAgenSubmissions.length === 0 ? React.createElement("div", {
+  }, bonAgenSubmissions.filter(item => !['cancelled', 'applied'].includes(item.status)).length === 0 ? React.createElement("div", {
     className: "rounded-2xl border border-dashed border-emerald-100 bg-emerald-50/35 p-3 text-center text-[10px] text-gray-500 font-semibold leading-relaxed"
-  }, "Belum ada bon agen masuk. Kalau kasir baru kirim, tekan Refresh dulu ya ☕") : bonAgenSubmissions.map(item => React.createElement("div", {
+  }, "Belum ada bon yang perlu direstok. Bon yang sudah diterapkan/diarsipkan tidak tampil di sini ☕") : bonAgenSubmissions.filter(item => !['cancelled', 'applied'].includes(item.status)).map(item => React.createElement("div", {
     key: item.id,
     className: "rounded-2xl border border-emerald-100 bg-emerald-50/40 p-2.5"
   }, React.createElement("div", {
@@ -10287,19 +10287,22 @@ ${note ? `<div class="note">${note}</div>` : ''}
       className: "text-[8.5px] text-gray-500 font-semibold"
     }, "Belum ada baris hasil baca. Cek teks bon mentah di atas."), React.createElement("div", {
       className: "mt-2 text-[8.5px] text-amber-700 bg-amber-50 rounded-xl px-2 py-1 font-semibold leading-relaxed"
-    }, "Edit dulu baris bon. Simpan Koreksi hanya merapikan draft; stok belum berubah sampai fitur Terapkan Restok diaktifkan."));
+    }, "Edit dulu baris bon. Setelah rapi, klik Terapkan Restok & Selesai agar stok barang bertambah dan bon keluar dari daftar aktif."));
   })(), React.createElement("div", {
-    className: "grid grid-cols-3 gap-1.5 mt-2"
-  }, ['reviewing','approved','cancelled'].map(st => React.createElement("button", {
-    key: st,
+    className: "grid grid-cols-2 gap-1.5 mt-2"
+  }, item.status !== 'reviewing' && React.createElement("button", {
     type: "button",
-    onClick: () => handleUpdateBonAgenStatus(item.id, st),
-    className: `rounded-xl py-1.5 text-[8px] font-black ${st === 'approved' ? 'bg-emerald-600 text-white' : st === 'cancelled' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700'}`
-  }, st === 'reviewing' ? 'Review' : st === 'approved' ? 'Setuju' : 'Batal'))), ['reviewing', 'approved'].includes(item.status) && React.createElement("button", {
+    onClick: () => handleUpdateBonAgenStatus(item.id, 'reviewing'),
+    className: "rounded-xl py-1.5 text-[8px] font-black bg-amber-50 text-amber-700"
+  }, "Review / Edit"), React.createElement("button", {
+    type: "button",
+    onClick: () => handleUpdateBonAgenStatus(item.id, 'cancelled'),
+    className: "rounded-xl py-1.5 text-[8px] font-black bg-red-50 text-red-600"
+  }, "Arsipkan")), item.status === 'reviewing' && React.createElement("button", {
     type: "button",
     onClick: () => handleApplyBonAgenRestock(item),
     className: "w-full mt-2 bg-[#703d92] text-white rounded-xl py-2 text-[9px] font-black active:scale-95"
-  }, "Terapkan Restok"))))), React.createElement("div", {
+  }, "Terapkan Restok & Selesai"))))), React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3 flex items-center gap-1.5"
@@ -11482,5 +11485,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c283c7afe79cd8',t:'MTc4NDIyMDcxOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c2b0696ec7ce7e',t:'MTc4NDIyMjU0Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

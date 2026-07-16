@@ -4070,9 +4070,9 @@ function App() {
       if (isMemberQrisInStore) {
         setQrisModalStartTab('qris');
         setShowQrisModal(true);
-        showToast(lang === 'id' ? `🧾 Order ${newOrderId} masuk ke kasir. Tunggu kasir tetapkan potongan/sisa bayar, lalu scan QRIS sesuai total final.` : `🧾 Order ${newOrderId} sent to cashier. Wait for cashier to set discount/final amount, then scan QRIS.`);
+        showToast(lang === 'id' ? `🧾 Pesanan ${newOrderId} sudah masuk ke meja kasir. Tunggu sebentar ya, kasir akan bantu cek potongan dan total akhir sebelum Juragan scan QRIS.` : `🧾 Order ${newOrderId} sent to cashier. Wait for cashier to set discount/final amount, then scan QRIS.`);
       } else {
-        showToast(lang === 'id' ? `🧾 Order ${newOrderId} masuk ke kasir. Tunggu kasir tetapkan potongan/sisa bayar, lalu bayar tunai sesuai total final.` : `🧾 Order ${newOrderId} sent to cashier. Wait for cashier to set discount/final amount, then pay cash.`);
+        showToast(lang === 'id' ? `🧾 Pesanan ${newOrderId} sudah masuk ke meja kasir. Tunggu sebentar ya, kasir akan bantu cek potongan dan total akhir sebelum Juragan bayar tunai.` : `🧾 Order ${newOrderId} sent to cashier. Wait for cashier to set discount/final amount, then pay cash.`);
       }
       if (currentUser?.role === 'customer') setCurrentTab('Profil');
       setPiExchangeChecked(false);
@@ -5582,7 +5582,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
           alert(lang === 'id' ? `Gagal simpan potongan ke database: ${error.message}. Pastikan 04_cashier_order_confirm_policy.sql sudah dijalankan.` : `Failed to save discount to database: ${error.message}. Make sure 04_cashier_order_confirm_policy.sql has been run.`);
         } else {
           console.log('Potongan reward ditetapkan:', order.id);
-          showToast(`✅ Potongan order ${order.id} tersimpan. Minta pelanggan cek Riwayat/Profil.`);
+          showToast(`✅ Potongan order ${order.id} sudah tersimpan. Sampaikan ke pelanggan untuk cek sisa bayar di Riwayat ya ☕`);
         }
       });
     }
@@ -5607,7 +5607,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
           alert(lang === 'id' ? `Gagal tandai lunas di database: ${error.message}. Pastikan 04_cashier_order_confirm_policy.sql sudah dijalankan.` : `Failed to mark paid in database: ${error.message}. Make sure 04_cashier_order_confirm_policy.sql has been run.`);
         } else {
           console.log('Order ditandai lunas kasir:', order.id);
-          showToast(`✅ Order ${order.id} sudah lunas dan tersimpan.`);
+          showToast(`✅ Order ${order.id} sudah lunas. Terima kasih, pesanan ditutup rapi dengan senyum ☕`);
         }
       });
     }
@@ -7457,7 +7457,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "font-black text-[#703d92] text-[12px] uppercase tracking-wider leading-tight"
   }, lang === 'id' ? 'Konfirmasi Order Kasir' : 'Cashier Order Confirmation'), React.createElement("p", {
     className: "text-[9.5px] text-gray-500 font-semibold leading-relaxed mt-0.5"
-  }, lang === 'id' ? 'Untuk order dari HP pelanggan: Tetapkan Potongan → minta pelanggan cek sisa bayar di Profil → setelah pelanggan bayar QRIS/Tunai, baru Tandai Lunas.' : 'For customer-phone orders: set discount first, customer pays the remaining amount, then mark paid.'))), React.createElement("div", {
+  }, lang === 'id' ? 'Alur lembut: tetapkan potongan → minta pelanggan lihat sisa bayar → setelah QRIS/Tunai diterima, tutup pesanan dengan Tandai Lunas.' : 'For customer-phone orders: set discount first, customer pays the remaining amount, then mark paid.'))), React.createElement("div", {
     className: "space-y-2 max-h-72 overflow-y-auto no-scrollbar"
   }, cashierPendingOrders.length === 0 ? React.createElement("div", {
     className: "bg-white border border-dashed border-amber-200 rounded-2xl p-3 text-center text-[10px] text-gray-500 font-semibold leading-relaxed"
@@ -8290,13 +8290,15 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: `px-2 py-0.5 rounded-full text-[8px] uppercase ${o.status === 'Selesai' ? 'bg-green-100 text-green-700' : o.status === 'Siap Bayar' ? 'bg-amber-100 text-amber-700' : o.status === 'Diproses' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'}`
   }, o.status)), React.createElement("div", {
     className: "text-[10px] text-gray-400"
-  }, "Tanggal: ", o.date, " | Bayar: ", o.payment_method), o.status === 'Selesai' ? React.createElement("div", {
+  }, "Tanggal: ", o.date, " | Bayar: ", o.payment_method), o.status === 'Belum Bayar' && React.createElement("div", {
+    className: "text-[10px] text-purple-700 bg-purple-50 border border-purple-100 rounded-xl px-2.5 py-2 font-semibold leading-relaxed"
+  }, "🧾 Pesanan sudah masuk, Juragan. Kasir sedang bantu cek belanjaan dan potongan bila ada. Tenang, Toko Hana jaga pesanan ini pelan-pelan ☕"), o.status === 'Selesai' ? React.createElement("div", {
     className: "text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-2.5 py-2 font-bold leading-relaxed shadow-sm"
-  }, "✅ Terima kasih, Juragan. Pesanan sudah selesai dan tercatat rapi di Toko Hana. Semoga belanja hari ini membawa manfaat ☕") : o.payment_note && React.createElement("div", {
+  }, "✅ Pesanan selesai, Juragan. Terima kasih sudah belanja di Toko Hana — Warungnya Rakyat. Semoga yang dibawa pulang bukan cuma barang, tapi juga sedikit rasa hangat dari warung dekat rumah ☕") : o.payment_note && o.status !== 'Belum Bayar' && React.createElement("div", {
     className: "text-[9px] text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-2 py-1 leading-relaxed"
   }, o.payment_note), o.status === 'Siap Bayar' && React.createElement("div", {
-    className: "text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-2 py-1 font-bold leading-relaxed"
-  }, "✅ Potongan sudah dikonfirmasi kasir. Sisa yang harus dibayar sekarang: Rp ", Number(o.total || 0).toLocaleString('id-ID'), " via ", o.payment_method || 'QRIS/Tunai', "."), React.createElement("div", {
+    className: "text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-2.5 py-2 font-bold leading-relaxed"
+  }, "✅ Potongan sudah dikonfirmasi kasir, Juragan. Sisa yang perlu dibayar sekarang: Rp ", Number(o.total || 0).toLocaleString('id-ID'), ". Silakan bayar lewat ", o.payment_method || 'QRIS/Tunai', "; kasir akan bantu menutup pesanan dengan senyum ☕"), React.createElement("div", {
     className: "border-t border-dashed py-1.5 my-1 text-[10px] text-gray-500 space-y-0.5"
   }, o.items?.map((item, idx) => React.createElement("div", {
     key: idx
@@ -10422,6 +10424,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1bddf26c9a18bc8',t:'MTc4NDE3MjAzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1bdff120b7cfeae',t:'MTc4NDE3MzM0MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

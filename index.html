@@ -2841,6 +2841,7 @@ function App() {
   const [cashierOrderSearch, setCashierOrderSearch] = useState('');
   const [cashierProductSearch, setCashierProductSearch] = useState('');
   const [bonAgenDraft, setBonAgenDraft] = useState({ supplier: '', total: '', rawText: '' });
+  const [showBonAgenDraft, setShowBonAgenDraft] = useState(false);
   const [cashierLastClosedOrder, setCashierLastClosedOrder] = useState(null);
   const [authActiveTab, setAuthActiveTab] = useState('login');
   const [authEmail, setAuthEmail] = useState('');
@@ -7910,10 +7911,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "font-black text-[#703d92] flex-shrink-0"
   }, "Rp ", (item.quantity * item.product.price).toLocaleString('id-ID'))))) : React.createElement("div", {
     className: "text-[10px] text-gray-400 font-semibold text-center py-3"
-  }, "Keranjang masih kosong. Ketik nama barang atau pilih dari daftar cepat, kawan ☕"))), React.createElement("div", {
-    className: "bg-white rounded-3xl border border-emerald-100 shadow-sm p-2.5 space-y-2"
+  }, "Keranjang masih kosong. Ketik nama barang atau pilih dari daftar cepat, kawan ☕"))), React.createElement("button", {
+    type: "button",
+    onClick: () => setShowBonAgenDraft(true),
+    className: "w-full rounded-3xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-white shadow-sm p-3 text-left active:scale-[0.99] transition-all flex items-center justify-between gap-3"
   }, React.createElement("div", {
-    className: "flex items-start gap-2.5"
+    className: "flex items-center gap-2.5 min-w-0"
   }, React.createElement("div", {
     className: "w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-sm flex-shrink-0"
   }, "🧾"), React.createElement("div", {
@@ -7921,9 +7924,29 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, React.createElement("h4", {
     className: "font-black text-emerald-700 text-[12px] uppercase tracking-wider leading-tight"
   }, "Bon Agen Draft"), React.createElement("p", {
+    className: "text-[9px] text-gray-500 font-semibold leading-snug"
+  }, bonAgenRows.length ? `${bonAgenRows.length} baris terbaca • tap untuk cek` : "Tempel bon agen tanpa menutupi tombol bayar"))), React.createElement("span", {
+    className: "bg-emerald-600 text-white rounded-full px-3 py-1.5 text-[9px] font-black flex-shrink-0"
+  }, "Buka")), showBonAgenDraft && React.createElement("div", {
+    className: "fixed inset-0 z-[9998] bg-black/55 backdrop-blur-sm flex items-end justify-center animate-fade-in",
+    onClick: () => setShowBonAgenDraft(false)
+  }, React.createElement("div", {
+    className: "w-full max-w-md bg-white rounded-t-3xl p-3 shadow-2xl border-t border-emerald-100 max-h-[86vh] overflow-y-auto no-scrollbar",
+    onClick: e => e.stopPropagation()
+  }, React.createElement("div", {
+    className: "w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-3"
+  }), React.createElement("div", {
+    className: "flex items-start justify-between gap-3 mb-3"
+  }, React.createElement("div", null, React.createElement("h4", {
+    className: "font-black text-emerald-700 text-[13px] uppercase tracking-wider"
+  }, "Bon Agen Draft"), React.createElement("p", {
     className: "text-[9.5px] text-gray-500 font-semibold leading-relaxed mt-0.5"
-  }, "Tempel teks bon dari agen. Sistem bantu pecah baris dan tebak produk. Belum mengubah stok sebelum Juragan setujui."))), React.createElement("div", {
-    className: "grid grid-cols-2 gap-2"
+  }, "Tempel teks bon dari agen. Sistem bantu pecah baris dan tebak produk. Belum mengubah stok sebelum Juragan setujui.")), React.createElement("button", {
+    type: "button",
+    onClick: () => setShowBonAgenDraft(false),
+    className: "bg-gray-100 text-gray-500 rounded-full px-3 py-1.5 text-[9px] font-black"
+  }, "Tutup")), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2 mb-2"
   }, React.createElement("input", {
     value: bonAgenDraft.supplier,
     onChange: e => setBonAgenDraft({ ...bonAgenDraft, supplier: e.target.value }),
@@ -7938,9 +7961,9 @@ ${note ? `<div class="note">${note}</div>` : ''}
     value: bonAgenDraft.rawText,
     onChange: e => setBonAgenDraft({ ...bonAgenDraft, rawText: e.target.value }),
     placeholder: "Tempel teks bon di sini...\nContoh:\nINDOMIE GORENG 1 DUS 85000\nKAPAL API 2 RENCENG 26000",
-    className: "w-full border border-emerald-100 rounded-2xl px-3 py-2 text-[16px] font-normal min-h-[68px]"
+    className: "w-full border border-emerald-100 rounded-2xl px-3 py-2 text-[16px] font-normal min-h-[120px] mb-2"
   }), React.createElement("div", {
-    className: "grid grid-cols-2 gap-2"
+    className: "grid grid-cols-2 gap-2 mb-2"
   }, React.createElement("button", {
     type: "button",
     onClick: () => setBonAgenDraft({ supplier: 'Agen Warung', total: '441000', rawText: 'INDOMIE GORENG 1 DUS 85000\nKAPAL API SPECIAL MIX 2 RENCENG 26000\nTELUR AYAM CURAH 1 PETI 330000' }),
@@ -7950,7 +7973,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: () => setBonAgenDraft({ supplier: '', total: '', rawText: '' }),
     className: "bg-gray-50 border border-gray-100 text-gray-500 rounded-xl py-2 text-[10px] font-black"
   }, "Bersihkan")), bonAgenRows.length > 0 && React.createElement("div", {
-    className: "space-y-1.5 max-h-36 overflow-y-auto no-scrollbar"
+    className: "space-y-1.5 max-h-60 overflow-y-auto no-scrollbar pb-4"
   }, bonAgenRows.map(row => React.createElement("div", {
     key: `bon-${row.rowNo}`,
     className: "rounded-2xl border border-emerald-100 bg-emerald-50/45 p-2.5 text-[9.5px]"
@@ -7960,7 +7983,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "text-gray-500 font-semibold mt-0.5"
   }, "Qty ", row.qty, " ", row.unit || 'unit', " • harga bon Rp ", Number(row.price || 0).toLocaleString('id-ID')), React.createElement("div", {
     className: `mt-1 font-bold ${row.match ? 'text-emerald-700' : 'text-amber-700'}`
-  }, row.match ? `Cocok: ${row.match.name}` : 'Belum cocok ke produk — nanti pilih manual'))))), currentTab === 'Cart' && React.createElement("div", {
+  }, row.match ? `Cocok: ${row.match.name}` : 'Belum cocok ke produk — nanti pilih manual')))))), currentTab === 'Cart' && React.createElement("div", {
     className: "animate-fade-in p-4 pb-24"
   }, canVerifyCashierReward && React.createElement("div", {
     className: "mb-4 rounded-3xl border border-amber-200 bg-gradient-to-br from-white via-amber-50 to-purple-50 p-3 shadow-sm"
@@ -11095,5 +11118,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c1ff019c6bbd75',t:'MTc4NDIxNTI4MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c2055e7843a5d8',t:'MTc4NDIxNTU0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

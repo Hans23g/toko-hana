@@ -2890,6 +2890,9 @@ function App() {
   const [piRewardDiscountInput, setPiRewardDiscountInput] = useState('');
   const [cashierOrderSearch, setCashierOrderSearch] = useState('');
   const [cashierProductSearch, setCashierProductSearch] = useState('');
+  const [showCashierScanner, setShowCashierScanner] = useState(false);
+  const [cashierScannerStatus, setCashierScannerStatus] = useState('');
+  const [cashierManualScanCode, setCashierManualScanCode] = useState('');
   const [bonAgenDraft, setBonAgenDraft] = useState({ supplier: '', total: '', rawText: '' });
   const [showBonAgenDraft, setShowBonAgenDraft] = useState(false);
   const [bonAgenSubmissions, setBonAgenSubmissions] = useState([]);
@@ -3299,6 +3302,9 @@ function App() {
     resi: ''
   });
   const mainScrollRef = useRef(null);
+  const cashierScannerVideoRef = useRef(null);
+  const cashierScannerRafRef = useRef(null);
+  const cashierScannerStreamRef = useRef(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [voiceSearching, setVoiceSearching] = useState(false);
   useEffect(() => {
@@ -4515,13 +4521,12 @@ Not recognized as active cashier/admin in staff_roles.`);
       tier
     };
   };
-  const handleCashierScanProduct = () => {
-    const raw = window.prompt(lang === 'id' ? 'Scan / ketik kode produk.\nFormat aman: HANA-PRODUCT:ID\nBisa juga pakai barcode / SKU jika sudah ada.' : 'Scan / type product code.\nSafe format: HANA-PRODUCT:ID\nBarcode / SKU also works if available.');
-    if (raw === null) return;
-    const code = String(raw || '').trim();
+  const processCashierProductCode = codeInput => {
+    const code = String(codeInput || '').trim();
     if (!code) {
+      setCashierScannerStatus(lang === 'id' ? 'Kode produk masih kosong.' : 'Product code is empty.');
       showToast(lang === 'id' ? 'Kode produk masih kosong, kawan.' : 'Product code is empty.');
-      return;
+      return false;
     }
     const lower = code.toLowerCase();
     const hanaMatch = lower.match(/hana-product\s*[:#-]\s*([^|;\s]+)/i);
@@ -4530,8 +4535,9 @@ Not recognized as active cashier/admin in staff_roles.`);
     const product = (products || []).find(p => String(p.id).toLowerCase() === String(lookupId).toLowerCase() || String(p.barcode || '').toLowerCase() === lower || String(p.sku || '').toLowerCase() === lower || String(p.name || '').toLowerCase() === lower);
     if (!product) {
       setCashierProductSearch(code.replace(/^hana-product\s*[:#-]\s*/i, ''));
+      setCashierScannerStatus(lang === 'id' ? `Kode “${code}” belum ketemu. Aku masukkan ke pencarian dulu.` : `Code “${code}” not found. I put it into search.`);
       showToast(lang === 'id' ? `📷 Kode “${code}” belum ketemu. Aku masukkan ke pencarian dulu ya.` : `📷 Code “${code}” not found. I put it into search.`);
-      return;
+      return false;
     }
     let chosen = product;
     if (product.price_tiers && product.price_tiers.length > 0) {
@@ -4553,13 +4559,82 @@ Not recognized as active cashier/admin in staff_roles.`);
         }
       } else {
         setSelectedProductDetail(product);
+        setShowCashierScanner(false);
+        setCashierScannerStatus('');
         showToast(lang === 'id' ? `📷 ${product.name} punya beberapa satuan. Pilih harga warung dulu ya.` : `📷 ${product.name} has multiple units. Please choose one.`);
-        return;
+        return true;
       }
     }
     handleAddToCart(chosen, 1);
+    setShowCashierScanner(false);
+    setCashierScannerStatus('');
+    setCashierManualScanCode('');
     showToast(lang === 'id' ? `📷 ${chosen.name} masuk keranjang.` : `📷 ${chosen.name} added to cart.`);
+    return true;
   };
+  const handleCashierScanProduct = () => {
+    setCashierManualScanCode('');
+    setCashierScannerStatus(lang === 'id' ? 'Membuka kamera kasir...' : 'Opening cashier camera...');
+    setShowCashierScanner(true);
+  };
+  useEffect(() => {
+    if (!showCashierScanner) {
+      if (cashierScannerRafRef.current) cancelAnimationFrame(cashierScannerRafRef.current);
+      cashierScannerRafRef.current = null;
+      if (cashierScannerStreamRef.current) {
+        cashierScannerStreamRef.current.getTracks().forEach(track => track.stop());
+        cashierScannerStreamRef.current = null;
+      }
+      return;
+    }
+    let stopped = false;
+    const startScanner = async () => {
+      if (!navigator.mediaDevices?.getUserMedia || !('BarcodeDetector' in window)) {
+        setCashierScannerStatus(lang === 'id' ? 'Kamera scanner belum didukung browser ini. Pakai input kode manual di bawah ya.' : 'Camera scanner is not supported in this browser. Use manual code input below.');
+        return;
+      }
+      try {
+        const detector = new window.BarcodeDetector({ formats: ['qr_code', 'ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e'] });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+        cashierScannerStreamRef.current = stream;
+        const video = cashierScannerVideoRef.current;
+        if (!video) return;
+        video.srcObject = stream;
+        video.setAttribute('playsinline', 'true');
+        await video.play();
+        setCashierScannerStatus(lang === 'id' ? 'Arahkan kamera ke QR/barcode produk.' : 'Point camera at product QR/barcode.');
+        const tick = async () => {
+          if (stopped || !cashierScannerVideoRef.current) return;
+          try {
+            const codes = await detector.detect(cashierScannerVideoRef.current);
+            if (codes && codes.length) {
+              const value = codes[0].rawValue || '';
+              setCashierScannerStatus(lang === 'id' ? `Terbaca: ${value}` : `Scanned: ${value}`);
+              processCashierProductCode(value);
+              return;
+            }
+          } catch (err) {
+            console.warn('Barcode detect skipped:', err);
+          }
+          cashierScannerRafRef.current = requestAnimationFrame(tick);
+        };
+        cashierScannerRafRef.current = requestAnimationFrame(tick);
+      } catch (err) {
+        console.warn('Camera scanner failed:', err);
+        setCashierScannerStatus(lang === 'id' ? `Kamera gagal dibuka: ${err.message || err}. Pakai input kode manual di bawah ya.` : `Camera failed: ${err.message || err}. Use manual input below.`);
+      }
+    };
+    startScanner();
+    return () => {
+      stopped = true;
+      if (cashierScannerRafRef.current) cancelAnimationFrame(cashierScannerRafRef.current);
+      cashierScannerRafRef.current = null;
+      if (cashierScannerStreamRef.current) {
+        cashierScannerStreamRef.current.getTracks().forEach(track => track.stop());
+        cashierScannerStreamRef.current = null;
+      }
+    };
+  }, [showCashierScanner, products]);
   const handleCashierVoiceAdd = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -11549,6 +11624,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c307f5eabba3d3',t:'MTc4NDIyNjEzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c322604a5e4717',t:'MTc4NDIyNzIxNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

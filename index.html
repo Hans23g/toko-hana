@@ -1323,6 +1323,16 @@ const supabaseService = {
       return { data: null, error: e };
     }
   },
+  updateSupplierInvoiceDraft: async (id, patch) => {
+    const client = getSupabaseClient();
+    if (!client) return { data: null, error: new Error('Supabase client not loaded') };
+    try {
+      const { data, error } = await client.from('supplier_invoice_drafts').update(patch).eq('id', id).select();
+      return { data, error };
+    } catch (e) {
+      return { data: null, error: e };
+    }
+  },
   getCustomers: async () => {
     const client = getSupabaseClient();
     if (!client) return {
@@ -3912,6 +3922,39 @@ function App() {
     }
     setBonAgenSubmitStatus(lang === 'id' ? `✅ Bon #${id} ${label}. Admin tetap cek dulu sebelum stok berubah.` : `✅ Invoice #${id} ${label}. Admin still reviews before stock changes.`);
     showToast(`🧾 Bon agen #${id} ${label}.`);
+  };
+  const handleUpdateBonAgenParsedItem = (draftId, idx, patch) => {
+    setBonAgenSubmissions(prev => prev.map(item => {
+      if (item.id !== draftId) return item;
+      const rows = Array.isArray(item.parsed_items) ? [...item.parsed_items] : [];
+      rows[idx] = {
+        ...(rows[idx] || {}),
+        ...patch
+      };
+      return {
+        ...item,
+        parsed_items: rows
+      };
+    }));
+  };
+  const handleSaveBonAgenParsedItems = async item => {
+    if (!item) return;
+    setBonAgenSubmitStatus(lang === 'id' ? `⏳ Menyimpan koreksi bon #${item.id}...` : `⏳ Saving invoice #${item.id} edits...`);
+    const rows = Array.isArray(item.parsed_items) ? item.parsed_items : [];
+    const patch = {
+      parsed_items: rows,
+      status: 'reviewing',
+      notes: 'Draft bon sudah dikoreksi admin. Belum diterapkan ke stok.'
+    };
+    const { data, error } = await supabaseService.updateSupplierInvoiceDraft(item.id, patch);
+    if (error) {
+      setBonAgenSubmitStatus(lang === 'id' ? `❌ Gagal simpan koreksi bon: ${error.message || error}` : `❌ Failed to save invoice edits: ${error.message || error}`);
+      alert(lang === 'id' ? `Gagal simpan koreksi bon: ${error.message || error}` : `Failed to save invoice edits: ${error.message || error}`);
+      return;
+    }
+    if (data && data[0]) setBonAgenSubmissions(prev => prev.map(x => x.id === item.id ? data[0] : x));
+    setBonAgenSubmitStatus(lang === 'id' ? `✅ Koreksi bon #${item.id} tersimpan. Nanti bisa diterapkan ke stok.` : `✅ Invoice #${item.id} edits saved.`);
+    showToast('🧾 Koreksi bon agen tersimpan.');
   };
   const dynamicPromoHighlights = useMemo(() => {
     const safeProducts = Array.isArray(products) ? products : [];
@@ -10094,23 +10137,81 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, item.raw_text || '-'), item.status === 'reviewing' && (() => {
     const rows = Array.isArray(item.parsed_items) ? item.parsed_items : [];
     return React.createElement("div", {
-      className: "mt-2 rounded-2xl bg-white border border-emerald-100 p-2 space-y-1"
+      className: "mt-2 rounded-2xl bg-white border border-emerald-100 p-2 space-y-2"
+    }, React.createElement("div", {
+      className: "flex items-center justify-between gap-2"
     }, React.createElement("div", {
       className: "text-[8px] font-black text-emerald-700 uppercase tracking-wider"
-    }, "Yang direview admin"), rows.length ? rows.map((row, idx) => React.createElement("div", {
-      key: `review-bon-${item.id}-${idx}`,
-      className: "border-t border-dashed border-emerald-100 pt-1.5 text-[8.5px] leading-relaxed"
-    }, React.createElement("div", {
-      className: "font-black text-[#2d1242]"
-    }, row.raw_name || row.rawName || row.raw || 'Barang bon'), React.createElement("div", {
-      className: "text-gray-500 font-semibold"
-    }, "Qty ", row.qty || '-', " ", row.unit || '', " • Harga bon Rp ", Number(row.price || 0).toLocaleString('id-ID')), React.createElement("div", {
-      className: `font-bold ${(row.matched_product_name || row.matchedProductName) ? 'text-emerald-700' : 'text-amber-700'}`
-    }, (row.matched_product_name || row.matchedProductName) ? `Saran cocok: ${row.matched_product_name || row.matchedProductName}` : 'Belum ada produk yang cocok — admin perlu pilih manual nanti'))) : React.createElement("div", {
+    }, "Edit Draft Bon"), React.createElement("button", {
+      type: "button",
+      onClick: () => handleSaveBonAgenParsedItems(item),
+      className: "bg-emerald-600 text-white rounded-full px-3 py-1.5 text-[8px] font-black active:scale-95"
+    }, "Simpan Koreksi")), rows.length ? rows.map((row, idx) => {
+      const selectedProduct = (products || []).find(p => String(p.id) === String(row.matched_product_id || row.product_id || '')) || null;
+      const suggestedStockAdd = row.stock_add_qty || (Number(row.qty || 1) * Number(selectedProduct?.units_per_purchase || 1));
+      const suggestedCost = row.cost_price || (suggestedStockAdd > 0 ? Math.round(Number(row.price || 0) / suggestedStockAdd) : 0);
+      return React.createElement("div", {
+        key: `review-bon-${item.id}-${idx}`,
+        className: "border-t border-dashed border-emerald-100 pt-2 space-y-1.5"
+      }, React.createElement("input", {
+        value: row.raw_name || row.rawName || '',
+        onChange: e => handleUpdateBonAgenParsedItem(item.id, idx, { raw_name: e.target.value }),
+        placeholder: "Nama barang di bon",
+        className: "w-full border border-emerald-100 rounded-xl px-2 py-1.5 text-[16px] font-normal"
+      }), React.createElement("div", {
+        className: "grid grid-cols-3 gap-1.5"
+      }, React.createElement("input", {
+        value: row.qty || '',
+        onChange: e => handleUpdateBonAgenParsedItem(item.id, idx, { qty: parseFloat(String(e.target.value).replace(',', '.')) || 0 }),
+        placeholder: "Qty",
+        className: "w-full border border-emerald-100 rounded-xl px-2 py-1.5 text-[16px] font-normal"
+      }), React.createElement("input", {
+        value: row.unit || '',
+        onChange: e => handleUpdateBonAgenParsedItem(item.id, idx, { unit: e.target.value }),
+        placeholder: "Unit",
+        className: "w-full border border-emerald-100 rounded-xl px-2 py-1.5 text-[16px] font-normal"
+      }), React.createElement("input", {
+        value: row.price || '',
+        onChange: e => handleUpdateBonAgenParsedItem(item.id, idx, { price: parseRupiahInput(e.target.value) }),
+        placeholder: "Harga bon",
+        className: "w-full border border-emerald-100 rounded-xl px-2 py-1.5 text-[16px] font-normal"
+      })), React.createElement("select", {
+        value: row.matched_product_id || '',
+        onChange: e => {
+          const prod = (products || []).find(p => String(p.id) === String(e.target.value));
+          handleUpdateBonAgenParsedItem(item.id, idx, {
+            matched_product_id: prod?.id || null,
+            matched_product_name: prod?.name || null,
+            units_per_purchase: prod?.units_per_purchase || row.units_per_purchase || 1,
+            stock_add_qty: Number(row.qty || 1) * Number(prod?.units_per_purchase || 1)
+          });
+        },
+        className: "w-full border border-emerald-100 rounded-xl px-2 py-1.5 text-[16px] font-normal bg-white"
+      }, React.createElement("option", {
+        value: ""
+      }, "Pilih produk cocok..."), (products || []).slice(0, 200).map(prod => React.createElement("option", {
+        key: prod.id,
+        value: prod.id
+      }, prod.name))), React.createElement("div", {
+        className: "grid grid-cols-2 gap-1.5"
+      }, React.createElement("input", {
+        value: row.stock_add_qty || suggestedStockAdd || '',
+        onChange: e => handleUpdateBonAgenParsedItem(item.id, idx, { stock_add_qty: parseFloat(String(e.target.value).replace(',', '.')) || 0 }),
+        placeholder: "Stok bertambah",
+        className: "w-full border border-emerald-100 rounded-xl px-2 py-1.5 text-[16px] font-normal"
+      }), React.createElement("input", {
+        value: row.cost_price || suggestedCost || '',
+        onChange: e => handleUpdateBonAgenParsedItem(item.id, idx, { cost_price: parseRupiahInput(e.target.value) }),
+        placeholder: "Modal/unit",
+        className: "w-full border border-emerald-100 rounded-xl px-2 py-1.5 text-[16px] font-normal"
+      })), React.createElement("div", {
+        className: "text-[8.5px] text-gray-500 font-semibold leading-relaxed"
+      }, selectedProduct ? `Produk: ${selectedProduct.name} • stok +${row.stock_add_qty || suggestedStockAdd || 0} • modal/unit Rp ${Number(row.cost_price || suggestedCost || 0).toLocaleString('id-ID')}` : 'Pilih produk yang benar sebelum diterapkan ke stok nanti.'));
+    }) : React.createElement("div", {
       className: "text-[8.5px] text-gray-500 font-semibold"
     }, "Belum ada baris hasil baca. Cek teks bon mentah di atas."), React.createElement("div", {
       className: "mt-2 text-[8.5px] text-amber-700 bg-amber-50 rounded-xl px-2 py-1 font-semibold leading-relaxed"
-    }, "Review sekarang baru tahap cek baris dan kecocokan produk. Tombol Setuju hanya menandai bon layak diproses; stok belum berubah otomatis."));
+    }, "Edit dulu baris bon. Simpan Koreksi hanya merapikan draft; stok belum berubah sampai fitur Terapkan Restok diaktifkan."));
   })(), React.createElement("div", {
     className: "grid grid-cols-3 gap-1.5 mt-2"
   }, ['reviewing','approved','cancelled'].map(st => React.createElement("button", {
@@ -11301,5 +11402,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c2585df84cce8a',t:'MTc4NDIxODk0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c2699c1804c211',t:'MTc4NDIxOTY0Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

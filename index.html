@@ -3324,7 +3324,8 @@ function App() {
           items: typeof o.items === 'string' ? JSON.parse(o.items) : o.items,
           total: o.total,
           payment_method: o.payment_method,
-          channel: (o.payment_method || '').includes('Offline') ? 'Offline' : 'Online',
+          payment_note: o.payment_note || '',
+          channel: (o.payment_method || '').includes('Offline') || (o.payment_method || '').includes('Toko') ? 'Offline' : 'Online',
           status: o.status,
           date: o.created_at ? o.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
           kurir: o.courier || '',
@@ -3335,6 +3336,12 @@ function App() {
       }
     };
     fetchOrders();
+    const ordersPoller = setInterval(() => {
+      const user = currentUserRef.current;
+      if (user && ['admin', 'cashier'].includes(user.role)) {
+        fetchOrders();
+      }
+    }, 8000);
     const fetchSettings = async () => {
       const {
         data,
@@ -3487,7 +3494,10 @@ function App() {
         fetchOrders();
       } else if (payload.eventType === 'UPDATE') {
         if (user && user.role === 'customer' && row.customer_name && user.name && row.customer_name.toLowerCase() === user.name.toLowerCase()) {
-          if (row.status === 'Diproses') {
+          if (row.status === 'Siap Bayar') {
+            pushNotification('✅', 'Potongan Dikonfirmasi!', `Pesanan ${row.id} siap dibayar. Sisa bayar Rp ${(row.total || 0).toLocaleString('id-ID')}.`);
+            showToast(`✅ Potongan dikonfirmasi. Sisa bayar Rp ${(row.total || 0).toLocaleString('id-ID')}.`);
+          } else if (row.status === 'Diproses') {
             pushNotification('📦', 'Pesanan Diproses!', `Pesanan ${row.id} sedang dikemas oleh Toko Hana.`);
             showToast(`📦 Pesanan ${row.id} sedang diproses!`);
           } else if (row.status === 'Selesai' && row.resi) {
@@ -3561,6 +3571,7 @@ function App() {
     };
     checkUser();
     return () => {
+      if (ordersPoller) clearInterval(ordersPoller);
       if (window.supabase) {
         const client = getSupabaseClient();
         if (client) {
@@ -3964,7 +3975,7 @@ function App() {
       payment_method: dbPaymentMethod,
       payment_note: piRewardNote,
       channel: isGuestCheckout || isMemberInStore ? 'Offline' : 'Online',
-      status: "Baru",
+      status: "Belum Bayar",
       date: new Date().toISOString().split('T')[0],
       kurir: "",
       resi: ""
@@ -4062,10 +4073,11 @@ function App() {
       if (isMemberQrisInStore) {
         setQrisModalStartTab('qris');
         setShowQrisModal(true);
-        showToast(lang === 'id' ? `🧾 Pesanan toko ${newOrderId} tercatat. Silakan pindai QRIS di kasir; HanaPoin diproses jika pelanggan member.${piExchangeRequested ? ' Catatan tukar Koin Pi akan dikonfirmasi kasir; final tetap Rupiah.' : ''}` : `🧾 In-store order ${newOrderId} recorded. Please scan QRIS at the counter; HanaPoints are processed if customer is a member.${piExchangeRequested ? ' Pi Coin exchange note will be confirmed by cashier; final settlement remains Rupiah.' : ''}`);
+        showToast(lang === 'id' ? `🧾 Order ${newOrderId} masuk ke kasir. Tunggu kasir tetapkan potongan/sisa bayar, lalu scan QRIS sesuai total final.` : `🧾 Order ${newOrderId} sent to cashier. Wait for cashier to set discount/final amount, then scan QRIS.`);
       } else {
-        showToast(lang === 'id' ? `🧾 Pesanan toko ${newOrderId} tercatat. Silakan bayar Cash di kasir; HanaPoin diproses jika pelanggan member.${piExchangeRequested ? ' Catatan tukar Koin Pi akan dikonfirmasi kasir; final tetap Rupiah.' : ''}` : `🧾 In-store order ${newOrderId} recorded. Please pay cash at the counter; HanaPoints are processed if customer is a member.${piExchangeRequested ? ' Pi Coin exchange note will be confirmed by cashier; final settlement remains Rupiah.' : ''}`);
+        showToast(lang === 'id' ? `🧾 Order ${newOrderId} masuk ke kasir. Tunggu kasir tetapkan potongan/sisa bayar, lalu bayar tunai sesuai total final.` : `🧾 Order ${newOrderId} sent to cashier. Wait for cashier to set discount/final amount, then pay cash.`);
       }
+      if (currentUser?.role === 'customer') setCurrentTab('Profil');
       setPiExchangeChecked(false);
       setPiRewardDiscountInput('');
       return;
@@ -10399,5 +10411,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1bd4cf47e02fdaf',t:'MTc4NDE2NjA0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1bd5ec299c09d82',t:'MTc4NDE2Njc3NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

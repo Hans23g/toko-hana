@@ -3895,10 +3895,23 @@ function App() {
     showToast(lang === 'id' ? '🧾 Bon agen terkirim ke admin untuk direview. Stok belum berubah sampai disetujui.' : '🧾 Supplier invoice sent to admin for review. Stock is not changed yet.');
   };
   const handleUpdateBonAgenStatus = async (id, status) => {
+    const label = status === 'reviewing' ? 'sedang direview' : status === 'approved' ? 'disetujui' : status === 'cancelled' ? 'dibatalkan' : status;
+    setBonAgenSubmitStatus(lang === 'id' ? `⏳ Mengubah status bon #${id} menjadi ${label}...` : `⏳ Updating invoice #${id} to ${label}...`);
+    const prevItems = bonAgenSubmissions;
     setBonAgenSubmissions(prev => prev.map(item => item.id === id ? { ...item, status } : item));
-    const { error } = await supabaseService.updateSupplierInvoiceDraftStatus(id, status);
-    if (error) console.warn('Gagal update status bon agen:', error.message || error);
-    else showToast('🧾 Status bon agen diperbarui.');
+    const { data, error } = await supabaseService.updateSupplierInvoiceDraftStatus(id, status);
+    if (error) {
+      console.warn('Gagal update status bon agen:', error.message || error);
+      setBonAgenSubmissions(prevItems);
+      setBonAgenSubmitStatus(lang === 'id' ? `❌ Gagal ubah status bon: ${error.message || error}` : `❌ Failed to update invoice status: ${error.message || error}`);
+      alert(lang === 'id' ? `Gagal ubah status bon: ${error.message || error}. Jalankan 06b_fix_supplier_invoice_drafts_grants.sql jika belum.` : `Failed to update invoice status: ${error.message || error}. Run 06b_fix_supplier_invoice_drafts_grants.sql if not yet.`);
+      return;
+    }
+    if (data && data[0]) {
+      setBonAgenSubmissions(prev => prev.map(item => item.id === id ? data[0] : item));
+    }
+    setBonAgenSubmitStatus(lang === 'id' ? `✅ Bon #${id} ${label}. Admin tetap cek dulu sebelum stok berubah.` : `✅ Invoice #${id} ${label}. Admin still reviews before stock changes.`);
+    showToast(`🧾 Bon agen #${id} ${label}.`);
   };
   const dynamicPromoHighlights = useMemo(() => {
     const safeProducts = Array.isArray(products) ? products : [];
@@ -11267,6 +11280,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c242df5c05ff95',t:'MTc4NDIxODA2MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c24bf85effd7ad',t:'MTc4NDIxODQzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

@@ -8215,7 +8215,57 @@ ${note ? `<div class="note">${note}</div>` : ''}
     type: "button",
     onClick: handleLogout,
     className: "absolute right-0 top-0 bg-white/12 border border-white/20 text-white rounded-full px-3 py-1.5 text-[9px] font-black active:scale-95 backdrop-blur-sm"
-  }, "Keluar"))), React.createElement("div", {
+  }, "Keluar"))), showCashierScanner && React.createElement("div", {
+    className: "fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-end justify-center animate-fade-in",
+    onClick: () => setShowCashierScanner(false)
+  }, React.createElement("div", {
+    className: "w-full max-w-md bg-white rounded-t-3xl p-4 shadow-2xl border-t border-purple-100",
+    onClick: e => e.stopPropagation()
+  }, React.createElement("div", {
+    className: "w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-3"
+  }), React.createElement("div", {
+    className: "flex items-start justify-between gap-3 mb-3"
+  }, React.createElement("div", null, React.createElement("h4", {
+    className: "font-black text-[#703d92] text-sm uppercase tracking-wider"
+  }, "Scan Produk"), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold leading-relaxed"
+  }, "Arahkan kamera ke QR produk. Kalau belum terbaca, ketik kode manual di bawah.")), React.createElement("button", {
+    type: "button",
+    onClick: () => setShowCashierScanner(false),
+    className: "bg-gray-100 text-gray-500 rounded-full px-3 py-1.5 text-[9px] font-black"
+  }, "Tutup")), React.createElement("div", {
+    className: "relative bg-black rounded-3xl overflow-hidden border-4 border-[#703d92] shadow-inner aspect-[4/3] flex items-center justify-center"
+  }, React.createElement("video", {
+    ref: cashierScannerVideoRef,
+    className: "w-full h-full object-cover",
+    muted: true,
+    playsInline: true,
+    autoPlay: true
+  }), React.createElement("canvas", {
+    ref: cashierScannerCanvasRef,
+    className: "hidden"
+  }), React.createElement("div", {
+    className: "absolute inset-8 border-2 border-[#FFD700] rounded-2xl shadow-[0_0_0_999px_rgba(0,0,0,0.22)] pointer-events-none"
+  }), React.createElement("div", {
+    className: "absolute left-3 right-3 bottom-3 bg-white/88 text-[#2d1242] rounded-2xl px-3 py-2 text-[10px] font-bold text-center"
+  }, cashierScannerStatus || 'Menunggu kamera...')), React.createElement("div", {
+    className: "mt-3 bg-purple-50 border border-purple-100 rounded-2xl p-2.5 space-y-2"
+  }, React.createElement("label", {
+    className: "block text-[9px] font-black text-[#703d92] uppercase tracking-wider"
+  }, "Input kode manual"), React.createElement("div", {
+    className: "flex gap-2"
+  }, React.createElement("input", {
+    value: cashierManualScanCode,
+    onChange: e => setCashierManualScanCode(e.target.value),
+    placeholder: "HANA-PRODUCT:12 / barcode / SKU",
+    className: "flex-1 border border-purple-100 rounded-xl px-3 py-2 text-[16px] font-normal outline-none"
+  }), React.createElement("button", {
+    type: "button",
+    onClick: () => processCashierProductCode(cashierManualScanCode),
+    className: "bg-[#703d92] text-white rounded-xl px-3 py-2 text-[10px] font-black"
+  }, "Masuk")), React.createElement("p", {
+    className: "text-[8.5px] text-gray-500 font-semibold leading-relaxed"
+  }, "Format aman: HANA-PRODUCT:ID. Untuk satuan khusus bisa HANA-PRODUCT:ID|tier=bungkus.")))), React.createElement("div", {
     className: "bg-white rounded-3xl border border-purple-100 shadow-sm p-2.5 space-y-2"
   }, React.createElement("div", {
     className: "bg-purple-50 border border-purple-100 rounded-2xl px-3 py-2 flex items-center gap-2"
@@ -11661,5 +11711,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c38ac09ec96029',t:'MTc4NDIzMTQ5MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

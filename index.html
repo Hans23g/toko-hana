@@ -10091,7 +10091,27 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "text-[9px] text-gray-500 font-semibold mt-1"
   }, "Total bon Rp ", Number(item.total_amount || 0).toLocaleString('id-ID'), " • dari ", item.submitted_by_name || item.submitted_by_role || 'Kasir'), React.createElement("div", {
     className: "mt-1 text-[9px] text-gray-600 bg-white rounded-xl px-2 py-1 max-h-16 overflow-hidden whitespace-pre-line"
-  }, item.raw_text || '-'), React.createElement("div", {
+  }, item.raw_text || '-'), item.status === 'reviewing' && (() => {
+    const rows = Array.isArray(item.parsed_items) ? item.parsed_items : [];
+    return React.createElement("div", {
+      className: "mt-2 rounded-2xl bg-white border border-emerald-100 p-2 space-y-1"
+    }, React.createElement("div", {
+      className: "text-[8px] font-black text-emerald-700 uppercase tracking-wider"
+    }, "Yang direview admin"), rows.length ? rows.map((row, idx) => React.createElement("div", {
+      key: `review-bon-${item.id}-${idx}`,
+      className: "border-t border-dashed border-emerald-100 pt-1.5 text-[8.5px] leading-relaxed"
+    }, React.createElement("div", {
+      className: "font-black text-[#2d1242]"
+    }, row.raw_name || row.rawName || row.raw || 'Barang bon'), React.createElement("div", {
+      className: "text-gray-500 font-semibold"
+    }, "Qty ", row.qty || '-', " ", row.unit || '', " • Harga bon Rp ", Number(row.price || 0).toLocaleString('id-ID')), React.createElement("div", {
+      className: `font-bold ${(row.matched_product_name || row.matchedProductName) ? 'text-emerald-700' : 'text-amber-700'}`
+    }, (row.matched_product_name || row.matchedProductName) ? `Saran cocok: ${row.matched_product_name || row.matchedProductName}` : 'Belum ada produk yang cocok — admin perlu pilih manual nanti'))) : React.createElement("div", {
+      className: "text-[8.5px] text-gray-500 font-semibold"
+    }, "Belum ada baris hasil baca. Cek teks bon mentah di atas."), React.createElement("div", {
+      className: "mt-2 text-[8.5px] text-amber-700 bg-amber-50 rounded-xl px-2 py-1 font-semibold leading-relaxed"
+    }, "Review sekarang baru tahap cek baris dan kecocokan produk. Tombol Setuju hanya menandai bon layak diproses; stok belum berubah otomatis."));
+  })(), React.createElement("div", {
     className: "grid grid-cols-3 gap-1.5 mt-2"
   }, ['reviewing','approved','cancelled'].map(st => React.createElement("button", {
     key: st,
@@ -11280,6 +11300,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c24bf85effd7ad',t:'MTc4NDIxODQzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c2585df84cce8a',t:'MTc4NDIxODk0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

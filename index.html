@@ -5598,8 +5598,25 @@ ${TOKO_HANA_PUBLIC_URL}`;
   };
   const handleCashierFinishOrder = order => {
     if (!order) return;
+    const totalDue = Number(order.total || 0);
+    const method = String(order.payment_method || '');
+    let cashNote = '';
+    if (/cash|tunai/i.test(method)) {
+      const rawPaid = window.prompt(lang === 'id' ? `Total yang harus dibayar: Rp ${totalDue.toLocaleString('id-ID')}\nUang tunai diterima berapa?` : `Total due: Rp ${totalDue.toLocaleString('id-ID')}\nHow much cash was received?`, String(totalDue));
+      if (rawPaid === null) return;
+      const paidAmount = parseRupiahInput(rawPaid);
+      if (paidAmount < totalDue) {
+        alert(lang === 'id' ? `Uang diterima masih kurang, kawan.\nTotal: Rp ${totalDue.toLocaleString('id-ID')}\nDiterima: Rp ${paidAmount.toLocaleString('id-ID')}` : `Cash received is not enough.\nTotal: Rp ${totalDue.toLocaleString('id-ID')}\nReceived: Rp ${paidAmount.toLocaleString('id-ID')}`);
+        return;
+      }
+      const changeAmount = paidAmount - totalDue;
+      cashNote = `Tunai diterima Rp ${paidAmount.toLocaleString('id-ID')}. Kembalian Rp ${changeAmount.toLocaleString('id-ID')}.`;
+      showToast(changeAmount > 0 ? `💵 Kembalian untuk pelanggan: Rp ${changeAmount.toLocaleString('id-ID')}.` : '💵 Uang pas. Pesanan bisa ditutup rapi.');
+    }
+    const nextNote = [order.payment_note || '', cashNote].filter(Boolean).join(' | ');
     const patch = {
       status: 'Selesai',
+      payment_note: nextNote || order.payment_note || null,
       courier: 'Ambil di Toko',
       resi: (order.payment_note || '').includes('Tukar Koin Pi') ? 'OFFLINE-REWARD-KASIR' : 'OFFLINE-KASIR'
     };
@@ -7465,7 +7482,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     className: "font-black text-[#703d92] text-[12px] uppercase tracking-wider leading-tight"
   }, lang === 'id' ? 'Konfirmasi Order Kasir' : 'Cashier Order Confirmation'), React.createElement("p", {
     className: "text-[9.5px] text-gray-500 font-semibold leading-relaxed mt-0.5"
-  }, lang === 'id' ? 'Alur lembut: tetapkan potongan → minta pelanggan lihat sisa bayar → setelah QRIS/Tunai diterima, tutup pesanan dengan Tandai Lunas.' : 'For customer-phone orders: set discount first, customer pays the remaining amount, then mark paid.'))), React.createElement("div", {
+  }, lang === 'id' ? 'Alur lembut: tetapkan potongan → pelanggan bayar sisa → klik Bayar & Lunas. Untuk tunai, kasir dibantu hitung kembalian.' : 'For customer-phone orders: set discount first, customer pays the remaining amount, then mark paid.'))), React.createElement("div", {
     className: "mb-2 bg-white/80 border border-purple-100 rounded-2xl px-3 py-2 flex items-center gap-2"
   }, React.createElement(LucideIcon, {
     name: "Search",
@@ -7514,7 +7531,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     type: "button",
     onClick: () => handleCashierFinishOrder(o),
     className: "bg-emerald-600 text-white rounded-xl py-2 text-[9px] font-black active:scale-95"
-  }, lang === 'id' ? 'Tandai Lunas' : 'Mark Paid')))))), cart.length === 0 && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
+  }, lang === 'id' ? 'Bayar & Lunas' : 'Pay & Close')))))), cart.length === 0 && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
     className: "-mx-4 mb-4 overflow-hidden bg-white shadow-sm"
   }, React.createElement("div", {
     className: "px-5 pt-3 pb-2 flex items-center justify-between"
@@ -10448,6 +10465,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1be4e644cd855fc',t:'MTc4NDE3NjU4OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

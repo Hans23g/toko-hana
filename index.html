@@ -1293,6 +1293,36 @@ const supabaseService = {
       };
     }
   },
+  insertSupplierInvoiceDraft: async draft => {
+    const client = getSupabaseClient();
+    if (!client) return { data: null, error: new Error('Supabase client not loaded') };
+    try {
+      const { data, error } = await client.from('supplier_invoice_drafts').insert([draft]).select();
+      return { data, error };
+    } catch (e) {
+      return { data: null, error: e };
+    }
+  },
+  getSupplierInvoiceDrafts: async () => {
+    const client = getSupabaseClient();
+    if (!client) return { data: null, error: new Error('Supabase client not loaded') };
+    try {
+      const { data, error } = await client.from('supplier_invoice_drafts').select('*').order('created_at', { ascending: false }).limit(20);
+      return { data, error };
+    } catch (e) {
+      return { data: null, error: e };
+    }
+  },
+  updateSupplierInvoiceDraftStatus: async (id, status) => {
+    const client = getSupabaseClient();
+    if (!client) return { data: null, error: new Error('Supabase client not loaded') };
+    try {
+      const { data, error } = await client.from('supplier_invoice_drafts').update({ status }).eq('id', id).select();
+      return { data, error };
+    } catch (e) {
+      return { data: null, error: e };
+    }
+  },
   getCustomers: async () => {
     const client = getSupabaseClient();
     if (!client) return {
@@ -2842,6 +2872,7 @@ function App() {
   const [cashierProductSearch, setCashierProductSearch] = useState('');
   const [bonAgenDraft, setBonAgenDraft] = useState({ supplier: '', total: '', rawText: '' });
   const [showBonAgenDraft, setShowBonAgenDraft] = useState(false);
+  const [bonAgenSubmissions, setBonAgenSubmissions] = useState([]);
   const [cashierLastClosedOrder, setCashierLastClosedOrder] = useState(null);
   const [authActiveTab, setAuthActiveTab] = useState('login');
   const [authEmail, setAuthEmail] = useState('');
@@ -3359,6 +3390,12 @@ function App() {
       }
     };
     fetchOrders();
+    const fetchBonAgenDrafts = async () => {
+      const { data, error } = await supabaseService.getSupplierInvoiceDrafts();
+      if (!error && Array.isArray(data)) setBonAgenSubmissions(data);
+      else if (error) console.warn('Supplier invoice drafts skipped:', error.message || error);
+    };
+    fetchBonAgenDrafts();
     const ordersPoller = setInterval(() => {
       fetchOrders();
     }, 5000);
@@ -3805,6 +3842,48 @@ function App() {
       };
     });
   }, [bonAgenDraft.rawText, products]);
+  const handleSubmitBonAgenDraft = async () => {
+    if (!bonAgenDraft.rawText.trim()) {
+      alert(lang === 'id' ? 'Tempel teks bon dulu ya kawan.' : 'Please paste invoice text first.');
+      return;
+    }
+    const parsedItems = bonAgenRows.map(row => ({
+      raw: row.raw,
+      raw_name: row.rawName,
+      qty: row.qty,
+      unit: row.unit,
+      price: row.price,
+      matched_product_id: row.match?.id || null,
+      matched_product_name: row.match?.name || null
+    }));
+    const payload = {
+      supplier_name: bonAgenDraft.supplier || 'Agen Warung',
+      total_amount: parseRupiahInput(bonAgenDraft.total),
+      raw_text: bonAgenDraft.rawText,
+      parsed_items: parsedItems,
+      status: 'submitted',
+      submitted_by_email: currentUser?.email || null,
+      submitted_by_name: currentUser?.name || 'Kasir Toko Hana',
+      submitted_by_role: currentUser?.role || 'cashier',
+      notes: 'Dikirim dari Bon Agen Draft Kasir Cepat.'
+    };
+    const { data, error } = await supabaseService.insertSupplierInvoiceDraft(payload);
+    if (error) {
+      console.warn('Gagal kirim bon agen:', error.message || error);
+      alert(lang === 'id' ? `Gagal kirim bon ke admin: ${error.message || error}. Pastikan 06_supplier_invoice_drafts.sql sudah dijalankan.` : `Failed to send invoice draft: ${error.message || error}. Make sure 06_supplier_invoice_drafts.sql has been run.`);
+      return;
+    }
+    if (data && data[0]) setBonAgenSubmissions(prev => [data[0], ...prev]);
+    setShowBonAgenDraft(false);
+    setBonAgenDraft({ supplier: '', total: '', rawText: '' });
+    showToast(lang === 'id' ? '🧾 Bon agen terkirim ke admin untuk direview. Stok belum berubah sampai disetujui.' : '🧾 Supplier invoice sent to admin for review. Stock is not changed yet.');
+  };
+  const handleUpdateBonAgenStatus = async (id, status) => {
+    setBonAgenSubmissions(prev => prev.map(item => item.id === id ? { ...item, status } : item));
+    const { error } = await supabaseService.updateSupplierInvoiceDraftStatus(id, status);
+    if (error) console.warn('Gagal update status bon agen:', error.message || error);
+    else showToast('🧾 Status bon agen diperbarui.');
+  };
   const dynamicPromoHighlights = useMemo(() => {
     const safeProducts = Array.isArray(products) ? products : [];
     const promoItems = safeProducts.filter(p => p.original_price && p.original_price > p.price).slice(0, 3).map(p => ({
@@ -7985,7 +8064,11 @@ ${note ? `<div class="note">${note}</div>` : ''}
     type: "button",
     onClick: () => setBonAgenDraft({ supplier: '', total: '', rawText: '' }),
     className: "bg-gray-50 border border-gray-100 text-gray-500 rounded-xl py-2 text-[10px] font-black"
-  }, "Bersihkan")), bonAgenRows.length > 0 && React.createElement("div", {
+  }, "Bersihkan")), React.createElement("button", {
+    type: "button",
+    onClick: handleSubmitBonAgenDraft,
+    className: "w-full bg-emerald-600 text-white rounded-2xl py-2.5 text-[11px] font-black mb-2 active:scale-95"
+  }, "Kirim ke Admin untuk Review"), bonAgenRows.length > 0 && React.createElement("div", {
     className: "space-y-1.5 max-h-60 overflow-y-auto no-scrollbar pb-4"
   }, bonAgenRows.map(row => React.createElement("div", {
     key: `bon-${row.rowNo}`,
@@ -9948,7 +10031,35 @@ ${note ? `<div class="note">${note}</div>` : ''}
     size: 12
   }))))))), adminActiveSubMenu === 'promo' && adminJelajahView === 'applications' && renderPartnerApplicationsAdmin(), adminActiveSubMenu === 'restok' && React.createElement("div", {
     className: "space-y-4 text-xs"
+  }, bonAgenSubmissions.length > 0 && React.createElement("div", {
+    className: "bg-white/95 rounded-2xl p-4 border border-emerald-100 shadow-sm"
+  }, React.createElement("h4", {
+    className: "font-extrabold text-xs text-emerald-700 uppercase tracking-wider mb-2"
+  }, "Bon Agen Masuk"), React.createElement("p", {
+    className: "text-[9px] text-gray-500 font-semibold mb-3"
+  }, "Review dulu sebelum stok berubah. Sistem baru membaca dan menyarankan, admin tetap memutuskan."), React.createElement("div", {
+    className: "space-y-2 max-h-72 overflow-y-auto no-scrollbar"
+  }, bonAgenSubmissions.map(item => React.createElement("div", {
+    key: item.id,
+    className: "rounded-2xl border border-emerald-100 bg-emerald-50/40 p-2.5"
   }, React.createElement("div", {
+    className: "flex items-center justify-between gap-2"
+  }, React.createElement("div", {
+    className: "font-black text-[#2d1242] text-[11px] truncate"
+  }, item.supplier_name || 'Agen Warung'), React.createElement("span", {
+    className: "text-[8px] font-black bg-white text-emerald-700 border border-emerald-100 rounded-full px-2 py-0.5"
+  }, item.status)), React.createElement("div", {
+    className: "text-[9px] text-gray-500 font-semibold mt-1"
+  }, "Total bon Rp ", Number(item.total_amount || 0).toLocaleString('id-ID'), " • dari ", item.submitted_by_name || item.submitted_by_role || 'Kasir'), React.createElement("div", {
+    className: "mt-1 text-[9px] text-gray-600 bg-white rounded-xl px-2 py-1 max-h-16 overflow-hidden whitespace-pre-line"
+  }, item.raw_text || '-'), React.createElement("div", {
+    className: "grid grid-cols-3 gap-1.5 mt-2"
+  }, ['reviewing','approved','cancelled'].map(st => React.createElement("button", {
+    key: st,
+    type: "button",
+    onClick: () => handleUpdateBonAgenStatus(item.id, st),
+    className: `rounded-xl py-1.5 text-[8px] font-black ${st === 'approved' ? 'bg-emerald-600 text-white' : st === 'cancelled' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700'}`
+  }, st === 'reviewing' ? 'Review' : st === 'approved' ? 'Setuju' : 'Batal'))))))), React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3 flex items-center gap-1.5"
@@ -11130,6 +11241,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c215745bc0ff92',t:'MTc4NDIxNjIwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c223c71d70f8e8',t:'MTc4NDIxNjc4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

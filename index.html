@@ -9737,6 +9737,36 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: handleOpenCashierShift,
     className: "w-full bg-blue-600 text-white rounded-2xl py-2 text-[10px] font-black"
   }, "Buka Shift"))), React.createElement("div", {
+    className: "rounded-3xl bg-white border border-blue-100 shadow-sm p-3 space-y-2"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between"
+  }, React.createElement("div", null, React.createElement("h3", {
+    className: "font-black text-blue-700 text-[12px] uppercase tracking-wider"
+  }, "Riwayat Shift Terakhir"), React.createElement("p", {
+    className: "text-[9px] text-gray-500 font-semibold"
+  }, "Catatan siapa jaga, jam berapa, dan selisih kas.")), React.createElement("span", {
+    className: "text-[8px] font-black text-blue-700 bg-blue-50 border border-blue-100 rounded-full px-2 py-1"
+  }, (cashierShifts || []).length, " shift")), React.createElement("div", {
+    className: "space-y-1.5 max-h-48 overflow-y-auto no-scrollbar"
+  }, (cashierShifts || []).length ? (cashierShifts || []).slice(0, 6).map(shift => {
+    const diff = Number(shift.difference || 0);
+    return React.createElement("div", {
+      key: `shift-history-${shift.id}`,
+      className: "rounded-2xl border border-blue-100 bg-blue-50/35 p-2 text-[9.5px]"
+    }, React.createElement("div", {
+      className: "flex items-center justify-between gap-2"
+    }, React.createElement("span", {
+      className: "font-black text-[#2d1242] truncate"
+    }, shift.cashier_name || 'Kasir Toko Hana'), React.createElement("span", {
+      className: `text-[8px] font-black rounded-full px-2 py-0.5 ${shift.status === 'open' ? 'bg-amber-100 text-amber-700' : diff === 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`
+    }, shift.status === 'open' ? 'berjalan' : `selisih ${diff >= 0 ? '+' : ''}${money(diff)}`)), React.createElement("div", {
+      className: "text-gray-500 font-semibold mt-0.5"
+    }, new Date(shift.opened_at).toLocaleString('id-ID'), shift.closed_at ? ` → ${new Date(shift.closed_at).toLocaleString('id-ID')}` : ' → masih jaga'), React.createElement("div", {
+      className: "text-gray-500 font-semibold"
+    }, "Awal ", money(shift.opening_cash), shift.closing_cash !== null && shift.closing_cash !== undefined ? ` • Akhir ${money(shift.closing_cash)}` : '', shift.expected_cash !== null && shift.expected_cash !== undefined ? ` • Seharusnya ${money(shift.expected_cash)}` : ''));
+  }) : React.createElement("div", {
+    className: "rounded-2xl border border-dashed border-blue-100 bg-blue-50/40 p-3 text-center text-[10px] text-gray-500 font-semibold"
+  }, "Belum ada riwayat shift. Setelah buka/tutup shift, catatannya muncul di sini."))), React.createElement("div", {
     className: "rounded-3xl bg-white border border-amber-100 shadow-sm p-3 space-y-2"
   }, React.createElement("div", {
     className: "flex items-center justify-between"
@@ -13626,6 +13656,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb52c2987c8198',t:'MTc4NDMxMzA4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb58da1efb8198',t:'MTc4NDMxMzMzMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

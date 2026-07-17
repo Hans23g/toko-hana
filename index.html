@@ -3209,7 +3209,8 @@ function App() {
   const [debtStatusMessage, setDebtStatusMessage] = useState('');
   const [cashLedgerEntries, setCashLedgerEntries] = useState(() => {
     try {
-      return JSON.parse(safeStorage.getItem('toko_hana_cash_ledger') || '[]');
+      const parsed = JSON.parse(safeStorage.getItem('toko_hana_cash_ledger') || '[]');
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       return [];
     }
@@ -6891,7 +6892,10 @@ ${TOKO_HANA_PUBLIC_URL}`;
       proof_note: ''
     });
   };
-  const openCashierShift = useMemo(() => (cashierShifts || []).find(s => s.status === 'open') || null, [cashierShifts]);
+  const openCashierShift = useMemo(() => {
+    const list = Array.isArray(cashierShifts) ? cashierShifts : [];
+    return list.find(s => s && s.status === 'open') || null;
+  }, [cashierShifts]);
   const shiftRangeStats = useMemo(() => {
     const shift = openCashierShift;
     const start = shift ? new Date(shift.opened_at).getTime() : 0;
@@ -7621,7 +7625,11 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center text-[10px] text-gray-400 font-bold"
   }, "Belum ada pendaftaran mitra masuk."))));
   const renderFinanceAdmin = () => {
-    const completedOrders = (orders || []).filter(o => o && o.status === 'Selesai');
+    const ordersList = Array.isArray(orders) ? orders : [];
+    const ledgerList = Array.isArray(cashLedgerEntries) ? cashLedgerEntries : [];
+    const debtList = Array.isArray(customerDebts) ? customerDebts : [];
+    const shiftList = Array.isArray(cashierShifts) ? cashierShifts : [];
+    const completedOrders = ordersList.filter(o => o && o.status === 'Selesai');
     const now = new Date();
     const year = now.getFullYear();
     const bars = Array.from({
@@ -7634,6 +7642,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       }).reduce((sum, o) => sum + (o.total || 0), 0);
       return {
         date: `${year}-${idx + 1}`,
+        month: idx + 1,
         day: String(idx + 1),
         total
       };
@@ -7693,14 +7702,14 @@ ${note ? `<div class="note">${note}</div>` : ''}
     const todayCompleted = completedOrders.filter(o => isToday(o.created_at || o.date));
     const cashOrderToday = todayCompleted.filter(o => /cash|tunai/i.test(o.payment_method || '')).reduce((sum, o) => sum + Number(o.total || 0), 0);
     const qrisOrderToday = todayCompleted.filter(o => /qris/i.test(o.payment_method || '')).reduce((sum, o) => sum + Number(o.total || 0), 0);
-    const todayLedger = (cashLedgerEntries || []).filter(e => isToday(e.created_at));
+    const todayLedger = ledgerList.filter(e => e && isToday(e.created_at));
     const ledgerCashInToday = todayLedger.filter(e => e.type === 'cash_in').reduce((sum, e) => sum + Number(e.amount || 0), 0);
     const ledgerCashOutToday = todayLedger.filter(e => e.type === 'cash_out').reduce((sum, e) => sum + Number(e.amount || 0), 0);
     const debtPaidToday = todayLedger.filter(e => e.type === 'cash_in' && e.category === 'bayar_piutang').reduce((sum, e) => sum + Number(e.amount || 0), 0);
     const otherCashInToday = Math.max(0, ledgerCashInToday - debtPaidToday);
-    const newDebtToday = (customerDebts || []).filter(d => isToday(d.created_at)).reduce((sum, d) => sum + Number(d.amount || 0), 0);
-    const activeDebtTotal = (customerDebts || []).filter(d => ['unpaid', 'partial'].includes(d.status)).reduce((sum, d) => sum + Number(d.remaining_amount || 0), 0);
-    const monthLedger = (cashLedgerEntries || []).filter(e => isThisMonth(e.created_at));
+    const newDebtToday = debtList.filter(d => d && isToday(d.created_at)).reduce((sum, d) => sum + Number(d.amount || 0), 0);
+    const activeDebtTotal = debtList.filter(d => d && ['unpaid', 'partial'].includes(d.status)).reduce((sum, d) => sum + Number(d.remaining_amount || 0), 0);
+    const monthLedger = ledgerList.filter(e => e && isThisMonth(e.created_at));
     const monthCashOut = monthLedger.filter(e => e.type === 'cash_out').reduce((sum, e) => sum + Number(e.amount || 0), 0);
     const monthCashIn = monthLedger.filter(e => e.type === 'cash_in').reduce((sum, e) => sum + Number(e.amount || 0), 0);
     const realCashToday = cashOrderToday + qrisOrderToday + ledgerCashInToday - ledgerCashOutToday;
@@ -7754,8 +7763,9 @@ ${note ? `<div class="note">${note}</div>` : ''}
       border: 'border-red-100',
       text: 'text-red-700'
     }];
-    const flowTotal = Math.max(flowItems.reduce((sum, item) => sum + Number(item.value || 0), 0), 1);
-    const pct = v => Math.round(Number(v || 0) / flowTotal * 100);
+    const flowTotalRaw = flowItems.reduce((sum, item) => sum + Number(item.value || 0), 0);
+    const flowTotal = Math.max(flowTotalRaw, 1);
+    const pct = v => flowTotalRaw > 0 ? Math.round(Number(v || 0) / flowTotal * 100) : 0;
     let flowDeg = 0;
     const flowConic = flowItems.map(seg => {
       const start = flowDeg;
@@ -7763,7 +7773,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       flowDeg = end;
       return `${seg.color} ${start}deg ${end}deg`;
     }).join(', ');
-    const latestShift = openCashierShift || (cashierShifts || [])[0] || null;
+    const latestShift = openCashierShift || shiftList[0] || null;
     const shiftIsOpen = latestShift?.status === 'open';
     const shiftExpected = shiftIsOpen ? shiftRangeStats.expected : Number(latestShift?.expected_cash || 0);
     const shiftCashSales = shiftIsOpen ? shiftRangeStats.cashSales : Number(latestShift?.cash_sales || 0);
@@ -7883,7 +7893,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       className: "block text-[9px] text-gray-400 font-bold leading-snug"
     }, "diagram bulat ini memecah isi kartu-kartu kas di bawahnya")), React.createElement("span", {
       className: "text-[8px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-full font-black flex-shrink-0"
-    }, flowTotal ? '100%' : '0%')), React.createElement("div", {
+    }, flowTotalRaw > 0 ? '100%' : '0%')), React.createElement("div", {
       className: "rounded-3xl bg-gradient-to-br from-white via-emerald-50/40 to-purple-50/40 border border-emerald-100 p-3 mb-3"
     }, React.createElement("div", {
       className: "flex items-center gap-3"
@@ -7898,7 +7908,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       className: "text-[8px] font-black text-gray-400 leading-none uppercase"
     }, "Total Gerak"), React.createElement("span", {
       className: "text-[13px] font-black text-[#703d92] leading-tight mt-0.5"
-    }, money(flowTotal)), React.createElement("span", {
+    }, money(flowTotalRaw)), React.createElement("span", {
       className: "text-[7px] font-bold text-gray-400 leading-none"
     }, "hari ini"))), React.createElement("div", {
       className: "flex-1 min-w-0 space-y-1"
@@ -13656,6 +13666,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb58da1efb8198',t:'MTc4NDMxMzMzMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb63a6cacd8198',t:'MTc4NDMxMzc3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

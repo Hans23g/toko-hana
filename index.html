@@ -7706,25 +7706,56 @@ ${note ? `<div class="note">${note}</div>` : ''}
     const newDebtPct = Math.min(100, Math.round(newDebtToday / debtBase * 100));
     const monthOutBase = Math.max(monthCashIn + monthCashOut, 1);
     const monthOutPct = Math.min(100, Math.round(monthCashOut / monthOutBase * 100));
-    const flowTotal = Math.max(cashOrderToday + qrisOrderToday + debtPaidToday + otherCashInToday + ledgerCashOutToday, 1);
+    const flowItems = [{
+      key: 'cash',
+      label: 'Cash Order',
+      short: 'Cash',
+      value: cashOrderToday,
+      color: '#16a34a',
+      bg: 'bg-emerald-50',
+      border: 'border-emerald-100',
+      text: 'text-emerald-700'
+    }, {
+      key: 'qris',
+      label: 'QRIS Order',
+      short: 'QRIS',
+      value: qrisOrderToday,
+      color: '#2563eb',
+      bg: 'bg-blue-50',
+      border: 'border-blue-100',
+      text: 'text-blue-700'
+    }, {
+      key: 'debtpaid',
+      label: 'Bayar Piutang',
+      short: 'Piutang',
+      value: debtPaidToday,
+      color: '#703d92',
+      bg: 'bg-purple-50',
+      border: 'border-purple-100',
+      text: 'text-[#703d92]'
+    }, {
+      key: 'otherin',
+      label: 'Laci Masuk',
+      short: 'Laci+',
+      value: otherCashInToday,
+      color: '#d97706',
+      bg: 'bg-amber-50',
+      border: 'border-amber-100',
+      text: 'text-amber-700'
+    }, {
+      key: 'cashout',
+      label: 'Uang Keluar Laci',
+      short: 'Laci-',
+      value: ledgerCashOutToday,
+      color: '#dc2626',
+      bg: 'bg-red-50',
+      border: 'border-red-100',
+      text: 'text-red-700'
+    }];
+    const flowTotal = Math.max(flowItems.reduce((sum, item) => sum + Number(item.value || 0), 0), 1);
     const pct = v => Math.round(Number(v || 0) / flowTotal * 100);
     let flowDeg = 0;
-    const flowConic = [{
-      value: cashOrderToday,
-      color: '#16a34a'
-    }, {
-      value: qrisOrderToday,
-      color: '#2563eb'
-    }, {
-      value: debtPaidToday,
-      color: '#703d92'
-    }, {
-      value: otherCashInToday,
-      color: '#d97706'
-    }, {
-      value: ledgerCashOutToday,
-      color: '#dc2626'
-    }].map(seg => {
+    const flowConic = flowItems.map(seg => {
       const start = flowDeg;
       const end = flowDeg + seg.value / flowTotal * 360;
       flowDeg = end;
@@ -7840,25 +7871,51 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, financeRecap?.countOffline || 0, " transaksi")))), React.createElement("div", {
       className: "bg-white/95 rounded-3xl p-3 border border-emerald-100 shadow-sm"
     }, React.createElement("div", {
-      className: "flex items-center justify-between gap-3 mb-3"
+      className: "flex items-start justify-between gap-3 mb-3"
     }, React.createElement("div", {
       className: "min-w-0"
     }, React.createElement("span", {
       className: "block text-[9px] text-emerald-700 uppercase tracking-widest font-black"
     }, "Kas Nyata Hari Ini"), React.createElement("span", {
       className: "block text-[9px] text-gray-400 font-bold leading-snug"
-    }, "uang yang benar-benar masuk/keluar, bukan sekadar omzet")), React.createElement("div", {
-      className: "w-16 h-16 rounded-full relative flex-shrink-0 shadow-inner",
+    }, "diagram bulat ini memecah isi kartu-kartu kas di bawahnya")), React.createElement("span", {
+      className: "text-[8px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-full font-black flex-shrink-0"
+    }, flowTotal ? '100%' : '0%')), React.createElement("div", {
+      className: "rounded-3xl bg-gradient-to-br from-white via-emerald-50/40 to-purple-50/40 border border-emerald-100 p-3 mb-3"
+    }, React.createElement("div", {
+      className: "flex items-center gap-3"
+    }, React.createElement("div", {
+      className: "w-28 h-28 rounded-full relative flex-shrink-0 shadow-inner",
       style: {
         background: `conic-gradient(${flowConic})`
       }
     }, React.createElement("div", {
-      className: "absolute inset-[7px] rounded-full bg-white flex flex-col items-center justify-center"
+      className: "absolute inset-[13px] rounded-full bg-white flex flex-col items-center justify-center shadow-sm"
     }, React.createElement("span", {
-      className: "text-[7px] font-black text-gray-400 leading-none"
-    }, "Kas"), React.createElement("span", {
-      className: "text-[9px] font-black text-[#703d92] leading-none mt-0.5"
-    }, "Nyata")))), React.createElement("div", {
+      className: "text-[8px] font-black text-gray-400 leading-none uppercase"
+    }, "Total Gerak"), React.createElement("span", {
+      className: "text-[13px] font-black text-[#703d92] leading-tight mt-0.5"
+    }, money(flowTotal)), React.createElement("span", {
+      className: "text-[7px] font-bold text-gray-400 leading-none"
+    }, "hari ini"))), React.createElement("div", {
+      className: "flex-1 min-w-0 space-y-1"
+    }, flowItems.map(item => React.createElement("div", {
+      key: item.key,
+      className: "flex items-center justify-between gap-2 text-[8.5px] font-bold"
+    }, React.createElement("div", {
+      className: "flex items-center gap-1.5 min-w-0"
+    }, React.createElement("span", {
+      className: "w-2.5 h-2.5 rounded-full flex-shrink-0",
+      style: {
+        backgroundColor: item.color
+      }
+    }), React.createElement("span", {
+      className: "truncate text-gray-600"
+    }, item.short)), React.createElement("span", {
+      className: item.text
+    }, pct(item.value), "%"))))), React.createElement("div", {
+      className: "mt-2 text-[8.5px] text-emerald-700 font-semibold leading-relaxed"
+    }, "Setiap warna di lingkaran sama dengan kartu rincian di bawah. Jadi admin bisa membaca arus uang sekilas, lalu lihat detailnya pelan-pelan ☕")), React.createElement("div", {
       className: "grid grid-cols-2 gap-2"
     }, React.createElement("div", {
       className: "relative overflow-hidden rounded-2xl bg-emerald-50 border border-emerald-100 p-2 min-h-[72px]"
@@ -13478,6 +13535,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cad2eb4f1df853',t:'MTc4NDMwNzg0Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

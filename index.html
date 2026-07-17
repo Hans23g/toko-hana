@@ -521,6 +521,13 @@ Check your Browserslist config to be sure that your targets are set up correctly
         console.warn('Ignored external analytics error:', msg);
         return;
       }
+      // Preview workspace berjalan di iframe sandbox/origin null. Kadang script viewer/browser mencoba baca
+      // window/frame.document lintas origin lalu melempar SecurityError. Aplikasi Toko Hana tetap jalan,
+      // jadi jangan ganti layar warung dengan error merah untuk noise preview ini.
+      if(msg.indexOf("Failed to read a named property 'document' from 'Window'") !== -1 || msg.indexOf('Blocked a frame with origin "null" from accessing a cross-origin frame') !== -1){
+        console.warn('Ignored workspace preview cross-origin frame error:', msg);
+        return;
+      }
       var detail = (e && (e.message || e.error)) || 'unknown';
       if(e && e.error && e.error.stack) detail = e.error.stack;
       detail += '\n\nLine: ' + ((e && e.lineno) || '') + ' Column: ' + ((e && e.colno) || '');
@@ -531,6 +538,10 @@ Check your Browserslist config to be sure that your targets are set up correctly
       var reasonText = String((reason && (reason.message || reason.stack)) || reason || '');
       if(reasonText.indexOf('cloudflareinsights.com') !== -1 || reasonText.indexOf('beacon.min.js') !== -1 || reasonText.indexOf('Beacons are only supported over HTTP') !== -1){
         console.warn('Ignored external analytics promise error:', reasonText);
+        return;
+      }
+      if(reasonText.indexOf("Failed to read a named property 'document' from 'Window'") !== -1 || reasonText.indexOf('Blocked a frame with origin "null" from accessing a cross-origin frame') !== -1){
+        console.warn('Ignored workspace preview cross-origin promise error:', reasonText);
         return;
       }
       var detail = reason && reason.stack ? reason.stack : (reason && reason.message ? reason.message : reason);
@@ -9788,7 +9799,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: handleOpenCashierShift,
     className: "w-full bg-blue-600 text-white rounded-2xl py-2 text-[10px] font-black"
   }, "Buka Shift"))), React.createElement("div", {
-    className: "rounded-3xl bg-white border border-blue-100 shadow-sm p-3 space-y-2"
+    className: "order-first rounded-3xl bg-white border border-blue-100 shadow-sm p-3 space-y-2"
   }, React.createElement("div", {
     className: "flex items-center justify-between"
   }, React.createElement("div", null, React.createElement("h3", {
@@ -13718,6 +13729,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb80534f5749f3',t:'MTc4NDMxNDk0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb90bc8f5e49f3',t:'MTc4NDMxNTYyMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

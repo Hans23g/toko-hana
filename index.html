@@ -9902,11 +9902,11 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }) : React.createElement("div", {
     className: "rounded-2xl border border-dashed border-blue-100 bg-blue-50/40 p-3 text-center text-[10px] text-gray-500 font-semibold"
   }, "Belum ada riwayat shift. Setelah buka/tutup shift, catatannya muncul di sini."))), React.createElement("div", {
-    className: "rounded-3xl bg-white border border-amber-100 shadow-sm p-3 space-y-2"
+    className: `rounded-3xl bg-white shadow-sm p-3 space-y-2 ${cashLedgerForm.type === 'cash_in' ? 'border border-emerald-100' : 'border border-amber-100'}`
   }, React.createElement("div", {
     className: "flex items-center justify-between"
   }, React.createElement("div", null, React.createElement("h3", {
-    className: "font-black text-amber-700 text-[12px] uppercase tracking-wider"
+    className: `font-black text-[12px] uppercase tracking-wider ${cashLedgerForm.type === 'cash_in' ? 'text-emerald-700' : 'text-amber-700'}`
   }, "4. Catatan Laci"), React.createElement("p", {
     className: "text-[9px] text-gray-500 font-semibold"
   }, "Masuk Rp ", cashLedgerToday.cashIn.toLocaleString('id-ID'), " • Keluar Rp ", cashLedgerToday.cashOut.toLocaleString('id-ID'))), React.createElement("button", {
@@ -9914,6 +9914,26 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: () => setShowCashLedger(true),
     className: "bg-amber-500 text-white rounded-xl px-3 py-2 text-[9px] font-black"
   }, "Panel")), React.createElement("div", {
+    className: "grid grid-cols-2 gap-1.5 rounded-2xl bg-gray-50 border border-gray-100 p-1"
+  }, React.createElement("button", {
+    type: "button",
+    onClick: () => setCashLedgerForm({
+      ...cashLedgerForm,
+      type: 'cash_out',
+      category: 'pengamen'
+    }),
+    className: `rounded-xl py-2 text-[9px] font-black active:scale-[0.98] ${cashLedgerForm.type === 'cash_out' ? 'bg-red-500 text-white shadow-sm' : 'bg-white text-red-600 border border-red-100'}`
+  }, "Uang Keluar"), React.createElement("button", {
+    type: "button",
+    onClick: () => setCashLedgerForm({
+      ...cashLedgerForm,
+      type: 'cash_in',
+      category: 'bayar_piutang'
+    }),
+    className: `rounded-xl py-2 text-[9px] font-black active:scale-[0.98] ${cashLedgerForm.type === 'cash_in' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-emerald-700 border border-emerald-100'}`
+  }, "Uang Masuk")), React.createElement("div", {
+    className: `rounded-2xl px-2 py-1 text-[8.5px] font-bold leading-snug ${cashLedgerForm.type === 'cash_in' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'}`
+  }, cashLedgerForm.type === 'cash_in' ? 'Uang yang benar-benar masuk ke laci: bayar piutang, jual kardus, tips, titipan.' : 'Uang yang keluar dari laci: iuran, pengamen, plastik, sedekah, biaya kecil.'), React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, React.createElement("select", {
     value: cashLedgerForm.category,
@@ -9921,7 +9941,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       ...cashLedgerForm,
       category: e.target.value
     }),
-    className: "border border-amber-100 rounded-xl px-3 py-2 text-[16px] bg-white"
+    className: `border rounded-xl px-3 py-2 text-[16px] bg-white ${cashLedgerForm.type === 'cash_in' ? 'border-emerald-100' : 'border-amber-100'}`
   }, (cashLedgerForm.type === 'cash_in' ? [['bayar_piutang', 'Bayar piutang'], ['jual_kardus', 'Jual kardus/karung'], ['tips', 'Tips/kembalian'], ['titipan', 'Uang titipan'], ['lainnya', 'Lainnya']] : [['pengamen', 'Pengamen'], ['iuran_sampah', 'Iuran sampah'], ['keamanan', 'Keamanan/lingkungan'], ['plastik', 'Beli plastik/kemasan'], ['sedekah', 'Sedekah/bantuan'], ['lainnya', 'Lainnya']]).map(([value, label]) => React.createElement("option", {
     key: value,
     value
@@ -9938,8 +9958,8 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "⚠️ Catatan serupa sudah ada. Cek dulu sebelum bayar lagi."), React.createElement("button", {
     type: "button",
     onClick: handleAddCashLedgerEntry,
-    className: "w-full bg-amber-500 text-[#2d1242] rounded-2xl py-2 text-[10px] font-black"
-  }, "Simpan Catatan Laci"), cashLedgerToday.list.slice(0, 3).map(entry => React.createElement("div", {
+    className: `w-full rounded-2xl py-2 text-[10px] font-black active:scale-[0.99] ${cashLedgerForm.type === 'cash_in' ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-[#2d1242]'}`
+  }, cashLedgerForm.type === 'cash_in' ? "Simpan Uang Masuk" : "Simpan Uang Keluar"), cashLedgerToday.list.slice(0, 3).map(entry => React.createElement("div", {
     key: `note-ledger-${entry.id}`,
     className: "rounded-xl bg-amber-50 px-2 py-1 text-[9px] flex justify-between gap-2"
   }, React.createElement("span", {
@@ -13802,6 +13822,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cba1e10a1afdf8',t:'MTc4NDMxNjMyNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cbac4c3e2bfdf8',t:'MTc4NDMxNjc1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

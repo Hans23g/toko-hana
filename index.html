@@ -7847,6 +7847,24 @@ ${note ? `<div class="note">${note}</div>` : ''}
     const shiftDiffPct = Math.min(100, Math.round(Math.abs(shiftDiff) / Math.max(Math.abs(shiftExpected), 1) * 100));
     const shiftWheelColor = shiftIsOpen ? '#2563eb' : shiftDiff === 0 ? '#16a34a' : shiftDiff > 0 ? '#d97706' : '#dc2626';
     const shiftTimeText = latestShift ? `${new Date(latestShift.opened_at).toLocaleString('id-ID')}${latestShift.closed_at ? ' → ' + new Date(latestShift.closed_at).toLocaleString('id-ID') : ' → berjalan'}` : 'Belum ada shift tercatat';
+    const bonList = Array.isArray(bonAgenSubmissions) ? bonAgenSubmissions : [];
+    const activeBonList = bonList.filter(item => item && !['cancelled', 'applied'].includes(item.status));
+    const todayDebtList = debtList.filter(d => d && isToday(d.created_at));
+    const overdueDebtList = debtList.filter(d => d && ['unpaid', 'partial'].includes(d.status) && d.due_date && String(d.due_date).slice(0, 10) < todayStr);
+    const todayOutNotes = todayLedger.filter(e => e.type === 'cash_out').slice(0, 3);
+    const todayInNotes = todayLedger.filter(e => e.type === 'cash_in').slice(0, 3);
+    const latestBonForFinance = activeBonList[0] || bonList[0] || null;
+    const categoryLabel = c => ({
+      bayar_piutang: 'Bayar piutang',
+      jual_kardus: 'Jual kardus',
+      tips: 'Tips',
+      titipan: 'Titipan',
+      pengamen: 'Pengamen',
+      iuran_sampah: 'Iuran sampah',
+      keamanan: 'Keamanan',
+      plastik: 'Plastik/kemasan',
+      sedekah: 'Sedekah'
+    })[c] || c || '-';
     return React.createElement("div", {
       className: "space-y-3 text-xs"
     }, React.createElement("div", {
@@ -8184,6 +8202,54 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, "Selisih bukan untuk menyalahkan, tapi untuk dicari ceritanya bersama ☕"))) : React.createElement("div", {
       className: "rounded-2xl border border-dashed border-blue-100 bg-blue-50/40 p-3 text-center text-[10px] text-gray-500 font-semibold"
     }, "Belum ada shift tercatat. Buka shift dari halaman Catatan Warung agar laporan kasir punya rumah waktu.")), React.createElement("div", {
+      className: "bg-white/95 rounded-3xl p-3 border border-purple-100 shadow-sm"
+    }, React.createElement("div", {
+      className: "flex items-center justify-between gap-2 mb-2"
+    }, React.createElement("div", {
+      className: "min-w-0"
+    }, React.createElement("span", {
+      className: "block text-[9px] text-[#703d92] uppercase tracking-widest font-black"
+    }, "Catatan Operasional Hari Ini"), React.createElement("span", {
+      className: "block text-[9px] text-gray-400 font-bold leading-snug"
+    }, "cerita dari meja kasir: shift, laci, piutang, dan bon agen")), React.createElement("span", {
+      className: "text-[8px] text-[#703d92] bg-purple-50 border border-purple-100 px-2 py-1 rounded-full font-black flex-shrink-0"
+    }, "Meja Kasir")), React.createElement("div", {
+      className: "grid grid-cols-2 gap-2"
+    }, React.createElement("div", {
+      className: "rounded-2xl bg-purple-50 border border-purple-100 p-2"
+    }, React.createElement("span", {
+      className: "block text-[8px] font-black text-[#703d92] uppercase"
+    }, "Piutang perlu disapa"), React.createElement("b", {
+      className: "text-[12px] text-[#703d92]"
+    }, overdueDebtList.length, " orang"), React.createElement("span", {
+      className: "block text-[8px] text-[#703d92]/75 font-semibold leading-tight"
+    }, "baru hari ini ", money(newDebtToday), " • aktif ", money(activeDebtTotal))), React.createElement("div", {
+      className: "rounded-2xl bg-emerald-50 border border-emerald-100 p-2"
+    }, React.createElement("span", {
+      className: "block text-[8px] font-black text-emerald-700 uppercase"
+    }, "Bon agen aktif"), React.createElement("b", {
+      className: "text-[12px] text-emerald-700"
+    }, activeBonList.length, " bon"), React.createElement("span", {
+      className: "block text-[8px] text-emerald-700/75 font-semibold leading-tight"
+    }, latestBonForFinance ? `${latestBonForFinance.supplier_name || 'Agen'} • ${latestBonForFinance.status || 'submitted'}` : 'belum ada bon aktif')), React.createElement("div", {
+      className: "rounded-2xl bg-red-50 border border-red-100 p-2"
+    }, React.createElement("span", {
+      className: "block text-[8px] font-black text-red-700 uppercase"
+    }, "Uang keluar terbaru"), React.createElement("b", {
+      className: "text-[12px] text-red-700"
+    }, todayOutNotes[0] ? `-${money(todayOutNotes[0].amount)}` : money(0)), React.createElement("span", {
+      className: "block text-[8px] text-red-700/75 font-semibold leading-tight truncate"
+    }, todayOutNotes[0] ? categoryLabel(todayOutNotes[0].category) : 'belum ada keluar hari ini')), React.createElement("div", {
+      className: "rounded-2xl bg-amber-50 border border-amber-100 p-2"
+    }, React.createElement("span", {
+      className: "block text-[8px] font-black text-amber-700 uppercase"
+    }, "Uang masuk laci"), React.createElement("b", {
+      className: "text-[12px] text-amber-700"
+    }, todayInNotes[0] ? `+${money(todayInNotes[0].amount)}` : money(0)), React.createElement("span", {
+      className: "block text-[8px] text-amber-700/75 font-semibold leading-tight truncate"
+    }, todayInNotes[0] ? categoryLabel(todayInNotes[0].category) : 'belum ada masuk laci'))), React.createElement("div", {
+      className: "mt-2 rounded-2xl bg-gradient-to-r from-purple-50 to-amber-50 border border-purple-100 px-2 py-1.5 text-[8.5px] text-[#703d92] font-semibold leading-relaxed"
+    }, "Angka besar menjawab berapa uangnya; catatan operasional menjawab kenapa uang bergerak. Jadi admin membaca laporan tanpa kehilangan cerita warung ☕")), React.createElement("div", {
       className: "bg-white/95 rounded-3xl p-3 border border-amber-100/70 shadow-sm overflow-hidden relative"
     }, React.createElement("div", {
       className: "absolute -right-10 -top-10 w-28 h-28 rounded-full bg-[#FFD700]/10 blur-sm pointer-events-none"
@@ -13927,6 +13993,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cbc4fe1e7dfdf8',t:'MTc4NDMxNzc2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cbdae3ae3dfe1f',t:'MTc4NDMxODY1OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

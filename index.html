@@ -3216,6 +3216,7 @@ function App() {
   });
   const [cashierShifts, setCashierShifts] = useState([]);
   const [shiftForm, setShiftForm] = useState({
+    cashier_name: '',
     opening_cash: '',
     opened_at: '',
     opening_note: '',
@@ -6916,7 +6917,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     const openedAt = shiftForm.opened_at ? new Date(shiftForm.opened_at).toISOString() : new Date().toISOString();
     const payload = {
       cashier_email: currentUser?.email || null,
-      cashier_name: currentUser?.name || 'Kasir Toko Hana',
+      cashier_name: shiftForm.cashier_name || currentUser?.name || 'Kasir Toko Hana',
       status: 'open',
       opened_at: openedAt,
       opening_cash: openingCash,
@@ -6933,6 +6934,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
     if (data && data[0]) setCashierShifts(prev => [data[0], ...prev]);
     setShiftForm({
       ...shiftForm,
+      cashier_name: '',
       opening_cash: '',
       opened_at: '',
       opening_note: ''
@@ -9673,7 +9675,15 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "w-full bg-blue-600 text-white rounded-2xl py-2 text-[10px] font-black"
   }, "Tutup Shift")) : React.createElement("div", {
     className: "space-y-2"
-  }, React.createElement("div", {
+  }, React.createElement("input", {
+    value: shiftForm.cashier_name,
+    onChange: e => setShiftForm({
+      ...shiftForm,
+      cashier_name: e.target.value
+    }),
+    placeholder: "Nama penjaga shift",
+    className: "w-full border border-blue-100 rounded-xl px-3 py-2 text-[16px]"
+  }), React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, React.createElement("input", {
     value: shiftForm.opening_cash,
@@ -13594,5 +13604,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb09c22d9baa1c',t:'MTc4NDMxMDA5Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb2d62a93481d2',t:'MTc4NDMxMTU1Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

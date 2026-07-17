@@ -7688,7 +7688,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
     const activeDebtTotal = (customerDebts || []).filter(d => ['unpaid', 'partial'].includes(d.status)).reduce((sum, d) => sum + Number(d.remaining_amount || 0), 0);
     const monthLedger = (cashLedgerEntries || []).filter(e => isThisMonth(e.created_at));
     const monthCashOut = monthLedger.filter(e => e.type === 'cash_out').reduce((sum, e) => sum + Number(e.amount || 0), 0);
+    const monthCashIn = monthLedger.filter(e => e.type === 'cash_in').reduce((sum, e) => sum + Number(e.amount || 0), 0);
     const realCashToday = cashOrderToday + qrisOrderToday + ledgerCashInToday - ledgerCashOutToday;
+    const debtBase = Math.max(activeDebtTotal, newDebtToday, 1);
+    const newDebtPct = Math.min(100, Math.round(newDebtToday / debtBase * 100));
+    const monthOutBase = Math.max(monthCashIn + monthCashOut, 1);
+    const monthOutPct = Math.min(100, Math.round(monthCashOut / monthOutBase * 100));
     const flowTotal = Math.max(cashOrderToday + qrisOrderToday + debtPaidToday + otherCashInToday + ledgerCashOutToday, 1);
     const pct = v => Math.round(Number(v || 0) / flowTotal * 100);
     let flowDeg = 0;
@@ -7833,7 +7838,47 @@ ${note ? `<div class="note">${note}</div>` : ''}
       className: "text-[13px] text-red-700 tracking-[-0.04em]"
     }, "-", money(ledgerCashOutToday)), React.createElement("span", {
       className: "block text-[8px] text-red-600 font-bold leading-tight"
-    }, "iuran, plastik, pengamen, sedekah, biaya kecil")))), React.createElement("div", {
+    }, "iuran, plastik, pengamen, sedekah, biaya kecil"))), React.createElement("div", {
+      className: "col-span-2 rounded-2xl bg-gradient-to-br from-amber-50 via-white to-orange-50 border border-amber-100 p-2"
+    }, React.createElement("div", {
+      className: "text-[8px] font-black text-amber-700 uppercase tracking-wider mb-1"
+    }, "Catatan yang perlu diawasi"), React.createElement("div", {
+      className: "grid grid-cols-2 gap-2"
+    }, React.createElement("div", {
+      className: "relative overflow-hidden rounded-xl bg-white/80 border border-amber-100 p-2 min-h-[66px]"
+    }, React.createElement("div", {
+      className: "absolute right-1.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-75 pointer-events-none",
+      style: {
+        background: `conic-gradient(#d97706 ${newDebtPct}%, rgba(217,119,6,.14) 0)`
+      }
+    }, React.createElement("div", {
+      className: "absolute inset-[4px] rounded-full bg-white/95 flex items-center justify-center text-[7px] font-black text-amber-700"
+    }, newDebtPct, "%")), React.createElement("div", {
+      className: "relative pr-11"
+    }, React.createElement("span", {
+      className: "block text-[8px] font-black text-amber-700 uppercase"
+    }, "Piutang Baru"), React.createElement("b", {
+      className: "text-[12px] text-amber-700 tracking-[-0.04em]"
+    }, money(newDebtToday)), React.createElement("span", {
+      className: "block text-[7.5px] text-amber-600 font-bold leading-tight"
+    }, "aktif: ", money(activeDebtTotal)))), React.createElement("div", {
+      className: "relative overflow-hidden rounded-xl bg-white/80 border border-orange-100 p-2 min-h-[66px]"
+    }, React.createElement("div", {
+      className: "absolute right-1.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-75 pointer-events-none",
+      style: {
+        background: `conic-gradient(#ea580c ${monthOutPct}%, rgba(234,88,12,.14) 0)`
+      }
+    }, React.createElement("div", {
+      className: "absolute inset-[4px] rounded-full bg-white/95 flex items-center justify-center text-[7px] font-black text-orange-700"
+    }, monthOutPct, "%")), React.createElement("div", {
+      className: "relative pr-11"
+    }, React.createElement("span", {
+      className: "block text-[8px] font-black text-orange-700 uppercase"
+    }, "Keluar Bulan Ini"), React.createElement("b", {
+      className: "text-[12px] text-orange-700 tracking-[-0.04em]"
+    }, money(monthCashOut)), React.createElement("span", {
+      className: "block text-[7.5px] text-orange-600 font-bold leading-tight"
+    }, "iuran & biaya kecil")))))), React.createElement("div", {
       className: "mt-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-[#703d92] text-white p-2.5"
     }, React.createElement("span", {
       className: "block text-[8px] font-black uppercase tracking-wider text-white/75"
@@ -7842,24 +7887,6 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, money(realCashToday)), React.createElement("span", {
       className: "block text-[8.5px] text-white/75 font-semibold mt-0.5"
     }, "Omzet menunjukkan barang terjual; kas nyata menunjukkan uang yang benar-benar bergerak di laci/QRIS."))), React.createElement("div", {
-      className: "grid grid-cols-2 gap-2"
-    }, React.createElement("div", {
-      className: "rounded-2xl bg-amber-50 border border-amber-100 p-3"
-    }, React.createElement("span", {
-      className: "block text-[8px] font-black text-amber-700 uppercase tracking-wider"
-    }, "Piutang baru hari ini"), React.createElement("b", {
-      className: "text-sm text-amber-700"
-    }, money(newDebtToday)), React.createElement("span", {
-      className: "block text-[9px] text-amber-600 font-bold"
-    }, "sisa aktif: ", money(activeDebtTotal))), React.createElement("div", {
-      className: "rounded-2xl bg-orange-50 border border-orange-100 p-3"
-    }, React.createElement("span", {
-      className: "block text-[8px] font-black text-orange-700 uppercase tracking-wider"
-    }, "Uang keluar bulan ini"), React.createElement("b", {
-      className: "text-sm text-orange-700"
-    }, money(monthCashOut)), React.createElement("span", {
-      className: "block text-[9px] text-orange-600 font-bold"
-    }, "iuran, plastik, pengamen, dll."))), React.createElement("div", {
       className: "grid grid-cols-2 gap-2"
     }, React.createElement("div", {
       className: "relative overflow-hidden bg-gradient-to-br from-purple-50 to-white p-3 rounded-2xl border border-purple-100 shadow-sm"
@@ -13389,6 +13416,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ca7f463a9ad4de',t:'MTc4NDMwNDQyMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ca93ab98683d8c',t:'MTc4NDMwNTI1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

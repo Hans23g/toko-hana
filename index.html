@@ -11127,6 +11127,81 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, deliveryOption === 'confirm_admin' ? 'Area belum dikenali. Admin akan konfirmasi ongkir lewat WA.' : `Area terdeteksi: ${(deliveryOptions.find(opt => opt.key === deliveryOption) || {}).label}. Zona bisa dicek ulang admin.`), React.createElement("div", null, React.createElement("span", {
     className: "block text-gray-600 font-bold mb-1.5"
   }, lang === 'id' ? 'Pilih Pembayaran Rupiah' : 'Choose Payment Method'), React.createElement("div", {
+    className: "bg-[#FFFDF6] border-b border-amber-100 px-3 py-2 flex-shrink-0"
+  }, (() => {
+    const tips = {
+      produk: ['📦 Produk', 'Isi yang penting dulu. Kalau bingung, pakai contoh harga. Data bisa dirapikan nanti.'],
+      promo: ['🧭 Jelajah', 'Kelola info, aplikasi kecil, mitra, undangan, dan cerita warga dari satu tempat.'],
+      restok: ['🧾 Belanja Agen', 'Pilih barang menipis, atur jumlah, lalu kirim daftar belanja ke WA agen.'],
+      kategori: ['🗂️ Rak Barang', 'Atur rak/kategori agar pembeli mudah menemukan barang.'],
+      pelanggan: ['👥 Pelanggan', 'Lihat data pelanggan dengan tenang. Jangan ubah jika belum perlu.'],
+      orderan: ['🛒 Pesanan', 'Cek pesanan masuk, status bayar, dan barang yang perlu disiapkan.'],
+      pengiriman: ['🚚 Pengiriman', 'Isi kurir dan resi jika barang sudah siap diantar/dikirim.'],
+      keuangan: ['💰 Uang Warung', 'Lihat ringkasan uang masuk. Laporan jujur membantu warung sehat.'],
+      status: ['🏪 Status Warung', 'Atur buka, tutup, restok, atau libur tanpa mengubah kode.'],
+      branding: ['🎨 Tampilan & Pembayaran', 'Atur tampilan toko, QRIS, WhatsApp, dan wallet edukasi dengan hati-hati.']
+    };
+    const info = tips[adminActiveSubMenu] || ['☕ Ruang Admin', 'Isi pelan-pelan. Yang belum paham boleh ditunda dulu.'];
+    const roleMap = {
+      produk: 'Kepala Gudang',
+      promo: 'Kepala Relasi Warga',
+      restok: 'Purchasing Warung',
+      kategori: 'Penata Rak',
+      pelanggan: 'CRM Warung',
+      orderan: 'Kepala Operasional',
+      pengiriman: 'Koordinator Kirim',
+      keuangan: 'CEO Warung',
+      status: 'Manajer Buka/Tutup',
+      branding: 'Penjaga Wajah Toko'
+    };
+    const activeOrderCount = (orders || []).filter(o => o && !['Selesai', 'Dikirim'].includes(o.status)).length;
+    const activeDebtCount = (customerDebts || []).filter(d => d && ['unpaid', 'partial'].includes(d.status)).length;
+    const activeBonCount = (bonAgenSubmissions || []).filter(b => b && !['cancelled', 'applied'].includes(b.status)).length;
+    const adminSummaryMap = {
+      produk: [['Aktif', activeProductsCount], ['Habis', outOfStockProducts.length], ['Menipis', stockAlertProducts.length], ['Belum scan', missingScanProducts.length]],
+      promo: [['Post', (sponsorBanners || []).length], ['Mitra', (partners || []).length], ['Aplikasi', (partnerApplications || []).length], ['Publik', (sponsorBanners || []).filter(x => x && x.is_public !== false).length]],
+      restok: [['Bon aktif', activeBonCount], ['Menipis', lowStockProducts.length], ['Dipilih', Object.keys(restockSelection || {}).length], ['Agen WA', agentWaNumber ? 'ada' : '-']],
+      kategori: [['Rak', (categories || []).length], ['Produk', (products || []).length], ['Urutan', 'aktif'], ['Etalase', 'rapi']],
+      pelanggan: [['Kontak', (customers || []).length], ['Piutang', activeDebtCount], ['Order aktif', activeOrderCount], ['Sapa', 'WA']],
+      orderan: [['Aktif', activeOrderCount], ['Baru', (orders || []).filter(o => o && o.status === 'Baru').length], ['Belum bayar', (orders || []).filter(o => o && ['Belum Bayar', 'Siap Bayar'].includes(o.status)).length], ['Kirim', (orders || []).filter(o => o && o.status === 'Diproses' && !(o.channel === 'Offline' || (o.payment_method || '').includes('Offline'))).length]],
+      pengiriman: [['Siap kirim', (orders || []).filter(o => o && o.status === 'Diproses').length], ['Terkirim', (orders || []).filter(o => o && o.status === 'Selesai' && o.resi).length], ['Kurir', shipForm?.kurir || '-'], ['Resi', selectedOrderToShip ? 'isi' : '-']],
+      keuangan: [['Hari ini', money(financeRecap?.omzetHariIni)], ['Minggu', money(financeRecap?.omzetMingguan)], ['Online', financeRecap?.countOnline || 0], ['Offline', financeRecap?.countOffline || 0]],
+      status: [['Status', warungStatus?.shortText || 'buka'], ['Catatan', warungStatusNote ? 'ada' : '-'], ['Buka', warungStatus?.isOpen === false ? 'tutup' : 'aktif'], ['Tampilan', 'live']],
+      branding: [['Logo', BRAND_LOGO_DATA_URI ? 'ada' : '-'], ['Batik', BRAND_BATIK_DATA_URI ? 'ada' : '-'], ['QRIS', qrisImageUrl ? 'ada' : '-'], ['WA', merchantWaNumber ? 'ada' : '-']]
+    };
+    const adminSummary = adminSummaryMap[adminActiveSubMenu] || [['Data', '-'], ['Saran', '-'], ['Aksi', '-'], ['Rasa', '☕']];
+    return React.createElement("div", {
+      className: "rounded-3xl bg-gradient-to-br from-[#2d1242] via-[#703d92] to-[#553C9A] text-white border border-[#FFD700]/35 px-3 py-3 shadow-sm relative overflow-hidden"
+    }, React.createElement("div", {
+      className: "absolute -right-8 -top-8 w-24 h-24 rounded-full bg-[#FFD700]/15 pointer-events-none"
+    }), React.createElement("div", {
+      className: "relative flex items-start justify-between gap-2"
+    }, React.createElement("div", {
+      className: "min-w-0"
+    }, React.createElement("div", {
+      className: "font-black text-[#FFD700] text-[8px] uppercase tracking-[0.28em]"
+    }, "Mode CEO Warung"), React.createElement("div", {
+      className: "font-black text-white text-[12px] uppercase tracking-wider mt-1"
+    }, info[0]), React.createElement("div", {
+      className: "text-[9px] text-white/75 font-semibold leading-snug mt-0.5"
+    }, info[1])), React.createElement("span", {
+      className: "bg-white/12 border border-white/20 text-[#FFD700] rounded-full px-2 py-1 text-[8px] font-black whitespace-nowrap"
+    }, roleMap[adminActiveSubMenu] || 'Ruang Admin')), React.createElement("div", {
+      className: "relative grid grid-cols-3 gap-1.5 mt-2"
+    }, ['Baca data', 'Saran sistem', 'Manusia putuskan'].map(label => React.createElement("span", {
+      key: label,
+      className: "rounded-xl bg-white/10 border border-white/15 text-white/85 px-2 py-1 text-[7.5px] font-black text-center"
+    }, label))), React.createElement("div", {
+      className: "relative grid grid-cols-4 gap-1.5 mt-2"
+    }, adminSummary.map(([label, value]) => React.createElement("div", {
+      key: label,
+      className: "rounded-2xl bg-white/95 text-[#2d1242] border border-white/60 px-2 py-1.5 min-w-0 shadow-sm"
+    }, React.createElement("span", {
+      className: "block text-[7px] font-black text-gray-400 uppercase leading-none truncate"
+    }, label), React.createElement("b", {
+      className: "block text-[9px] text-[#703d92] leading-tight mt-0.5 truncate"
+    }, value)))));
+  })()), React.createElement("div", {
     className: "grid grid-cols-5 gap-1"
   }, React.createElement("button", {
     type: "button",
@@ -11813,81 +11888,6 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }), React.createElement("span", null, tab.label), tab.badge > 0 && React.createElement("span", {
     className: "absolute top-0.5 right-0.5 bg-red-500 text-white font-black text-[8px] min-w-[13px] h-[13px] px-1 rounded-full flex items-center justify-center animate-pulse"
   }, tab.badge)))), React.createElement("div", {
-    className: "bg-[#FFFDF6] border-b border-amber-100 px-3 py-2 flex-shrink-0"
-  }, (() => {
-    const tips = {
-      produk: ['📦 Produk', 'Isi yang penting dulu. Kalau bingung, pakai contoh harga. Data bisa dirapikan nanti.'],
-      promo: ['🧭 Jelajah', 'Kelola info, aplikasi kecil, mitra, undangan, dan cerita warga dari satu tempat.'],
-      restok: ['🧾 Belanja Agen', 'Pilih barang menipis, atur jumlah, lalu kirim daftar belanja ke WA agen.'],
-      kategori: ['🗂️ Rak Barang', 'Atur rak/kategori agar pembeli mudah menemukan barang.'],
-      pelanggan: ['👥 Pelanggan', 'Lihat data pelanggan dengan tenang. Jangan ubah jika belum perlu.'],
-      orderan: ['🛒 Pesanan', 'Cek pesanan masuk, status bayar, dan barang yang perlu disiapkan.'],
-      pengiriman: ['🚚 Pengiriman', 'Isi kurir dan resi jika barang sudah siap diantar/dikirim.'],
-      keuangan: ['💰 Uang Warung', 'Lihat ringkasan uang masuk. Laporan jujur membantu warung sehat.'],
-      status: ['🏪 Status Warung', 'Atur buka, tutup, restok, atau libur tanpa mengubah kode.'],
-      branding: ['🎨 Tampilan & Pembayaran', 'Atur tampilan toko, QRIS, WhatsApp, dan wallet edukasi dengan hati-hati.']
-    };
-    const info = tips[adminActiveSubMenu] || ['☕ Ruang Admin', 'Isi pelan-pelan. Yang belum paham boleh ditunda dulu.'];
-    const roleMap = {
-      produk: 'Kepala Gudang',
-      promo: 'Kepala Relasi Warga',
-      restok: 'Purchasing Warung',
-      kategori: 'Penata Rak',
-      pelanggan: 'CRM Warung',
-      orderan: 'Kepala Operasional',
-      pengiriman: 'Koordinator Kirim',
-      keuangan: 'CEO Warung',
-      status: 'Manajer Buka/Tutup',
-      branding: 'Penjaga Wajah Toko'
-    };
-    const activeOrderCount = (orders || []).filter(o => o && !['Selesai', 'Dikirim'].includes(o.status)).length;
-    const activeDebtCount = (customerDebts || []).filter(d => d && ['unpaid', 'partial'].includes(d.status)).length;
-    const activeBonCount = (bonAgenSubmissions || []).filter(b => b && !['cancelled', 'applied'].includes(b.status)).length;
-    const adminSummaryMap = {
-      produk: [['Aktif', activeProductsCount], ['Habis', outOfStockProducts.length], ['Menipis', stockAlertProducts.length], ['Belum scan', missingScanProducts.length]],
-      promo: [['Post', (sponsorBanners || []).length], ['Mitra', (partners || []).length], ['Aplikasi', (partnerApplications || []).length], ['Publik', (sponsorBanners || []).filter(x => x && x.is_public !== false).length]],
-      restok: [['Bon aktif', activeBonCount], ['Menipis', lowStockProducts.length], ['Dipilih', Object.keys(restockSelection || {}).length], ['Agen WA', agentWaNumber ? 'ada' : '-']],
-      kategori: [['Rak', (categories || []).length], ['Produk', (products || []).length], ['Urutan', 'aktif'], ['Etalase', 'rapi']],
-      pelanggan: [['Kontak', (customers || []).length], ['Piutang', activeDebtCount], ['Order aktif', activeOrderCount], ['Sapa', 'WA']],
-      orderan: [['Aktif', activeOrderCount], ['Baru', (orders || []).filter(o => o && o.status === 'Baru').length], ['Belum bayar', (orders || []).filter(o => o && ['Belum Bayar', 'Siap Bayar'].includes(o.status)).length], ['Kirim', (orders || []).filter(o => o && o.status === 'Diproses' && !(o.channel === 'Offline' || (o.payment_method || '').includes('Offline'))).length]],
-      pengiriman: [['Siap kirim', (orders || []).filter(o => o && o.status === 'Diproses').length], ['Terkirim', (orders || []).filter(o => o && o.status === 'Selesai' && o.resi).length], ['Kurir', shipForm?.kurir || '-'], ['Resi', selectedOrderToShip ? 'isi' : '-']],
-      keuangan: [['Hari ini', money(financeRecap?.omzetHariIni)], ['Minggu', money(financeRecap?.omzetMingguan)], ['Online', financeRecap?.countOnline || 0], ['Offline', financeRecap?.countOffline || 0]],
-      status: [['Status', warungStatus?.shortText || 'buka'], ['Catatan', warungStatusNote ? 'ada' : '-'], ['Buka', warungStatus?.isOpen === false ? 'tutup' : 'aktif'], ['Tampilan', 'live']],
-      branding: [['Logo', BRAND_LOGO_DATA_URI ? 'ada' : '-'], ['Batik', BRAND_BATIK_DATA_URI ? 'ada' : '-'], ['QRIS', qrisImageUrl ? 'ada' : '-'], ['WA', merchantWaNumber ? 'ada' : '-']]
-    };
-    const adminSummary = adminSummaryMap[adminActiveSubMenu] || [['Data', '-'], ['Saran', '-'], ['Aksi', '-'], ['Rasa', '☕']];
-    return React.createElement("div", {
-      className: "rounded-3xl bg-gradient-to-br from-[#2d1242] via-[#703d92] to-[#553C9A] text-white border border-[#FFD700]/35 px-3 py-3 shadow-sm relative overflow-hidden"
-    }, React.createElement("div", {
-      className: "absolute -right-8 -top-8 w-24 h-24 rounded-full bg-[#FFD700]/15 pointer-events-none"
-    }), React.createElement("div", {
-      className: "relative flex items-start justify-between gap-2"
-    }, React.createElement("div", {
-      className: "min-w-0"
-    }, React.createElement("div", {
-      className: "font-black text-[#FFD700] text-[8px] uppercase tracking-[0.28em]"
-    }, "Mode CEO Warung"), React.createElement("div", {
-      className: "font-black text-white text-[12px] uppercase tracking-wider mt-1"
-    }, info[0]), React.createElement("div", {
-      className: "text-[9px] text-white/75 font-semibold leading-snug mt-0.5"
-    }, info[1])), React.createElement("span", {
-      className: "bg-white/12 border border-white/20 text-[#FFD700] rounded-full px-2 py-1 text-[8px] font-black whitespace-nowrap"
-    }, roleMap[adminActiveSubMenu] || 'Ruang Admin')), React.createElement("div", {
-      className: "relative grid grid-cols-3 gap-1.5 mt-2"
-    }, ['Baca data', 'Saran sistem', 'Manusia putuskan'].map(label => React.createElement("span", {
-      key: label,
-      className: "rounded-xl bg-white/10 border border-white/15 text-white/85 px-2 py-1 text-[7.5px] font-black text-center"
-    }, label))), React.createElement("div", {
-      className: "relative grid grid-cols-4 gap-1.5 mt-2"
-    }, adminSummary.map(([label, value]) => React.createElement("div", {
-      key: label,
-      className: "rounded-2xl bg-white/95 text-[#2d1242] border border-white/60 px-2 py-1.5 min-w-0 shadow-sm"
-    }, React.createElement("span", {
-      className: "block text-[7px] font-black text-gray-400 uppercase leading-none truncate"
-    }, label), React.createElement("b", {
-      className: "block text-[9px] text-[#703d92] leading-tight mt-0.5 truncate"
-    }, value)))));
-  })()), React.createElement("div", {
     className: "flex-1 min-h-0 p-3 overflow-y-auto pb-28 bg-[#F8F2E9]"
   }, adminActiveSubMenu === 'produk' && React.createElement("div", {
     className: "space-y-4"
@@ -14437,5 +14437,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cc39cc1e8bf930',t:'MTc4NDMyMjU0Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cc458cd9ed7d50',t:'MTc4NDMyMzAyNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

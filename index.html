@@ -6772,6 +6772,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
       showToast("⚠️ Hubungan produk tidak ditemukan!");
     }
   };
+  const money = v => `Rp ${Number(v || 0).toLocaleString('id-ID')}`;
   const financeRecap = useMemo(() => {
     try {
       const completedOrders = (orders || []).filter(o => o && o.status === 'Selesai');
@@ -6814,7 +6815,8 @@ ${TOKO_HANA_PUBLIC_URL}`;
   }, [cart]);
   const cashLedgerToday = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
-    const list = (cashLedgerEntries || []).filter(e => String(e.created_at || '').slice(0, 10) === today);
+    const ledgerList = Array.isArray(cashLedgerEntries) ? cashLedgerEntries : [];
+    const list = ledgerList.filter(e => e && String(e.created_at || '').slice(0, 10) === today);
     const cashIn = list.filter(e => e.type === 'cash_in').reduce((sum, e) => sum + Number(e.amount || 0), 0);
     const cashOut = list.filter(e => e.type === 'cash_out').reduce((sum, e) => sum + Number(e.amount || 0), 0);
     return {
@@ -6827,7 +6829,7 @@ ${TOKO_HANA_PUBLIC_URL}`;
   const iuranCategories = ['iuran_sampah', 'keamanan'];
   const cashLedgerDuplicateWarning = useMemo(() => {
     if (cashLedgerForm.type !== 'cash_out' || !iuranCategories.includes(cashLedgerForm.category)) return null;
-    const sameCategory = (cashLedgerEntries || []).filter(e => e && e.type === 'cash_out' && e.category === cashLedgerForm.category);
+    const sameCategory = (Array.isArray(cashLedgerEntries) ? cashLedgerEntries : []).filter(e => e && e.type === 'cash_out' && e.category === cashLedgerForm.category);
     if (!sameCategory.length) return null;
     const period = String(cashLedgerForm.period_label || '').trim().toLowerCase();
     let found = null;
@@ -7004,7 +7006,8 @@ ${TOKO_HANA_PUBLIC_URL}`;
     setShiftStatusMessage(`✅ Shift ditutup. Selisih kas: Rp ${(closingCash - expected).toLocaleString('id-ID')}.`);
   };
   const activeCustomerDebts = useMemo(() => {
-    return (customerDebts || []).filter(d => d && ['unpaid', 'partial'].includes(d.status)).slice(0, 50);
+    const debtList = Array.isArray(customerDebts) ? customerDebts : [];
+    return debtList.filter(d => d && ['unpaid', 'partial'].includes(d.status)).slice(0, 50);
   }, [customerDebts]);
   const handleAddCustomerDebt = async () => {
     const amount = parseRupiahInput(debtForm.amount);
@@ -13716,5 +13719,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb7604eea049f3',t:'MTc4NDMxNDUyNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb80534f5749f3',t:'MTc4NDMxNDk0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

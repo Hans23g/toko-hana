@@ -7667,6 +7667,18 @@ ${note ? `<div class="note">${note}</div>` : ''}
     });
     const weekMiniMax = Math.max(1, ...weekMiniBars.map(b => b.total || 0));
     const maxBar = Math.max(1, ...bars.map(b => b.total || 0));
+    const yearTotal = bars.reduce((sum, b) => sum + Number(b.total || 0), 0);
+    const monthAverage = Math.round(yearTotal / 12);
+    const maxMonth = bars.reduce((best, b) => (b.total || 0) > (best.total || 0) ? b : best, bars[0] || {
+      month: 1,
+      total: 0
+    });
+    const nonZeroBars = bars.filter(b => (b.total || 0) > 0);
+    const minMonth = nonZeroBars.length ? nonZeroBars.reduce((low, b) => (b.total || 0) < (low.total || 0) ? b : low, nonZeroBars[0]) : {
+      month: now.getMonth() + 1,
+      total: 0
+    };
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     const todayWheelPct = Math.min(100, Math.round((financeRecap?.omzetHariIni || 0) / Math.max(financeRecap?.omzetMingguan || 1, 1) * 100));
     const channelTotal = Math.max((financeRecap?.omzetOnline || 0) + (financeRecap?.omzetOffline || 0), 1);
     const onlineWheelPct = Math.min(100, Math.round((financeRecap?.omzetOnline || 0) / channelTotal * 100));
@@ -7976,26 +7988,70 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, money(financeRecap?.omzetOffline)), React.createElement("span", {
       className: "text-[9px] text-amber-500 font-bold"
     }, financeRecap?.countOffline || 0, " transaksi")))), React.createElement("div", {
-      className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
+      className: "bg-white/95 rounded-3xl p-3 border border-amber-100/70 shadow-sm overflow-hidden relative"
     }, React.createElement("div", {
-      className: "flex items-center justify-between mb-2"
+      className: "absolute -right-10 -top-10 w-28 h-28 rounded-full bg-[#FFD700]/10 blur-sm pointer-events-none"
+    }), React.createElement("div", {
+      className: "relative flex items-start justify-between gap-2 mb-2"
+    }, React.createElement("div", {
+      className: "min-w-0"
     }, React.createElement("span", {
-      className: "text-[9px] text-[#703d92] uppercase tracking-widest font-black"
-    }, "Grafik 12 Bulan"), React.createElement("span", {
-      className: "text-[8px] text-gray-400 font-bold"
-    }, "per bulan")), React.createElement("div", {
-      className: "flex items-end gap-1 h-24"
-    }, bars.map((bar, idx) => React.createElement("div", {
-      key: bar.date || idx,
-      className: "flex-1 h-full flex flex-col items-center justify-end gap-1"
+      className: "block text-[9px] text-[#703d92] uppercase tracking-widest font-black"
+    }, "Peta Tahun Warung"), React.createElement("span", {
+      className: "block text-[9px] text-gray-400 font-bold leading-snug"
+    }, "12 bulan napas omzet Toko Hana")), React.createElement("div", {
+      className: "text-right flex-shrink-0"
+    }, React.createElement("span", {
+      className: "block text-[8px] text-gray-400 font-black uppercase"
+    }, "Total ", year), React.createElement("b", {
+      className: "block text-[12px] text-[#703d92] leading-tight"
+    }, money(yearTotal)))), React.createElement("div", {
+      className: "relative h-28 rounded-2xl bg-gradient-to-b from-purple-50/60 to-amber-50/35 border border-purple-50 px-2 pt-3 pb-2"
     }, React.createElement("div", {
-      className: "w-full rounded-t-xl bg-gradient-to-t from-[#703d92] to-[#D4AF37] min-h-[6px] shadow-sm",
-      style: {
-        height: `${Math.max(6, (bar.total || 0) / maxBar * 72)}px`
-      }
-    }), React.createElement("span", {
-      className: "text-[7px] font-black text-gray-400"
-    }, bar.day))))), React.createElement("div", {
+      className: "absolute left-2 right-2 top-[42%] border-t border-dashed border-[#D4AF37]/45"
+    }), React.createElement("div", {
+      className: "relative flex items-end gap-1 h-full"
+    }, bars.map((bar, idx) => {
+      const isCurrent = idx === now.getMonth();
+      const isBest = bar.month === maxMonth.month && (bar.total || 0) > 0;
+      const h = Math.max(6, (bar.total || 0) / maxBar * 76);
+      return React.createElement("div", {
+        key: bar.month,
+        className: "flex-1 h-full flex flex-col items-center justify-end gap-1",
+        title: `${monthNames[idx]}: ${money(bar.total)}`
+      }, isBest && React.createElement("span", {
+        className: "text-[8px] leading-none"
+      }, "🏆"), React.createElement("div", {
+        className: `w-full rounded-t-xl shadow-sm transition-all ${isCurrent ? 'bg-gradient-to-t from-[#D4AF37] to-[#FFD700] ring-1 ring-[#D4AF37]/60' : isBest ? 'bg-gradient-to-t from-emerald-500 to-[#FFD700]' : (bar.total || 0) > 0 ? 'bg-gradient-to-t from-[#703d92] to-[#BFA2DB]' : 'bg-gray-100'}`,
+        style: {
+          height: `${h}px`
+        }
+      }), React.createElement("span", {
+        className: `text-[7px] font-black ${isCurrent ? 'text-[#B8860B]' : 'text-gray-400'}`
+      }, monthNames[idx]));
+    }))), React.createElement("div", {
+      className: "grid grid-cols-2 gap-2 mt-2"
+    }, React.createElement("div", {
+      className: "rounded-2xl bg-purple-50 border border-purple-100 p-2"
+    }, React.createElement("span", {
+      className: "block text-[8px] font-black text-[#703d92] uppercase"
+    }, "Rata-rata/bulan"), React.createElement("b", {
+      className: "text-[12px] text-[#703d92]"
+    }, money(monthAverage))), React.createElement("div", {
+      className: "rounded-2xl bg-emerald-50 border border-emerald-100 p-2"
+    }, React.createElement("span", {
+      className: "block text-[8px] font-black text-emerald-700 uppercase"
+    }, "Bulan teramai"), React.createElement("b", {
+      className: "text-[12px] text-emerald-700"
+    }, monthNames[(maxMonth.month || 1) - 1], " • ", money(maxMonth.total))), React.createElement("div", {
+      className: "rounded-2xl bg-amber-50 border border-amber-100 p-2 col-span-2"
+    }, React.createElement("span", {
+      className: "block text-[8px] font-black text-amber-700 uppercase"
+    }, "Bulan paling tenang"), React.createElement("b", {
+      className: "text-[12px] text-amber-700"
+    }, monthNames[(minMonth.month || 1) - 1], " • ", money(minMonth.total)), React.createElement("span", {
+      className: "block text-[8px] text-amber-600 font-semibold"
+    }, "Bukan sepi untuk disesali, tapi tanda kapan warung perlu disapa lebih hangat ☕")))), React.createElement("div", {
       className: "bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 rounded-2xl p-3 text-[10px] text-orange-700 font-semibold leading-relaxed"
     }, "Catatan jujur: omzet, kas nyata, piutang, dan catatan laci sengaja dipisah agar warung tidak bingung. Laba bersih akan makin akurat setelah modal, susut, kemasan, dan barang titipan lengkap."), React.createElement("div", {
       className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
@@ -13417,5 +13473,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ca9c3c4ef27b14',t:'MTc4NDMwNTYwNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

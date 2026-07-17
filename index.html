@@ -513,6 +513,14 @@ Check your Browserslist config to be sure that your targets are set up correctly
     }
     window.__showCQError = showCQError;
     window.addEventListener('error', function(e){
+      var msg = String((e && e.message) || '');
+      var file = String((e && e.filename) || '');
+      // Cloudflare/Arena preview kadang menyuntik script analytics. Saat CQ dibuka dari file/origin null,
+      // beacon analytics itu error sendiri. Ini bukan error Toko Hana, jadi jangan tampilkan layar merah.
+      if(file.indexOf('cloudflareinsights.com') !== -1 || file.indexOf('beacon.min.js') !== -1 || msg.indexOf('Beacons are only supported over HTTP') !== -1){
+        console.warn('Ignored external analytics error:', msg);
+        return;
+      }
       var detail = (e && (e.message || e.error)) || 'unknown';
       if(e && e.error && e.error.stack) detail = e.error.stack;
       detail += '\n\nLine: ' + ((e && e.lineno) || '') + ' Column: ' + ((e && e.colno) || '');
@@ -520,6 +528,11 @@ Check your Browserslist config to be sure that your targets are set up correctly
     });
     window.addEventListener('unhandledrejection', function(e){
       var reason = e && e.reason;
+      var reasonText = String((reason && (reason.message || reason.stack)) || reason || '');
+      if(reasonText.indexOf('cloudflareinsights.com') !== -1 || reasonText.indexOf('beacon.min.js') !== -1 || reasonText.indexOf('Beacons are only supported over HTTP') !== -1){
+        console.warn('Ignored external analytics promise error:', reasonText);
+        return;
+      }
       var detail = reason && reason.stack ? reason.stack : (reason && reason.message ? reason.message : reason);
       showCQError('Async error', detail || 'unknown promise error');
     });
@@ -13702,6 +13715,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb7030cf488198',t:'MTc4NDMxNDI4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb7604eea049f3',t:'MTc4NDMxNDUyNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

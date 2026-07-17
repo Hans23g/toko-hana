@@ -506,11 +506,22 @@ Check your Browserslist config to be sure that your targets are set up correctly
 <body>
   <div id="root" class="w-full max-w-md bg-[#F5F3F7] min-h-screen shadow-[0_0_60px_rgba(0,0,0,0.85)] flex flex-col relative overflow-hidden sm:rounded-3xl my-0 sm:my-4 sm:border-8 sm:border-neutral-900 mx-auto"></div>
   <script>
-    window.addEventListener('error', function(e){
+    function showCQError(title, detail){
       var root = document.getElementById('root');
-      if(root && !root.innerHTML){
-        root.innerHTML = '<div class="cq-error"><b>App error:</b>\n' + (e.message || e.error || 'unknown') + '\n\nLine: ' + (e.lineno||'') + '</div>';
-      }
+      if(!root) return;
+      root.innerHTML = '<div class="cq-error"><b>' + title + ':</b>\n' + String(detail || 'unknown') + '</div>';
+    }
+    window.__showCQError = showCQError;
+    window.addEventListener('error', function(e){
+      var detail = (e && (e.message || e.error)) || 'unknown';
+      if(e && e.error && e.error.stack) detail = e.error.stack;
+      detail += '\n\nLine: ' + ((e && e.lineno) || '') + ' Column: ' + ((e && e.colno) || '');
+      showCQError('App error', detail);
+    });
+    window.addEventListener('unhandledrejection', function(e){
+      var reason = e && e.reason;
+      var detail = reason && reason.stack ? reason.stack : (reason && reason.message ? reason.message : reason);
+      showCQError('Async error', detail || 'unknown promise error');
     });
     document.addEventListener('focusin', function(e){
       if(e.target && e.target.matches && e.target.matches('input, textarea, select')){
@@ -7147,15 +7158,29 @@ ${note ? `<div class="note">${note}</div>` : ''}
 <div class="center small" style="margin-top:12px">Senyum penjaga warung adalah fitur pertama.</div>
 <div class="no-print center" style="margin-top:16px"><button onclick="window.print()" style="background:#703d92;color:white;border:0;border-radius:12px;padding:10px 14px;font-weight:800">Cetak / Simpan PDF</button></div>
 </div><script>setTimeout(function(){try{window.print()}catch(e){}},350)<\/script></body></html>`;
-    const win = window.open('', '_blank');
-    if (!win) {
-      showToast(lang === 'id' ? 'Popup struk diblokir. Izinkan popup browser untuk mencetak struk.' : 'Receipt popup blocked. Please allow popups to print receipt.');
-      return;
+    try {
+      const win = window.open('', '_blank');
+      if (!win) {
+        showToast(lang === 'id' ? 'Popup struk diblokir. Izinkan popup browser untuk mencetak struk.' : 'Receipt popup blocked. Please allow popups to print receipt.');
+        return;
+      }
+      try {
+        win.document.open();
+        win.document.write(html);
+        win.document.close();
+      } catch (docError) {
+        try {
+          win.close();
+        } catch (e) {}
+        const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
+        const fallbackWin = window.open(dataUrl, '_blank');
+        if (!fallbackWin) throw docError;
+      }
+      showToast(lang === 'id' ? `🧾 Struk ${order.id} siap dicetak.` : `🧾 Receipt ${order.id} is ready to print.`);
+    } catch (printError) {
+      console.warn('Print receipt skipped:', printError);
+      showToast(lang === 'id' ? 'Browser membatasi jendela struk di mode preview. Coba buka file CQ langsung di Chrome lalu cetak lagi.' : 'Browser blocked the receipt window in preview mode. Open the CQ file directly in Chrome and print again.');
     }
-    win.document.open();
-    win.document.write(html);
-    win.document.close();
-    showToast(lang === 'id' ? `🧾 Struk ${order.id} siap dicetak.` : `🧾 Receipt ${order.id} is ready to print.`);
   };
   const handleCashierSetRewardDiscount = order => {
     if (!order) return;
@@ -13658,14 +13683,25 @@ ${note ? `<div class="note">${note}</div>` : ''}
 }
 
 try {
+  class CQErrorBoundary extends React.Component {
+    constructor(props){ super(props); this.state = { error: null, info: null }; }
+    componentDidCatch(error, info){ this.setState({ error: error, info: info }); }
+    render(){
+      if(this.state.error){
+        var detail = (this.state.error && this.state.error.stack ? this.state.error.stack : this.state.error) + '\n\nComponent stack:\n' + ((this.state.info && this.state.info.componentStack) || '');
+        return React.createElement('div', { className: 'cq-error' }, React.createElement('b', null, 'Render error:'), '\n' + detail);
+      }
+      return this.props.children;
+    }
+  }
   const container = document.getElementById('root');
   const root = ReactDOM.createRoot(container);
-  root.render(React.createElement(App));
+  root.render(React.createElement(CQErrorBoundary, null, React.createElement(App)));
 } catch (e) {
   const container = document.getElementById('root');
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb63a6cacd8198',t:'MTc4NDMxMzc3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cb7030cf488198',t:'MTc4NDMxNDI4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

@@ -7689,6 +7689,30 @@ ${note ? `<div class="note">${note}</div>` : ''}
     const monthLedger = (cashLedgerEntries || []).filter(e => isThisMonth(e.created_at));
     const monthCashOut = monthLedger.filter(e => e.type === 'cash_out').reduce((sum, e) => sum + Number(e.amount || 0), 0);
     const realCashToday = cashOrderToday + qrisOrderToday + ledgerCashInToday - ledgerCashOutToday;
+    const flowTotal = Math.max(cashOrderToday + qrisOrderToday + debtPaidToday + otherCashInToday + ledgerCashOutToday, 1);
+    const pct = v => Math.round(Number(v || 0) / flowTotal * 100);
+    let flowDeg = 0;
+    const flowConic = [{
+      value: cashOrderToday,
+      color: '#16a34a'
+    }, {
+      value: qrisOrderToday,
+      color: '#2563eb'
+    }, {
+      value: debtPaidToday,
+      color: '#703d92'
+    }, {
+      value: otherCashInToday,
+      color: '#d97706'
+    }, {
+      value: ledgerCashOutToday,
+      color: '#dc2626'
+    }].map(seg => {
+      const start = flowDeg;
+      const end = flowDeg + seg.value / flowTotal * 360;
+      flowDeg = end;
+      return `${seg.color} ${start}deg ${end}deg`;
+    }).join(', ');
     return React.createElement("div", {
       className: "space-y-3 text-xs"
     }, React.createElement("div", {
@@ -7702,14 +7726,27 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, "laporan jujur")), React.createElement("p", {
       className: "text-[10px] text-gray-500 font-semibold mt-1 leading-relaxed"
     }, "Omzet, kas nyata, piutang, dan catatan laci dipisah agar warung tahu uangnya berjalan ke mana. Grafik boleh indah, tapi laporan tetap harus jujur ☕")), React.createElement("div", {
-      className: "bg-white/95 rounded-2xl p-3 border border-emerald-100 shadow-sm"
+      className: "bg-white/95 rounded-3xl p-3 border border-emerald-100 shadow-sm"
     }, React.createElement("div", {
-      className: "flex items-center justify-between gap-2 mb-2"
+      className: "flex items-center justify-between gap-3 mb-3"
+    }, React.createElement("div", {
+      className: "min-w-0"
     }, React.createElement("span", {
-      className: "text-[9px] text-emerald-700 uppercase tracking-widest font-black"
+      className: "block text-[9px] text-emerald-700 uppercase tracking-widest font-black"
     }, "Kas Nyata Hari Ini"), React.createElement("span", {
-      className: "text-[8px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-full font-black"
-    }, "uang benar-benar bergerak")), React.createElement("div", {
+      className: "block text-[9px] text-gray-400 font-bold leading-snug"
+    }, "uang yang benar-benar masuk/keluar, bukan sekadar omzet")), React.createElement("div", {
+      className: "w-16 h-16 rounded-full relative flex-shrink-0 shadow-inner",
+      style: {
+        background: `conic-gradient(${flowConic})`
+      }
+    }, React.createElement("div", {
+      className: "absolute inset-[7px] rounded-full bg-white flex flex-col items-center justify-center"
+    }, React.createElement("span", {
+      className: "text-[7px] font-black text-gray-400 leading-none"
+    }, "Kas"), React.createElement("span", {
+      className: "text-[9px] font-black text-[#703d92] leading-none mt-0.5"
+    }, "Nyata")))), React.createElement("div", {
       className: "grid grid-cols-2 gap-2"
     }, React.createElement("div", {
       className: "rounded-2xl bg-emerald-50 border border-emerald-100 p-2"
@@ -7717,25 +7754,33 @@ ${note ? `<div class="note">${note}</div>` : ''}
       className: "block text-[8px] font-black text-emerald-700 uppercase"
     }, "Cash Order"), React.createElement("b", {
       className: "text-[13px] text-emerald-700"
-    }, money(cashOrderToday))), React.createElement("div", {
+    }, money(cashOrderToday)), React.createElement("span", {
+      className: "block text-[8px] text-emerald-600 font-black"
+    }, pct(cashOrderToday), "%")), React.createElement("div", {
       className: "rounded-2xl bg-blue-50 border border-blue-100 p-2"
     }, React.createElement("span", {
       className: "block text-[8px] font-black text-blue-700 uppercase"
     }, "QRIS Order"), React.createElement("b", {
       className: "text-[13px] text-blue-700"
-    }, money(qrisOrderToday))), React.createElement("div", {
+    }, money(qrisOrderToday)), React.createElement("span", {
+      className: "block text-[8px] text-blue-600 font-black"
+    }, pct(qrisOrderToday), "%")), React.createElement("div", {
       className: "rounded-2xl bg-purple-50 border border-purple-100 p-2"
     }, React.createElement("span", {
       className: "block text-[8px] font-black text-[#703d92] uppercase"
     }, "Bayar Piutang"), React.createElement("b", {
       className: "text-[13px] text-[#703d92]"
-    }, money(debtPaidToday))), React.createElement("div", {
+    }, money(debtPaidToday)), React.createElement("span", {
+      className: "block text-[8px] text-[#703d92] font-black"
+    }, pct(debtPaidToday), "%")), React.createElement("div", {
       className: "rounded-2xl bg-red-50 border border-red-100 p-2"
     }, React.createElement("span", {
       className: "block text-[8px] font-black text-red-700 uppercase"
-    }, "Uang Keluar Laci"), React.createElement("b", {
+    }, "Keluar Laci"), React.createElement("b", {
       className: "text-[13px] text-red-700"
-    }, "-", money(ledgerCashOutToday)))), React.createElement("div", {
+    }, "-", money(ledgerCashOutToday)), React.createElement("span", {
+      className: "block text-[8px] text-red-600 font-black"
+    }, pct(ledgerCashOutToday), "%"))), React.createElement("div", {
       className: "mt-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-[#703d92] text-white p-2.5"
     }, React.createElement("span", {
       className: "block text-[8px] font-black uppercase tracking-wider text-white/75"
@@ -13292,5 +13337,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ca69472e98feae',t:'MTc4NDMwMzUxOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ca75a1ca03fd38',t:'MTc4NDMwNDAyNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

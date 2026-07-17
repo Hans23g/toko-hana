@@ -12750,7 +12750,27 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "bg-emerald-600 text-white rounded-full px-3 py-1.5 text-[9px] font-black active:scale-95"
   }, "Refresh")), React.createElement("p", {
     className: "text-[9px] text-gray-500 font-semibold mb-2"
-  }, "Bon dari kasir masuk ke sini untuk direstok. Klik Review/Edit, koreksi baris, lalu Terapkan Restok & Selesai. Setelah selesai bon otomatis hilang dari daftar aktif."), bonAgenSubmitStatus && React.createElement("div", {
+  }, "Bon dari kasir masuk ke sini untuk direstok. Klik Review/Edit, koreksi baris, lalu Terapkan Restok & Selesai. Setelah selesai bon otomatis hilang dari daftar aktif."), React.createElement("div", {
+    className: "grid grid-cols-3 gap-1.5 mb-2"
+  }, React.createElement("div", {
+    className: "rounded-2xl bg-amber-50 border border-amber-100 p-2"
+  }, React.createElement("span", {
+    className: "block text-[7.5px] font-black text-amber-700 uppercase"
+  }, "Menunggu"), React.createElement("b", {
+    className: "text-[12px] text-amber-700"
+  }, bonAgenSubmissions.filter(x => x && !['cancelled', 'applied'].includes(x.status) && (x.status === 'submitted' || !x.status)).length)), React.createElement("div", {
+    className: "rounded-2xl bg-blue-50 border border-blue-100 p-2"
+  }, React.createElement("span", {
+    className: "block text-[7.5px] font-black text-blue-700 uppercase"
+  }, "Review"), React.createElement("b", {
+    className: "text-[12px] text-blue-700"
+  }, bonAgenSubmissions.filter(x => x && x.status === 'reviewing').length)), React.createElement("div", {
+    className: "rounded-2xl bg-emerald-50 border border-emerald-100 p-2"
+  }, React.createElement("span", {
+    className: "block text-[7.5px] font-black text-emerald-700 uppercase"
+  }, "Disetujui"), React.createElement("b", {
+    className: "text-[12px] text-emerald-700"
+  }, bonAgenSubmissions.filter(x => x && x.status === 'approved').length))), bonAgenSubmitStatus && React.createElement("div", {
     className: `mb-2 rounded-2xl px-3 py-2 text-[10px] font-bold leading-relaxed ${bonAgenSubmitStatus.includes('❌') || bonAgenSubmitStatus.includes('⚠️') ? 'bg-red-50 text-red-700 border border-red-100' : bonAgenSubmitStatus.includes('⏳') || bonAgenSubmitStatus.includes('🔄') ? 'bg-amber-50 text-amber-700 border border-amber-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'}`
   }, bonAgenSubmitStatus), lastRestockSummary && React.createElement("div", {
     className: "mb-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-[10px] text-emerald-800 shadow-sm"
@@ -12781,16 +12801,16 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "rounded-2xl border border-dashed border-emerald-100 bg-emerald-50/35 p-3 text-center text-[10px] text-gray-500 font-semibold leading-relaxed"
   }, "Belum ada bon yang perlu direstok. Bon yang sudah diterapkan/diarsipkan tidak tampil di sini ☕") : bonAgenSubmissions.filter(item => !['cancelled', 'applied'].includes(item.status)).map(item => React.createElement("div", {
     key: item.id,
-    className: "rounded-2xl border border-emerald-100 bg-emerald-50/40 p-2.5"
+    className: `rounded-2xl border p-2.5 ${item.status === 'reviewing' ? 'border-blue-100 bg-blue-50/45' : item.status === 'approved' ? 'border-emerald-100 bg-emerald-50/55' : 'border-amber-100 bg-amber-50/45'}`
   }, React.createElement("div", {
     className: "flex items-center justify-between gap-2"
   }, React.createElement("div", {
     className: "font-black text-[#2d1242] text-[11px] truncate"
   }, item.supplier_name || 'Agen Warung'), React.createElement("span", {
-    className: "text-[8px] font-black bg-white text-emerald-700 border border-emerald-100 rounded-full px-2 py-0.5"
-  }, item.status)), React.createElement("div", {
+    className: `text-[8px] font-black bg-white border rounded-full px-2 py-0.5 ${item.status === 'reviewing' ? 'text-blue-700 border-blue-100' : item.status === 'approved' ? 'text-emerald-700 border-emerald-100' : 'text-amber-700 border-amber-100'}`
+  }, item.status === 'reviewing' ? 'direview' : item.status === 'approved' ? 'disetujui' : 'menunggu')), React.createElement("div", {
     className: "text-[9px] text-gray-500 font-semibold mt-1"
-  }, "Total bon Rp ", Number(item.total_amount || 0).toLocaleString('id-ID'), " • dari ", item.submitted_by_name || item.submitted_by_role || 'Kasir'), React.createElement("div", {
+  }, "Total bon Rp ", Number(item.total_amount || 0).toLocaleString('id-ID'), " • ", Array.isArray(item.parsed_items) ? item.parsed_items.length : 0, " item • dari ", item.submitted_by_name || item.submitted_by_role || 'Kasir', item.created_at ? ` • ${new Date(item.created_at).toLocaleString('id-ID')}` : ''), React.createElement("div", {
     className: "mt-1 text-[9px] text-gray-600 bg-white rounded-xl px-2 py-1 max-h-16 overflow-hidden whitespace-pre-line"
   }, item.raw_text || '-'), item.status === 'reviewing' && (() => {
     const rows = Array.isArray(item.parsed_items) ? item.parsed_items : [];
@@ -12892,11 +12912,27 @@ ${note ? `<div class="note">${note}</div>` : ''}
     type: "button",
     onClick: () => handleUpdateBonAgenStatus(item.id, 'cancelled'),
     className: "rounded-xl py-1.5 text-[8px] font-black bg-red-50 text-red-600"
-  }, "Arsipkan")), item.status === 'reviewing' && React.createElement("button", {
+  }, "Arsipkan")), item.status === 'reviewing' && React.createElement("div", {
+    className: "mt-2 rounded-2xl bg-white border border-purple-100 p-2 space-y-1.5"
+  }, React.createElement("div", {
+    className: "text-[8px] font-black text-[#703d92] uppercase tracking-wider"
+  }, "Checklist admin sebelum restok"), [["Nama barang sudah cocok", "jangan sampai barang mirip tertukar"], ["Qty masuk benar", "dus/renceng/pcs sudah diterjemahkan"], ["Harga modal dicek", "modal per unit masuk akal"], ["Stok lama + stok baru masuk akal", "admin tetap memutuskan"]].map(([title, desc]) => React.createElement("label", {
+    key: title,
+    className: "flex items-start gap-2 rounded-xl bg-purple-50/50 border border-purple-50 px-2 py-1.5 text-[8.5px] text-gray-600 font-semibold leading-snug"
+  }, React.createElement("input", {
+    type: "checkbox",
+    className: "mt-0.5 accent-[#703d92]"
+  }), React.createElement("span", null, React.createElement("b", {
+    className: "block text-[#2d1242] text-[9px]"
+  }, title), React.createElement("span", {
+    className: "block text-gray-400"
+  }, desc)))), React.createElement("div", {
+    className: "rounded-xl bg-amber-50 border border-amber-100 px-2 py-1 text-[8.5px] text-amber-700 font-bold leading-snug"
+  }, "Terapkan restok hanya setelah admin cek. Sistem membantu membaca bon, admin tetap memutuskan ☕"), React.createElement("button", {
     type: "button",
     onClick: () => handleApplyBonAgenRestock(item),
-    className: "w-full mt-2 bg-[#703d92] text-white rounded-xl py-2 text-[9px] font-black active:scale-95"
-  }, "Terapkan Restok & Selesai"))))), React.createElement("div", {
+    className: "w-full bg-[#703d92] text-white rounded-xl py-2 text-[9px] font-black active:scale-95"
+  }, "Terapkan Restok & Selesai")))))), React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3 flex items-center gap-1.5"
@@ -14089,6 +14125,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cbf76da984d3c6',t:'MTc4NDMxOTgyOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cc05b208a1d3c6',t:'MTc4NDMyMDQxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

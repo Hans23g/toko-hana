@@ -11576,16 +11576,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "w-5 h-5 object-contain drop-shadow-sm flex-shrink-0"
   }), React.createElement("span", {
     className: "font-black text-[#FFD700] text-[12px] uppercase tracking-[0.12em] truncate"
-  }, lang === 'id' ? 'Kartu Member Toko Hana' : 'Toko Hana Member Card')), React.createElement("span", {
-    className: "bg-[#FFD700]/18 border border-[#FFD700]/45 text-[#FFD700] font-black text-[8px] px-2 py-0.5 rounded-md backdrop-blur-sm"
-  }, loyaltyLevel.emoji, " ", loyaltyLevel.name)), React.createElement("div", {
-    className: "relative flex items-center gap-3"
+  }, lang === 'id' ? 'Kartu Member Toko Hana' : 'Toko Hana Member Card'))), React.createElement("div", {
+    className: "relative flex items-center gap-3.5"
   }, React.createElement("div", {
-    className: "flex-shrink-0 relative"
+    className: "flex-shrink-0 relative pb-2"
   }, React.createElement("div", {
-    className: "w-[54px] h-[54px] rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#FFD700] to-[#D4AF37] p-[3px] shadow-lg shadow-black/30"
-  }, React.createElement("div", {
-    className: "w-full h-full rounded-full bg-gradient-to-tr from-[#8e51b8] to-[#703d92] flex items-center justify-center border-2 border-[#2d1242]/40 overflow-hidden"
+    className: "w-[76px] h-[76px] rounded-[22px] bg-white/10 shadow-[0_12px_24px_rgba(0,0,0,0.28)] overflow-hidden flex items-center justify-center"
   }, memberProfilePhoto && !profilePhotoBroken ? React.createElement("img", {
     src: memberProfilePhoto,
     alt: `Foto ${currentUser.name || 'member Toko Hana'}`,
@@ -11593,16 +11589,16 @@ ${note ? `<div class="note">${note}</div>` : ''}
     referrerPolicy: "no-referrer",
     onError: () => setProfilePhotoBroken(true)
   }) : React.createElement("span", {
-    className: "text-[27px] leading-none select-none",
+    className: "text-[38px] leading-none select-none",
     style: {
       transform: 'translateY(2px)'
     }
-  }, avatarGender === 'wanita' ? '👩🏻' : '👨🏻'))), React.createElement("span", {
-    className: "absolute -bottom-1 -right-1 w-5 h-5 bg-[#2d1242] border-2 border-[#FFD700] rounded-full flex items-center justify-center text-[10px] shadow-md"
-  }, loyaltyLevel.emoji)), React.createElement("div", {
+  }, avatarGender === 'wanita' ? '👩🏻' : '👨🏻')), React.createElement("span", {
+    className: "absolute bottom-0 left-1/2 -translate-x-1/2 bg-[#2d1242]/90 text-[#FFD700] rounded-full px-2.5 py-1 text-[8px] leading-none font-black whitespace-nowrap shadow-lg backdrop-blur-md"
+  }, loyaltyLevel.emoji, " ", loyaltyLevel.name)), React.createElement("div", {
     className: "flex-1 min-w-0"
   }, React.createElement("h3", {
-    className: "font-semibold text-[12px] text-white/95 truncate leading-tight drop-shadow-sm"
+    className: "font-bold text-[13.5px] text-white truncate leading-tight drop-shadow-sm"
   }, currentUser.name), React.createElement("p", {
     className: "text-[7.5px] text-[#FFD700]/85 font-bold uppercase tracking-wider mb-1"
   }, lang === 'id' ? '☕ Member Resmi Toko Hana' : '☕ Toko Hana Official Member'), React.createElement("div", {
@@ -14706,5 +14702,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d301eddf74f8f0',t:'MTc4NDM5MzY1OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

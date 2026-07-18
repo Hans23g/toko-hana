@@ -3553,7 +3553,7 @@ function App() {
     offset: "1",
     stopColor: "#D4AF37"
   })))), React.createElement("h3", {
-    className: "font-black text-[#703d92] text-[13px] uppercase tracking-wider flex-shrink-0"
+    className: `font-black text-[13px] uppercase tracking-wider flex-shrink-0 ${darkMode ? 'text-[#FFD76A]' : 'text-[#703d92]'}`
   }, title), React.createElement("svg", {
     width: "16",
     height: "20",
@@ -8973,13 +8973,13 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: () => setActiveBannerIndex(idx),
     className: `w-2 h-2 rounded-full transition-all duration-300 ${idx === activeBannerIndex ? 'bg-amber-400 w-4' : 'bg-white/45'}`
   })))) : null, currentTab === 'Home' && React.createElement("div", {
-    className: "sticky top-0 z-20 bg-white/76 backdrop-blur-md border-b border-purple-50 py-1.5 shadow-[0_6px_18px_rgba(112,61,146,0.06)]"
+    className: `sticky top-0 z-20 backdrop-blur-md border-b py-1.5 transition-colors duration-300 ${darkMode ? 'bg-[#190d26]/95 border-[#6f4b82]/25 shadow-[0_7px_20px_rgba(0,0,0,0.28)]' : 'bg-white/76 border-purple-50 shadow-[0_6px_18px_rgba(112,61,146,0.06)]'}`
   }, React.createElement("div", {
     className: "flex overflow-x-auto pl-2 pr-4 gap-[10px] no-scrollbar scroll-smooth"
   }, React.createElement("button", {
     type: "button",
     onClick: () => setSelectedCategory('Semua'),
-    className: `relative w-[64px] min-w-[64px] flex-shrink-0 rounded-xl border px-1 py-1 text-center transition-all active:scale-95 overflow-hidden ${selectedCategory === 'Semua' ? 'border-[#FFD700] bg-gradient-to-b from-amber-50 to-white shadow-sm ring-1 ring-[#FFD700]/45' : 'border-white/70 bg-white/78 backdrop-blur-sm shadow-sm'}`
+    className: `relative w-[64px] min-w-[64px] flex-shrink-0 rounded-xl border px-1 py-1 text-center transition-all active:scale-95 overflow-hidden ${selectedCategory === 'Semua' ? darkMode ? 'border-[#FFD700]/75 bg-[#332044] shadow-md ring-1 ring-[#FFD700]/35' : 'border-[#FFD700] bg-gradient-to-b from-amber-50 to-white shadow-sm ring-1 ring-[#FFD700]/45' : darkMode ? 'border-white/10 bg-white/[0.055] shadow-sm' : 'border-white/70 bg-white/78 backdrop-blur-sm shadow-sm'}`
   }, React.createElement("div", {
     className: "w-[42px] h-[42px] mx-auto rounded-[14px] flex items-center justify-center mb-1"
   }, React.createElement("img", {
@@ -8987,7 +8987,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     alt: lang === 'id' ? 'Semua kategori Toko Hana' : 'All Toko Hana categories',
     className: `w-full h-full object-contain rounded-[14px] transition-all ${selectedCategory === 'Semua' ? 'scale-[1.04] drop-shadow-[0_4px_7px_rgba(112,61,146,0.32)]' : 'scale-100'}`
   })), React.createElement("span", {
-    className: `block text-[8.5px] font-black leading-tight truncate px-0.5 ${selectedCategory === 'Semua' ? 'text-[#703d92]' : 'text-gray-700'}`
+    className: `block text-[8.5px] font-black leading-tight truncate px-0.5 ${selectedCategory === 'Semua' ? darkMode ? 'text-[#FFD76A]' : 'text-[#703d92]' : darkMode ? 'text-purple-100/85' : 'text-gray-700'}`
   }, lang === 'id' ? 'Semua' : 'All'), selectedCategory === 'Semua' && React.createElement("span", {
     className: "absolute left-2 right-2 bottom-0 h-0.5 rounded-full bg-[#FFD700]"
   })), (categories || []).filter(cat => cat.name !== 'Semua').map((cat, idx) => {
@@ -8996,13 +8996,13 @@ ${note ? `<div class="note">${note}</div>` : ''}
     return React.createElement("button", {
       key: cat.name + '-' + idx,
       onClick: () => setSelectedCategory(cat.name),
-      className: `relative w-[64px] min-w-[64px] flex-shrink-0 rounded-xl border px-1 py-1 text-center transition-all active:scale-95 overflow-hidden ${isActive ? 'border-[#FFD700] bg-gradient-to-b from-amber-50 to-white shadow-sm ring-1 ring-[#FFD700]/45' : 'border-white/70 bg-white/78 backdrop-blur-sm shadow-sm'}`
+      className: `relative w-[64px] min-w-[64px] flex-shrink-0 rounded-xl border px-1 py-1 text-center transition-all active:scale-95 overflow-hidden ${isActive ? darkMode ? 'border-[#FFD700]/75 bg-[#332044] shadow-md ring-1 ring-[#FFD700]/35' : 'border-[#FFD700] bg-gradient-to-b from-amber-50 to-white shadow-sm ring-1 ring-[#FFD700]/45' : darkMode ? 'border-white/10 bg-white/[0.055] shadow-sm' : 'border-white/70 bg-white/78 backdrop-blur-sm shadow-sm'}`
     }, React.createElement("div", {
       className: `w-[42px] h-[42px] mx-auto rounded-[14px] bg-gradient-to-br ${meta.tone} flex items-center justify-center text-[21px] shadow-sm mb-1`
     }, React.createElement("span", {
       className: "leading-none"
     }, meta.emoji)), React.createElement("span", {
-      className: `block text-[8.5px] font-black leading-tight truncate px-0.5 ${isActive ? 'text-[#703d92]' : 'text-gray-700'}`
+      className: `block text-[8.5px] font-black leading-tight truncate px-0.5 ${isActive ? darkMode ? 'text-[#FFD76A]' : 'text-[#703d92]' : darkMode ? 'text-purple-100/85' : 'text-gray-700'}`
     }, translateCategory(cat.name)), isActive && React.createElement("span", {
       className: "absolute left-2 right-2 bottom-0 h-0.5 rounded-full bg-[#FFD700]"
     }));
@@ -9012,7 +9012,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "grid grid-cols-2 gap-2.5 px-3 pb-8"
   }, [1, 2, 3, 4].map(idx => React.createElement("div", {
     key: idx,
-    className: "bg-white rounded-2xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col border border-gray-100/50 p-3.5 space-y-3 animate-pulse"
+    className: `rounded-2xl overflow-hidden flex flex-col border p-3.5 space-y-3 animate-pulse ${darkMode ? 'bg-[#21152d] border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.22)]' : 'bg-white border-gray-100/50 shadow-[0_2px_10px_rgba(0,0,0,0.02)]'}`
   }, React.createElement("div", {
     className: "h-40 bg-purple-50/70 rounded-2xl w-full"
   }), React.createElement("div", {
@@ -9030,11 +9030,11 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, filteredProducts.map(product => React.createElement("div", {
     key: product.id,
     onClick: () => setSelectedProductDetail(product),
-    className: "poster-card bg-[#FFFDF6] overflow-visible flex flex-col hover:shadow-lg transition-all group relative cursor-pointer animate-fade-in",
+    className: `poster-card overflow-visible flex flex-col hover:shadow-lg transition-all group relative cursor-pointer animate-fade-in ${darkMode ? 'bg-[#21152d]' : 'bg-[#FFFDF6]'}`,
     style: {
-      border: '1px solid #eee4c8',
+      border: darkMode ? '1px solid rgba(255,215,112,0.16)' : '1px solid #eee4c8',
       borderRadius: '4px',
-      boxShadow: '0 3px 10px rgba(45,18,66,0.10), 0 1px 3px rgba(45,18,66,0.08)',
+      boxShadow: darkMode ? '0 7px 18px rgba(0,0,0,0.30), 0 1px 0 rgba(255,215,112,0.06)' : '0 3px 10px rgba(45,18,66,0.10), 0 1px 3px rgba(45,18,66,0.08)',
       transform: `rotate(${product.id % 3 === 0 ? -0.8 : product.id % 2 === 0 ? 0.7 : -0.4}deg)`
     }
   }, React.createElement("div", {
@@ -9047,7 +9047,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       borderRight: '1px dashed rgba(255,255,255,0.5)'
     }
   }), React.createElement("div", {
-    className: "relative h-40 bg-gray-50 overflow-hidden"
+    className: `relative h-40 overflow-hidden ${darkMode ? 'bg-[#160b20]' : 'bg-gray-50'}`
   }, React.createElement("img", {
     src: product.image,
     alt: product.name,
@@ -9129,9 +9129,9 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "HARGA HEMAT")))), React.createElement("div", {
     className: "p-3.5 flex-1 flex flex-col justify-between"
   }, React.createElement("div", null, React.createElement("h4", {
-    className: "text-sm font-medium text-gray-800 leading-tight truncate"
+    className: `text-sm font-semibold leading-tight truncate ${darkMode ? 'text-[#FFF8E8]' : 'text-gray-800'}`
   }, product.name), React.createElement("p", {
-    className: "text-[10px] text-gray-400 mt-1 truncate block"
+    className: `text-[10px] mt-1 truncate block ${darkMode ? 'text-purple-200/60' : 'text-gray-400'}`
   }, product.card_label ? `/ ${product.card_label} • ${product.desc || 'Premium selected goods'}` : product.desc || 'Premium selected goods')), React.createElement("div", {
     className: "mt-2 flex flex-col justify-end"
   }, product.original_price && product.original_price > product.price ? React.createElement("div", {
@@ -9139,7 +9139,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, React.createElement("div", {
     className: "flex items-center gap-1.5"
   }, React.createElement("span", {
-    className: "text-[10px] text-gray-400 line-through"
+    className: `text-[10px] line-through ${darkMode ? 'text-purple-200/45' : 'text-gray-400'}`
   }, "Rp ", product.original_price.toLocaleString('id-ID'))), React.createElement("div", {
     className: "flex items-center justify-between gap-1 min-w-0"
   }, React.createElement("span", {
@@ -9179,7 +9179,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, convertRpToPi(product.card_price || product.price).toFixed(4), " π"))), React.createElement("div", {
     className: "flex items-center justify-between mt-1"
   }, React.createElement("span", {
-    className: "text-[9px] text-gray-400 font-semibold"
+    className: `text-[9px] font-semibold ${darkMode ? 'text-purple-200/55' : 'text-gray-400'}`
   }, t('soldLabel'), ": ", product.sold || 0, " | ", t('stockLabel'), ": ", product.stock || 0), React.createElement("button", {
     type: "button",
     onClick: e => {
@@ -9200,17 +9200,17 @@ ${note ? `<div class="note">${note}</div>` : ''}
       transform: 'scaleX(-1)'
     }
   })))))))) : React.createElement("div", {
-    className: "mx-4 mt-6 bg-white rounded-2xl p-8 text-center border border-purple-50"
+    className: `mx-4 mt-6 rounded-2xl p-8 text-center border ${darkMode ? 'bg-[#21152d] border-white/10' : 'bg-white border-purple-50'}`
   }, React.createElement("h4", {
-    className: "font-bold text-sm text-gray-700"
+    className: `font-bold text-sm ${darkMode ? 'text-purple-100' : 'text-gray-700'}`
   }, "Produk Tidak Ditemukan")), currentTab === 'Home' && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
-    className: "-mx-4 -mt-2 mb-5 overflow-hidden bg-white shadow-sm"
+    className: `-mx-4 -mt-2 mb-5 overflow-hidden shadow-sm ${darkMode ? 'bg-[#180d24] border-y border-white/5' : 'bg-white'}`
   }, React.createElement("div", {
     className: "pl-7 pr-5 pt-3 pb-2"
   }, React.createElement("h4", {
-    className: "font-extrabold text-[11px] text-[#703d92] uppercase tracking-wider"
+    className: `font-extrabold text-[11px] uppercase tracking-wider ${darkMode ? 'text-[#FFD76A]' : 'text-[#703d92]'}`
   }, "Etalase Dinamis Promo"), React.createElement("p", {
-    className: "text-[9px] text-gray-400 font-semibold"
+    className: `text-[9px] font-semibold ${darkMode ? 'text-purple-200/55' : 'text-gray-400'}`
   }, "Promo, terlaris, dan barang baru otomatis dari etalase.")), React.createElement("div", {
     className: "relative overflow-hidden pb-3"
   }, React.createElement("div", {
@@ -14742,5 +14742,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d3862bfab4806f',t:'MTc4NDM5OTA3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d392b01fff806f',t:'MTc4NDM5OTU4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

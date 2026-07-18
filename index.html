@@ -13605,14 +13605,20 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "Antar / Input Resi")))))), adminActiveSubMenu === 'pengiriman' && React.createElement("div", {
     className: "space-y-3 text-xs"
   }, selectedOrderToShip && React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
+  }, React.createElement("div", {
+    className: "flex items-start justify-between gap-2 mb-2"
+  }, React.createElement("div", {
+    className: "min-w-0"
   }, React.createElement("h4", {
-    className: "font-extrabold text-[#703d92] mb-3"
+    className: "font-extrabold text-[#703d92] text-xs uppercase tracking-wider"
   }, "Antar Pesanan ", selectedOrderToShip.id), React.createElement("p", {
-    className: "text-[10px] text-gray-500 font-semibold -mt-2 mb-3"
-  }, "Pilih cara antar, isi resi/catatan, lalu tandai pesanan sudah dikirim."), React.createElement("form", {
+    className: "text-[9px] text-gray-500 font-semibold leading-snug mt-0.5"
+  }, "Pilih cara antar, isi resi/catatan, lalu tandai pesanan sudah dikirim.")), React.createElement("span", {
+    className: "text-[8px] font-black text-amber-700 bg-amber-50 border border-amber-100 rounded-full px-2 py-1 flex-shrink-0"
+  }, "Siap Kirim")), React.createElement("form", {
     onSubmit: handleShipOrder,
-    className: "space-y-3"
+    className: "rounded-2xl border border-amber-100 bg-amber-50/25 p-3 space-y-2"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block text-gray-600 font-bold mb-1"
   }, "Pilih kurir / cara antar"), React.createElement("select", {
@@ -13649,40 +13655,48 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }),
     className: "w-full border rounded-xl p-2.5"
   })), React.createElement("div", {
-    className: "flex gap-2 pt-1"
+    className: "grid grid-cols-2 gap-2 pt-1"
   }, React.createElement("button", {
     type: "button",
     onClick: () => setSelectedOrderToShip(null),
-    className: "bg-gray-100 text-gray-600 font-bold py-2.5 px-4 rounded-xl"
+    className: "bg-gray-100 border border-gray-200 text-gray-600 font-black py-2.5 px-4 rounded-xl"
   }, "Batal"), React.createElement("button", {
     type: "submit",
-    className: "flex-1 bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
+    className: "bg-[#703d92] text-white font-black py-2.5 rounded-xl shadow-sm active:scale-[0.99]"
   }, "Catat Pengiriman")))), React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
-  }, React.createElement("h4", {
-    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between gap-2 mb-2"
+  }, React.createElement("div", null, React.createElement("h4", {
+    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider"
   }, "Catatan Pesanan Terkirim"), React.createElement("p", {
-    className: "text-[9px] text-gray-500 font-semibold -mt-2 mb-2"
-  }, "Daftar ini dibuat scroll sendiri agar halaman kirim tetap pendek dan nyaman."), React.createElement("div", {
+    className: "text-[9px] text-gray-500 font-semibold leading-snug"
+  }, "Pengiriman bukan cuma resi, tapi janji terakhir warung sampai ke tangan pelanggan ☕")), React.createElement("span", {
+    className: "text-[8px] font-black text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2 py-1 flex-shrink-0"
+  }, (orders || []).filter(o => o && o.status === 'Selesai' && o.resi).length, " terkirim")), React.createElement("div", {
     className: "space-y-2 max-h-96 overflow-y-auto no-scrollbar pr-1"
   }, (orders || []).filter(o => o && o.status === 'Selesai' && o.resi).map(o => React.createElement("div", {
     key: o.id,
-    className: "p-3 border border-amber-100/70 rounded-2xl bg-[#FFFDF6] space-y-1"
+    className: "p-2.5 border border-emerald-100/70 rounded-2xl bg-emerald-50/25 space-y-1"
   }, React.createElement("div", {
     className: "flex items-center justify-between font-bold"
   }, React.createElement("span", null, o.id), React.createElement("span", {
-    className: "text-green-600 font-black uppercase text-[8px]"
+    className: "text-emerald-700 bg-white border border-emerald-100 rounded-full px-2 py-0.5 font-black uppercase text-[8px]"
   }, "Terkirim")), React.createElement("div", {
     className: "text-[10px] text-gray-600 font-bold"
   }, "Cara antar: ", o.kurir, " | Catatan: ", o.resi), React.createElement("div", {
     className: "text-[10px] text-gray-400"
   }, "Diterima oleh: ", o.customer_name, " (", o.address, ")"))))), React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-emerald-100/70 shadow-sm"
-  }, React.createElement("h4", {
-    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2"
+    className: "bg-white/95 rounded-2xl p-3 border border-emerald-100/70 shadow-sm"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between gap-2 mb-2"
+  }, React.createElement("div", null, React.createElement("h4", {
+    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider"
   }, "Catatan Pesanan Selesai"), React.createElement("p", {
-    className: "text-[9px] text-gray-500 font-semibold -mt-1 mb-2"
-  }, "Pesanan selesai dipindah ke halaman Kirim agar catatan akhir order satu rumah dengan pengiriman."), React.createElement("div", {
+    className: "text-[9px] text-gray-500 font-semibold leading-snug"
+  }, "Arsip akhir order yang sudah ditutup rapi.")), React.createElement("span", {
+    className: "text-[8px] font-black text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2 py-1 flex-shrink-0"
+  }, (orders || []).filter(o => o && o.status === 'Selesai').length, " selesai")), React.createElement("div", {
     className: "space-y-2 max-h-64 overflow-y-auto no-scrollbar pr-1"
   }, (orders || []).filter(o => o && o.status === 'Selesai').length ? (orders || []).filter(o => o && o.status === 'Selesai').slice(0, 20).map(o => React.createElement("div", {
     key: `done-order-${o.id}`,
@@ -14479,5 +14493,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0ca05bac591b7',t:'MTc4NDM3MDM5Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0d70b990691b7',t:'MTc4NDM3MDkzMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

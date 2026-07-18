@@ -7620,32 +7620,30 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, key)))));
   };
   const renderAdminJelajahTabs = () => React.createElement("div", {
-    className: "grid grid-cols-3 gap-1 w-full"
+    className: "grid grid-cols-3 gap-1.5 w-full rounded-2xl bg-gray-50 border border-gray-100 p-1"
   }, React.createElement("button", {
     type: "button",
     onClick: () => setAdminJelajahView('posts'),
-    className: `rounded-xl px-1.5 py-1.5 text-[8.5px] font-black ${adminJelajahView === 'posts' ? 'bg-[#703d92] text-white' : 'bg-purple-50 text-[#703d92]'}`
-  }, "Info Jelajah"), React.createElement("button", {
+    className: `rounded-xl px-1.5 py-2 text-[8.5px] font-black transition-all ${adminJelajahView === 'posts' ? 'bg-[#703d92] text-white shadow-sm' : 'bg-white text-[#703d92] border border-purple-100'}`
+  }, "Info"), React.createElement("button", {
     type: "button",
     onClick: () => setAdminJelajahView('partners'),
-    className: `rounded-xl px-1.5 py-1.5 text-[8.5px] font-black ${adminJelajahView === 'partners' ? 'bg-[#703d92] text-white' : 'bg-purple-50 text-[#703d92]'}`
-  }, "Data Mitra"), React.createElement("button", {
+    className: `rounded-xl px-1.5 py-2 text-[8.5px] font-black transition-all ${adminJelajahView === 'partners' ? 'bg-[#703d92] text-white shadow-sm' : 'bg-white text-[#703d92] border border-purple-100'}`
+  }, "Mitra"), React.createElement("button", {
     type: "button",
     onClick: () => setAdminJelajahView('applications'),
-    className: `relative rounded-xl px-1.5 py-1.5 text-[8.5px] font-black ${adminJelajahView === 'applications' ? 'bg-[#703d92] text-white' : 'bg-amber-50 text-[#703d92]'}`,
+    className: `relative rounded-xl px-1.5 py-2 text-[8.5px] font-black transition-all ${adminJelajahView === 'applications' ? 'bg-[#703d92] text-white shadow-sm' : 'bg-white text-amber-700 border border-amber-100'}`,
     title: "Pendaftaran Mitra Masuk"
-  }, "Mitra Masuk", (partnerApplications || []).filter(a => (a.status || 'new') === 'new').length > 0 && React.createElement("span", {
+  }, "Masuk", (partnerApplications || []).filter(a => (a.status || 'new') === 'new').length > 0 && React.createElement("span", {
     className: "absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[8px] flex items-center justify-center"
   }, (partnerApplications || []).filter(a => (a.status || 'new') === 'new').length)));
   const renderPartnerApplicationsAdmin = () => React.createElement("div", {
     className: "space-y-4 text-xs"
   }, React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm space-y-3"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm space-y-3"
   }, React.createElement("div", {
-    className: "flex items-start gap-3"
-  }, React.createElement("div", {
-    className: "w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-sm flex-shrink-0"
-  }, "📥"), React.createElement("div", null, renderAdminJelajahTabs())), React.createElement("div", {
+    className: "block"
+  }, renderAdminJelajahTabs()), React.createElement("div", {
     className: "rounded-2xl bg-amber-50 border border-amber-100 px-3 py-2 text-[9px] text-amber-800 font-semibold leading-relaxed"
   }, "Alur: cek data masuk → hubungi via WA → ubah status jadi contacted → kalau cocok lanjut in_discussion/approved, kalau tidak cocok pilih rejected. Arsipkan jika sudah selesai."), React.createElement("div", {
     className: "space-y-2 max-h-[62vh] overflow-y-auto no-scrollbar"
@@ -12519,7 +12517,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "📥", (partnerApplications || []).filter(a => (a.status || 'new') === 'new').length > 0 && React.createElement("span", {
     className: "absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[8px] flex items-center justify-center"
   }, (partnerApplications || []).filter(a => (a.status || 'new') === 'new').length))), adminActiveSubMenu === 'promo' && adminJelajahView === 'posts' && React.createElement("div", {
-    className: "space-y-2 text-xs -mt-1"
+    className: "space-y-3 text-xs"
   }, React.createElement("div", {
     className: "hidden"
   }, React.createElement("div", {
@@ -12531,10 +12529,10 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "Pusat Jelajah Toko Hana"), React.createElement("p", {
     className: "text-[10px] text-gray-500 font-semibold mt-1 leading-relaxed"
   }, "Kelola isi Jelajah: ruang mitra, edukasi, info warga, dan cerita warung. Promo produk otomatis tetap tampil dari data produk di Home.")))), React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm space-y-3"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm space-y-3"
   }, renderAdminJelajahTabs(), React.createElement("form", {
     onSubmit: handleSaveSponsor,
-    className: "space-y-2 bg-amber-50/40 p-3 rounded-2xl border border-dashed border-amber-200"
+    className: "rounded-2xl border border-amber-100 bg-amber-50/25 p-3 space-y-2"
   }, React.createElement("input", {
     value: sponsorForm.title,
     onChange: e => setSponsorForm({
@@ -12625,7 +12623,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "flex gap-2"
   }, React.createElement("button", {
     type: "submit",
-    className: "flex-1 bg-[#703d92] text-white font-bold text-[10px] px-3 py-2.5 rounded-xl"
+    className: "flex-1 bg-[#703d92] text-white font-black text-[10px] px-3 py-2.5 rounded-xl shadow-sm active:scale-[0.99]"
   }, editingSponsor ? 'Perbarui Mitra' : 'Simpan Mitra'), editingSponsor && React.createElement("button", {
     type: "button",
     onClick: () => {
@@ -12642,12 +12640,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
         showBanner: true
       });
     },
-    className: "bg-gray-200 text-gray-700 font-bold text-[10px] px-3 py-2.5 rounded-xl"
+    className: "bg-gray-100 border border-gray-200 text-gray-600 font-black text-[10px] px-3 py-2.5 rounded-xl active:scale-[0.99]"
   }, "Batal"))), React.createElement("div", {
-    className: "space-y-2"
+    className: "space-y-2 max-h-96 overflow-y-auto no-scrollbar pr-1"
   }, (sponsorBanners || []).map(item => React.createElement("div", {
     key: item.id,
-    className: "flex items-center gap-2 border rounded-xl p-2 bg-white"
+    className: "flex items-center gap-2 border border-purple-100/70 rounded-2xl p-2 bg-white/95"
   }, React.createElement("img", {
     src: item.image || BRAND_LOGO_DATA_URI,
     alt: item.title,
@@ -12685,16 +12683,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
     name: "Trash2",
     size: 12
   }))))))), adminActiveSubMenu === 'promo' && adminJelajahView === 'partners' && React.createElement("div", {
-    className: "space-y-2 text-xs -mt-1"
+    className: "space-y-3 text-xs"
   }, React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm space-y-3"
-  }, React.createElement("div", {
-    className: "flex items-start gap-3"
-  }, React.createElement("div", {
-    className: "w-10 h-10 rounded-2xl bg-[#703d92] text-[#FFD700] flex items-center justify-center shadow-sm flex-shrink-0"
-  }, "🤝"), React.createElement("div", null, renderAdminJelajahTabs())), React.createElement("form", {
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm space-y-3"
+  }, renderAdminJelajahTabs(), React.createElement("form", {
     onSubmit: handleSavePartner,
-    className: "space-y-2 bg-purple-50/40 p-3 rounded-2xl border border-dashed border-purple-200"
+    className: "rounded-2xl border border-purple-100 bg-purple-50/25 p-3 space-y-2"
   }, React.createElement("input", {
     value: partnerForm.name,
     onChange: e => setPartnerForm({
@@ -14493,5 +14487,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0d70b990691b7',t:'MTc4NDM3MDkzMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0e255cd0b91b7',t:'MTc4NDM3MTM5Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

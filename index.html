@@ -40,6 +40,34 @@
     .cq-error{white-space:pre-wrap;background:#fee2e2;color:#7f1d1d;padding:16px;border-radius:16px;margin:16px;font-family:monospace;font-size:12px;text-align:left}
     input, select, textarea{font-size:16px!important;font-weight:400!important;letter-spacing:-0.02em;}
     input::placeholder, textarea::placeholder{font-weight:400;color:rgba(107,114,128,.62)!important;}
+    .admin-clean input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    .admin-clean select,
+    .admin-clean textarea{
+      width:100%;
+      border:1px solid rgba(112,61,146,.16)!important;
+      background:rgba(255,255,255,.96)!important;
+      color:#2d1242!important;
+      border-radius:14px!important;
+      padding:10px 12px!important;
+      min-height:40px;
+      box-shadow:0 1px 0 rgba(112,61,146,.04)!important;
+      transition:border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+    }
+    .admin-clean textarea{min-height:64px;line-height:1.35!important;}
+    .admin-clean select{appearance:auto;background-color:#fff!important;}
+    .admin-clean input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+    .admin-clean select:focus,
+    .admin-clean textarea:focus{
+      outline:none!important;
+      border-color:rgba(112,61,146,.55)!important;
+      box-shadow:0 0 0 3px rgba(112,61,146,.10)!important;
+      background:#fff!important;
+    }
+    .admin-clean input::placeholder,
+    .admin-clean textarea::placeholder{color:rgba(107,114,128,.55)!important;font-weight:500!important;}
+    .admin-clean label{color:#4b5563;}
+    .admin-clean button{transition:transform .12s ease, box-shadow .12s ease, background-color .12s ease, border-color .12s ease;}
+    .admin-clean button:active{transform:scale(.98);}
     input[type="number"], input[type="text"], input[type="url"], input[type="email"], input[type="tel"], input[type="password"], select, textarea{line-height:1.15!important;}
     select{background-position:right .55rem center;}
     body.keyboard-open .fixed.bottom-0,
@@ -11717,7 +11745,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }), React.createElement("span", {
     className: "text-[7px] font-black text-[#FFD700] uppercase leading-none mt-0.5 drop-shadow-sm"
   }, "Top"))) : React.createElement("div", {
-    className: "flex-1 min-h-0 overflow-y-auto no-scrollbar bg-[#F8F2E9] animate-fade-in text-xs"
+    className: "admin-clean flex-1 min-h-0 overflow-y-auto no-scrollbar bg-[#F8F2E9] animate-fade-in text-xs"
   }, React.createElement("div", {
     className: "sticky top-0 z-50 text-white px-4 pb-2 pt-[calc(env(safe-area-inset-top,20px)+8px)] flex items-end justify-between flex-shrink-0 overflow-hidden border-b border-[#FFD700]/20 shadow-[0_8px_22px_rgba(45,18,66,0.28)]",
     style: {
@@ -14397,5 +14425,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cfd8826b8b6003',t:'MTc4NDM2MDUwNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cfe276ceaf6003',t:'MTc4NDM2MDkxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

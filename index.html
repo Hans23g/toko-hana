@@ -13178,14 +13178,22 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }), React.createElement("span", null, lang === 'id' ? `📤 Kirim Daftar ke WA Agen (${Object.keys(restockSelection).length})` : `📤 Send Shopping List to Agent WA (${Object.keys(restockSelection).length})`)), !agentWaNumber && React.createElement("p", {
     className: "text-center text-[9px] text-red-400 font-bold mt-1.5"
   }, lang === 'id' ? '⚠️ Isi dulu nomor WA agen di atas agar daftar belanja bisa dikirim.' : '⚠️ Set the Agent WA number in settings above to send!'))), adminActiveSubMenu === 'kategori' && React.createElement("div", {
-    className: "space-y-4"
+    className: "space-y-3 text-xs"
   }, React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm text-xs"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between gap-2 mb-2"
+  }, React.createElement("div", {
+    className: "min-w-0"
   }, React.createElement("h4", {
-    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
-  }, editingCategory ? '✏️ Ubah Rak Barang' : '✨ Tambah Rak Barang'), React.createElement("form", {
+    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider"
+  }, editingCategory ? 'Ubah Rak Barang' : 'Tambah Rak Barang'), React.createElement("p", {
+    className: "text-[9px] text-gray-500 font-semibold leading-snug"
+  }, "Rak yang rapi membantu pelanggan menemukan barang tanpa banyak bertanya ☕")), React.createElement("span", {
+    className: "text-[8px] font-black text-[#703d92] bg-purple-50 border border-purple-100 rounded-full px-2 py-1 flex-shrink-0"
+  }, (categories || []).length, " rak")), React.createElement("form", {
     onSubmit: handleSaveCategory,
-    className: "space-y-3"
+    className: "space-y-2"
   }, React.createElement("input", {
     type: "text",
     required: true,
@@ -13196,9 +13204,11 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }),
     placeholder: "Nama Rak / Kategori *",
     className: "w-full border rounded-xl p-2.5"
-  }), React.createElement("div", null, React.createElement("label", {
-    className: "block text-gray-600 font-bold mb-1"
-  }, "Pilih Ikon Rak"), React.createElement("select", {
+  }), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("div", null, React.createElement("label", {
+    className: "block text-[8px] font-black text-gray-400 uppercase tracking-wider mb-1"
+  }, "Ikon Rak"), React.createElement("select", {
     value: catForm.icon,
     onChange: e => setCatForm({
       ...catForm,
@@ -13207,77 +13217,99 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "w-full border rounded-xl p-2.5 bg-white cursor-pointer"
   }, React.createElement("option", {
     value: "LayoutGrid"
-  }, "LayoutGrid (Semua)"), React.createElement("option", {
+  }, "LayoutGrid"), React.createElement("option", {
     value: "Smartphone"
-  }, "Smartphone (Digital)"), React.createElement("option", {
+  }, "Smartphone"), React.createElement("option", {
     value: "ShoppingBag"
-  }, "ShoppingBag (Sembako)"), React.createElement("option", {
+  }, "ShoppingBag"), React.createElement("option", {
     value: "GlassWater"
-  }, "GlassWater (Minuman)"), React.createElement("option", {
+  }, "GlassWater"), React.createElement("option", {
     value: "Cookie"
-  }, "Cookie (Jajanan)"), React.createElement("option", {
+  }, "Cookie"), React.createElement("option", {
     value: "Sparkles"
-  }, "Sparkles (Kosmetik)"), React.createElement("option", {
+  }, "Sparkles"), React.createElement("option", {
     value: "Soup"
-  }, "Soup (Makanan Instan)"), React.createElement("option", {
+  }, "Soup"), React.createElement("option", {
     value: "ChefHat"
-  }, "ChefHat (Bumbu Dapur)"), React.createElement("option", {
+  }, "ChefHat"), React.createElement("option", {
     value: "Home"
-  }, "Home (Rumah Tangga)"), React.createElement("option", {
+  }, "Home"), React.createElement("option", {
     value: "Cigarette"
-  }, "Cigarette (Rokok 18+)"), React.createElement("option", {
+  }, "Cigarette"), React.createElement("option", {
     value: "Package"
-  }, "Package (Lainnya)"))), React.createElement("button", {
+  }, "Package"))), React.createElement("div", {
+    className: "rounded-2xl bg-purple-50/60 border border-purple-100 p-2 flex items-center gap-2"
+  }, React.createElement("div", {
+    className: "w-9 h-9 rounded-xl bg-white border border-purple-100 flex items-center justify-center flex-shrink-0"
+  }, React.createElement(LucideIcon, {
+    name: catForm.icon || 'LayoutGrid',
+    size: 16,
+    className: "text-[#703d92]"
+  })), React.createElement("div", {
+    className: "min-w-0"
+  }, React.createElement("span", {
+    className: "block text-[8px] font-black text-[#703d92] uppercase"
+  }, "Preview"), React.createElement("b", {
+    className: "block text-[10px] text-[#2d1242] truncate"
+  }, catForm.name || 'Nama Rak'))))), React.createElement("button", {
     type: "submit",
-    className: "w-full bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
-  }, 'Simpan Rak'))), React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm text-xs"
-  }, React.createElement("h4", {
-    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2.5"
+    className: "w-full bg-[#703d92] text-white font-black py-2.5 rounded-xl shadow-sm active:scale-[0.99]"
+  }, editingCategory ? 'Simpan Perubahan Rak' : 'Simpan Rak'))), React.createElement("div", {
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm text-xs"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between gap-2 mb-2"
+  }, React.createElement("div", null, React.createElement("h4", {
+    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider"
   }, "Susun Rak Warung"), React.createElement("p", {
-    className: "text-[10px] text-gray-500 font-semibold -mt-1 mb-3"
-  }, "Rak membantu pembeli menemukan barang. Susun yang paling sering dicari di depan."), React.createElement("div", {
-    className: "space-y-2"
+    className: "text-[9px] text-gray-500 font-semibold leading-snug"
+  }, "Susun yang paling sering dicari di depan."))), React.createElement("div", {
+    className: "space-y-1.5 max-h-96 overflow-y-auto no-scrollbar pr-1"
   }, (categories || []).map((cat, idx) => React.createElement("div", {
     key: cat.name + '-' + idx,
-    className: "flex items-center justify-between p-2.5 border border-amber-100/70 rounded-2xl bg-[#FFFDF6]"
+    className: "flex items-center justify-between p-2.5 border border-amber-100/70 rounded-2xl bg-[#FFFDF6] gap-2"
   }, React.createElement("div", {
-    className: "flex items-center space-x-2"
+    className: "flex items-center gap-2 min-w-0"
+  }, React.createElement("div", {
+    className: "w-8 h-8 rounded-xl bg-white border border-purple-100 flex items-center justify-center flex-shrink-0"
   }, React.createElement(LucideIcon, {
     name: cat.icon,
     size: 15,
     className: "text-[#703d92]"
-  }), React.createElement("span", {
-    className: "font-bold text-gray-700"
-  }, cat.name)), React.createElement("div", {
-    className: "flex items-center space-x-1"
+  })), React.createElement("div", {
+    className: "min-w-0"
+  }, React.createElement("span", {
+    className: "font-black text-gray-700 text-[10px] truncate block"
+  }, cat.name), React.createElement("span", {
+    className: "text-[8px] text-gray-400 font-semibold"
+  }, "Urutan #", idx + 1))), React.createElement("div", {
+    className: "flex items-center gap-1 flex-shrink-0"
   }, React.createElement("button", {
     onClick: () => handleMoveCategory(idx, -1),
     disabled: idx === 0,
-    className: "p-1 disabled:opacity-30 text-gray-500"
+    className: "w-7 h-7 rounded-xl bg-gray-50 border border-gray-100 disabled:opacity-30 text-gray-500 flex items-center justify-center"
   }, React.createElement(LucideIcon, {
     name: "ChevronLeft",
     size: 13
   })), React.createElement("button", {
     onClick: () => handleMoveCategory(idx, 1),
     disabled: idx === (categories || []).length - 1,
-    className: "p-1 disabled:opacity-30 text-gray-500"
+    className: "w-7 h-7 rounded-xl bg-gray-50 border border-gray-100 disabled:opacity-30 text-gray-500 flex items-center justify-center"
   }, React.createElement(LucideIcon, {
     name: "ChevronRight",
     size: 13
   })), React.createElement("button", {
     onClick: () => handleEditCategoryClick(cat),
-    className: "p-1 text-blue-600"
+    className: "w-7 h-7 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center"
   }, React.createElement(LucideIcon, {
     name: "Edit",
     size: 13
   })), React.createElement("button", {
     onClick: () => handleDeleteCategory(cat.name),
-    className: "p-1 text-red-600"
+    className: "w-7 h-7 rounded-xl bg-red-50 border border-red-100 text-red-600 flex items-center justify-center"
   }, React.createElement(LucideIcon, {
     name: "Trash2",
     size: 13
-  })))))))), adminActiveSubMenu === 'pelanggan' && (() => {
+  }))))))), adminActiveSubMenu === 'pelanggan' && (() => {
     const customerList = Array.isArray(customers) ? customers : [];
     const orderList = Array.isArray(orders) ? orders : [];
     const debtList = Array.isArray(customerDebts) ? customerDebts : [];
@@ -14446,6 +14478,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0a89bbc93fdc4',t:'MTc4NDM2OTAyOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0b01d5f27678e',t:'MTc4NDM2OTMzNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

@@ -7193,6 +7193,9 @@ ${TOKO_HANA_PUBLIC_URL}`;
       if (!o) return false;
       const status = o.status || '';
       if (!['Baru', 'Belum Bayar', 'Diproses', 'Siap Bayar', 'Siap Diambil'].includes(status)) return false;
+      const method = String(o.payment_method || '');
+      const isStorePickup = o.delivery_zone === 'pickup_later' || /toko|offline|ambil/i.test(method);
+      if (status === 'Diproses' && !isStorePickup) return false;
       if (!q) return true;
       const haystack = [o.id, o.customer_name, o.phone, o.payment_method, o.status, o.payment_note].filter(Boolean).join(' ').toLowerCase();
       return haystack.includes(q);
@@ -7361,8 +7364,15 @@ ${note ? `<div class="note">${note}</div>` : ''}
       cashNote = `Tunai diterima Rp ${paidAmount.toLocaleString('id-ID')}. Kembalian Rp ${changeAmount.toLocaleString('id-ID')}.`;
       showToast(changeAmount > 0 ? `💵 Kembalian untuk pelanggan: Rp ${changeAmount.toLocaleString('id-ID')}.` : '💵 Uang pas. Pesanan bisa ditutup rapi.');
     }
-    const nextNote = [order.payment_note || '', cashNote].filter(Boolean).join(' | ');
-    const patch = {
+    const storePickup = order.delivery_zone === 'pickup_later' || /toko|offline|ambil/i.test(method);
+    const onlineDelivery = !storePickup;
+    const nextNote = [order.payment_note || '', cashNote, onlineDelivery ? 'Pembayaran dikonfirmasi kasir. Pesanan masuk ke alur kirim untuk input kurir/resi.' : ''].filter(Boolean).join(' | ');
+    const patch = onlineDelivery ? {
+      status: 'Diproses',
+      payment_note: nextNote || order.payment_note || null,
+      courier: null,
+      resi: null
+    } : {
       status: 'Selesai',
       payment_note: nextNote || order.payment_note || null,
       courier: 'Ambil di Toko',
@@ -7372,7 +7382,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       ...order,
       ...patch
     };
-    setCashierLastClosedOrder(closedOrder);
+    if (!onlineDelivery) setCashierLastClosedOrder(closedOrder);
     setOrders(prev => prev.map(o => o.id === order.id ? closedOrder : o));
     const client = getSupabaseClient();
     if (client) {
@@ -7383,8 +7393,8 @@ ${note ? `<div class="note">${note}</div>` : ''}
           console.warn('Gagal tandai lunas order kasir:', error.message);
           alert(lang === 'id' ? `Gagal tandai lunas di database: ${error.message}. Pastikan 04_cashier_order_confirm_policy.sql sudah dijalankan.` : `Failed to mark paid in database: ${error.message}. Make sure 04_cashier_order_confirm_policy.sql has been run.`);
         } else {
-          console.log('Order ditandai lunas kasir:', order.id);
-          showToast(`✅ Order ${order.id} sudah lunas. Terima kasih, pesanan ditutup rapi dengan senyum ☕`);
+          console.log('Order dikonfirmasi kasir:', order.id);
+          showToast(onlineDelivery ? `✅ Pembayaran ${order.id} dikonfirmasi. Lanjut input kurir/resi di menu Kirim.` : `✅ Order ${order.id} sudah lunas. Terima kasih, pesanan ditutup rapi dengan senyum ☕`);
         }
       });
     }
@@ -10849,7 +10859,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     type: "button",
     onClick: () => handleCashierFinishOrder(o),
     className: "bg-emerald-600 text-white rounded-xl py-2 text-[8.5px] font-black active:scale-95"
-  }, lang === 'id' ? 'Lunas' : 'Paid')))))), cart.length === 0 && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
+  }, lang === 'id' ? 'Konfirm Bayar' : 'Confirm')))))), cart.length === 0 && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
     className: "-mx-4 mb-4 overflow-hidden bg-white shadow-sm"
   }, React.createElement("div", {
     className: "px-5 pt-3 pb-2 flex items-center justify-between"
@@ -14494,6 +14504,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d119bcbedecdd1',t:'MTc4NDM3MzY2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d1c7915e2fef6d',t:'MTc4NDM4MDc4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

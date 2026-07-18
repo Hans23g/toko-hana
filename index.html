@@ -10791,7 +10791,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: () => setCashierLastClosedOrder(null),
     className: "text-[8px] font-black text-emerald-700 bg-white/80 border border-emerald-100 rounded-full px-2 py-1"
   }, "Tutup")))), React.createElement("div", {
-    className: "space-y-2 max-h-72 overflow-y-auto no-scrollbar"
+    className: "space-y-2 max-h-96 overflow-y-auto no-scrollbar pr-1"
   }, cashierPendingOrders.length === 0 ? React.createElement("div", {
     className: "bg-white border border-dashed border-amber-200 rounded-2xl p-3 text-center text-[10px] text-gray-500 font-semibold leading-relaxed"
   }, cashierOrderSearch ? lang === 'id' ? 'Tidak ada order yang cocok dengan pencarian ini.' : 'No orders match this search.' : lang === 'id' ? 'Belum ada order yang menunggu konfirmasi kasir. Buat order dari HP pelanggan atau checkout dari kasir dulu.' : 'No orders are waiting for cashier confirmation yet. Create an order from customer phone or cashier checkout first.') : cashierPendingOrders.map(o => React.createElement("div", {
@@ -11575,7 +11575,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, React.createElement("span", {
     className: `block font-bold mb-2 text-[10px] uppercase tracking-wide ${darkMode ? 'text-purple-200' : 'text-gray-500'}`
   }, "👤 ", lang === 'id' ? 'Pilih Avatar Anda' : 'Choose Your Avatar'), React.createElement("div", {
-    className: "grid grid-cols-2 gap-2.5"
+    className: "rounded-2xl border border-purple-100 bg-purple-50/25 p-3 grid grid-cols-2 gap-2"
   }, React.createElement("button", {
     type: "button",
     onClick: () => handleSetAvatar('pria'),
@@ -12143,7 +12143,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: handleImportBulkProducts,
     className: `font-extrabold py-2.5 rounded-xl ${bulkImportBusy || bulkImportRows.some(r => r.errors.length) ? 'bg-gray-200 text-gray-400' : 'bg-emerald-600 text-white shadow'}`
   }, bulkImportBusy ? 'Mengimpor...' : 'Import Produk')))), React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
   }, editingProduct ? '✏️ Edit Produk' : '✨ Tambah Produk Baru'), React.createElement("form", {
@@ -12462,7 +12462,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     type: "submit",
     className: "flex-1 bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
   }, editingProduct ? 'Simpan' : 'Tambah')))), React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2"
   }, "Daftar Produk (", (products || []).length, ")"), React.createElement("div", {
@@ -12839,15 +12839,15 @@ ${note ? `<div class="note">${note}</div>` : ''}
     name: "Trash2",
     size: 12
   }))))))), adminActiveSubMenu === 'promo' && adminJelajahView === 'applications' && renderPartnerApplicationsAdmin(), adminActiveSubMenu === 'restok' && React.createElement("div", {
-    className: "space-y-4 text-xs"
+    className: "space-y-3 text-xs"
   }, React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-emerald-100 shadow-sm"
+    className: "bg-white/95 rounded-2xl p-3 border border-emerald-100 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-emerald-700 uppercase tracking-wider mb-2 flex items-center justify-between gap-2"
   }, React.createElement("span", null, "Bon Agen Masuk"), React.createElement("button", {
     type: "button",
     onClick: handleRefreshBonAgenDrafts,
-    className: "bg-emerald-600 text-white rounded-full px-3 py-1.5 text-[9px] font-black active:scale-95"
+    className: "bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-full px-3 py-1.5 text-[9px] font-black active:scale-95"
   }, "Refresh")), React.createElement("p", {
     className: "text-[9px] text-gray-500 font-semibold mb-2"
   }, "Bon dari kasir masuk ke sini untuk direstok. Klik Review/Edit, koreksi baris, lalu Terapkan Restok & Selesai. Setelah selesai bon otomatis hilang dari daftar aktif."), React.createElement("div", {
@@ -12896,7 +12896,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "+", Number(line.qty || 0).toLocaleString('id-ID'), " ", line.unit, " • Rp ", Number(line.unit_cost || 0).toLocaleString('id-ID'), "/unit")))), React.createElement("div", {
     className: "mt-2 text-[9px] font-semibold text-emerald-700 leading-relaxed"
   }, "Stok sudah diperbarui. Catatan pergerakan stok tersimpan agar laporan warung tetap jujur ☕")), React.createElement("div", {
-    className: "space-y-2 max-h-72 overflow-y-auto no-scrollbar"
+    className: "space-y-2 max-h-96 overflow-y-auto no-scrollbar pr-1"
   }, bonAgenSubmissions.filter(item => !['cancelled', 'applied'].includes(item.status)).length === 0 ? React.createElement("div", {
     className: "rounded-2xl border border-dashed border-emerald-100 bg-emerald-50/35 p-3 text-center text-[10px] text-gray-500 font-semibold leading-relaxed"
   }, "Belum ada bon yang perlu direstok. Bon yang sudah diterapkan/diarsipkan tidak tampil di sini ☕") : bonAgenSubmissions.filter(item => !['cancelled', 'applied'].includes(item.status)).map(item => React.createElement("div", {
@@ -12911,11 +12911,11 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, item.status === 'reviewing' ? 'direview' : item.status === 'approved' ? 'disetujui' : 'menunggu')), React.createElement("div", {
     className: "text-[9px] text-gray-500 font-semibold mt-1"
   }, "Total bon Rp ", Number(item.total_amount || 0).toLocaleString('id-ID'), " • ", Array.isArray(item.parsed_items) ? item.parsed_items.length : 0, " item • dari ", item.submitted_by_name || item.submitted_by_role || 'Kasir', item.created_at ? ` • ${new Date(item.created_at).toLocaleString('id-ID')}` : ''), React.createElement("div", {
-    className: "mt-1 text-[9px] text-gray-600 bg-white rounded-xl px-2 py-1 max-h-16 overflow-hidden whitespace-pre-line"
+    className: "mt-1 text-[9px] text-gray-600 bg-white/85 border border-white/80 rounded-xl px-2 py-1 max-h-16 overflow-hidden whitespace-pre-line"
   }, item.raw_text || '-'), item.status === 'reviewing' && (() => {
     const rows = Array.isArray(item.parsed_items) ? item.parsed_items : [];
     return React.createElement("div", {
-      className: "mt-2 rounded-2xl bg-white border border-emerald-100 p-2 space-y-2"
+      className: "mt-2 rounded-2xl bg-white/95 border border-emerald-100 p-2 space-y-2"
     }, React.createElement("div", {
       className: "flex items-center justify-between gap-2"
     }, React.createElement("div", {
@@ -12923,7 +12923,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, "Edit Draft Bon"), React.createElement("button", {
       type: "button",
       onClick: () => handleSaveBonAgenParsedItems(item),
-      className: "bg-emerald-600 text-white rounded-full px-3 py-1.5 text-[8px] font-black active:scale-95"
+      className: "bg-emerald-600 text-white rounded-xl px-3 py-1.5 text-[8px] font-black active:scale-95"
     }, "Simpan Koreksi")), rows.length ? rows.map((row, idx) => {
       const selectedProduct = (products || []).find(p => String(p.id) === String(row.matched_product_id || row.product_id || '')) || null;
       const suggestedStockAdd = row.stock_add_qty || Number(row.qty || 1) * Number(selectedProduct?.units_per_purchase || 1);
@@ -13007,11 +13007,11 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, item.status !== 'reviewing' && React.createElement("button", {
     type: "button",
     onClick: () => handleUpdateBonAgenStatus(item.id, 'reviewing'),
-    className: "rounded-xl py-1.5 text-[8px] font-black bg-amber-50 text-amber-700"
+    className: "rounded-xl py-1.5 text-[8px] font-black bg-amber-50 border border-amber-100 text-amber-700"
   }, "Review / Edit"), React.createElement("button", {
     type: "button",
     onClick: () => handleUpdateBonAgenStatus(item.id, 'cancelled'),
-    className: "rounded-xl py-1.5 text-[8px] font-black bg-red-50 text-red-600"
+    className: "rounded-xl py-1.5 text-[8px] font-black bg-red-50 border border-red-100 text-red-600"
   }, "Arsipkan")), item.status === 'reviewing' && React.createElement("div", {
     className: "mt-2 rounded-2xl bg-white border border-purple-100 p-2 space-y-1.5"
   }, React.createElement("div", {
@@ -13033,15 +13033,15 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: () => handleApplyBonAgenRestock(item),
     className: "w-full bg-[#703d92] text-white rounded-xl py-2 text-[9px] font-black active:scale-95"
   }, "Terapkan Restok & Selesai")))))), React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
-    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3 flex items-center gap-1.5"
+    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2 flex items-center gap-1.5"
   }, React.createElement(LucideIcon, {
     name: "ClipboardList",
     size: 13
   }), React.createElement("span", null, lang === 'id' ? 'Belanja ke Agen' : 'Order from Agent')), React.createElement("form", {
     onSubmit: handleSaveRestockSettings,
-    className: "grid grid-cols-2 gap-2.5"
+    className: "rounded-2xl border border-purple-100 bg-purple-50/25 p-3 grid grid-cols-2 gap-2"
   }, React.createElement("div", {
     className: "col-span-2 sm:col-span-1"
   }, React.createElement("label", {
@@ -13064,9 +13064,9 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "w-full border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-[#703d92] font-semibold"
   })), React.createElement("button", {
     type: "submit",
-    className: "col-span-2 bg-[#703d92] text-white font-bold py-2.5 rounded-xl text-xs shadow-sm active:scale-95 transition-all"
+    className: "col-span-2 bg-[#703d92] text-white font-black py-2.5 rounded-xl text-[10px] shadow-sm active:scale-[0.99] transition-all"
   }, lang === 'id' ? '💾 Simpan Aturan Belanja Agen' : '💾 Save Restock Settings'))), lowStockProducts.length > 0 ? React.createElement("div", {
-    className: "bg-red-50 border border-red-200 rounded-2xl p-3.5 flex items-start gap-2.5"
+    className: "bg-red-50 border border-red-100 rounded-2xl p-3 flex items-start gap-2.5"
   }, React.createElement("div", {
     className: "w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse"
   }, React.createElement(LucideIcon, {
@@ -13088,7 +13088,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, lang === 'id' ? '✅ Stok aman. Belum ada barang yang perlu dibeli ke agen.' : '✅ All stock is healthy! No items below the threshold.'), React.createElement("span", {
     className: "text-[9px] text-emerald-600"
   }, lang === 'id' ? `Aturan saat ini: stok ≤ ${lowStockThreshold} akan masuk daftar belanja.` : `Current threshold: ≤ ${lowStockThreshold} pcs. Raise it in settings for a broader list.`)), lowStockProducts.length > 0 && React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
   }, React.createElement("div", {
     className: "flex items-center justify-between mb-3"
   }, React.createElement("h4", {
@@ -13107,13 +13107,13 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: clearRestockSelection,
     className: "bg-gray-50 text-gray-500 font-bold px-2.5 py-1 rounded-lg text-[9px] border border-gray-200"
   }, lang === 'id' ? 'Kosongkan' : 'Clear'))), React.createElement("div", {
-    className: "space-y-2 max-h-80 overflow-y-auto no-scrollbar"
+    className: "space-y-2 max-h-96 overflow-y-auto no-scrollbar pr-1"
   }, lowStockProducts.map(p => {
     const isChecked = restockSelection[p.id] !== undefined;
     const isCritical = (p.stock || 0) <= Math.max(3, Math.floor(lowStockThreshold / 3));
     return React.createElement("div", {
       key: p.id,
-      className: `flex items-center gap-2.5 p-2.5 rounded-xl border-2 transition-all ${isChecked ? 'border-[#703d92] bg-purple-50/60' : 'border-gray-100 bg-gray-50/50'}`
+      className: `flex items-center gap-2.5 p-2.5 rounded-2xl border transition-all ${isChecked ? 'border-[#703d92] bg-purple-50/60' : 'border-gray-100 bg-white/80'}`
     }, React.createElement("button", {
       type: "button",
       onClick: () => toggleRestockItem(p.id, suggestRestockQty(p)),
@@ -14487,5 +14487,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0e255cd0b91b7',t:'MTc4NDM3MTM5Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0eac6f96d91b7',t:'MTc4NDM3MTczOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

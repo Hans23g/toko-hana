@@ -11533,7 +11533,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: handleLogout,
     className: "w-full bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 font-bold py-3 rounded-xl transition-all text-center mb-6"
   }, lang === 'id' ? 'Keluar dari Mode Tamu' : 'Exit Guest Mode')) : React.createElement("div", {
-    className: "space-y-4 animate-fade-in"
+    className: "space-y-3 animate-fade-in"
   }, React.createElement("div", {
     className: "-mx-4"
   }, React.createElement(GununganDivider, {
@@ -11617,7 +11617,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }))) : React.createElement("div", {
     className: "relative mt-3.5 text-[9px] font-black text-[#FFD700]"
   }, "💎 ", lang === 'id' ? 'LEVEL TERTINGGI TERCAPAI — Poin 2x setiap belanja!' : 'MAX LEVEL REACHED — 2x points every order!')), React.createElement("div", {
-    className: "bg-white rounded-2xl p-3 border border-amber-100 shadow-sm text-[9.5px] text-gray-600 space-y-1.5"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/80 shadow-sm text-[9.5px] text-gray-600 space-y-1.5"
   }, React.createElement("div", {
     className: "flex items-start gap-2"
   }, React.createElement("span", {
@@ -11631,7 +11631,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, React.createElement("span", {
     className: "text-amber-500"
   }, "🎁"), React.createElement("span", null, lang === 'id' ? `Tukar ${REDEEM_UNIT_POINTS} poin = potongan Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} di keranjang belanja.` : `Redeem ${REDEEM_UNIT_POINTS} pts = Rp ${REDEEM_UNIT_VALUE.toLocaleString('id-ID')} off in your cart.`))), myCustomerRecord && React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border-2 border-dashed border-amber-300 shadow-sm relative overflow-hidden"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/80 shadow-sm relative overflow-hidden"
   }, React.createElement("div", {
     className: "absolute -right-6 -top-6 w-20 h-20 bg-amber-100/60 rounded-full"
   }), React.createElement("div", {
@@ -11677,11 +11677,11 @@ ${note ? `<div class="note">${note}</div>` : ''}
     name: "User",
     size: 10
   }), React.createElement("span", null, lang === 'id' ? `${myReferralsCount} teman sudah bergabung lewat kode Anda ${myReferralsCount > 0 ? '— keren! 🏆' : '— jadilah yang pertama mengajak!'}` : `${myReferralsCount} friends joined via your code ${myReferralsCount > 0 ? '— awesome! 🏆' : '— be the first to invite!'}`)))), React.createElement("div", {
-    className: `rounded-2xl border shadow-sm overflow-hidden transition-colors ${darkMode ? 'bg-[#1d1130] border-[#553C9A]/40' : 'bg-white'}`
+    className: `rounded-2xl border shadow-sm overflow-hidden transition-colors ${darkMode ? 'bg-[#1d1130] border-[#553C9A]/40' : 'bg-white/95 border-amber-100/70'}`
   }, React.createElement("button", {
     type: "button",
     onClick: () => setShowProfileSettings(!showProfileSettings),
-    className: "w-full flex items-center justify-between p-4 active:scale-[0.99] transition-all"
+    className: "w-full flex items-center justify-between p-3 active:scale-[0.99] transition-all"
   }, React.createElement("span", {
     className: `font-extrabold flex items-center gap-1.5 uppercase tracking-wider text-[11px] ${darkMode ? 'text-[#FFD700]' : 'text-[#703d92]'}`
   }, React.createElement(LucideIcon, {
@@ -11692,7 +11692,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     size: 15,
     className: darkMode ? 'text-purple-300' : 'text-gray-400'
   })), showProfileSettings && React.createElement("div", {
-    className: `px-4 pb-4 space-y-4 animate-fade-in border-t ${darkMode ? 'border-[#553C9A]/40' : 'border-gray-100'}`
+    className: `px-3 pb-3 space-y-3 animate-fade-in border-t ${darkMode ? 'border-[#553C9A]/40' : 'border-amber-100/60'}`
   }, React.createElement("div", {
     className: "pt-3"
   }, React.createElement("span", {
@@ -11815,21 +11815,21 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: `text-[9px] font-semibold leading-snug ${darkMode ? 'text-purple-300' : 'text-gray-400'}`
   }, "Nama, email, nomor HP, alamat, dan password bisa diperbarui di sini. Ganti email/password wajib isi password lama."), React.createElement("button", {
     type: "submit",
-    className: "bg-[#703d92] text-white font-bold py-2 px-5 rounded-xl"
+    className: "w-full bg-[#703d92] text-white font-black py-2.5 px-5 rounded-xl shadow-sm active:scale-[0.99]"
   }, "Simpan Perubahan"))))), React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
-    className: "font-extrabold text-[#703d92] border-b pb-2 mb-3 flex items-center gap-1.5 uppercase tracking-wider text-[11px]"
+    className: "font-extrabold text-[#703d92] pb-2 mb-2 flex items-center justify-between gap-1.5 uppercase tracking-wider text-[11px]"
   }, React.createElement(LucideIcon, {
     name: "ShoppingCart",
     size: 13
   }), React.createElement("span", null, "Riwayat Belanja Saya (", customerOrdersList.length, ")")), customerOrdersList.length === 0 ? React.createElement("p", {
     className: "text-gray-400 text-center py-4 font-semibold"
   }, "Anda belum pernah melakukan pemesanan.") : React.createElement("div", {
-    className: "space-y-3 max-h-96 overflow-y-auto no-scrollbar pr-1"
+    className: "space-y-2 max-h-96 overflow-y-auto no-scrollbar pr-1"
   }, customerOrdersList.map(o => React.createElement("div", {
     key: o.id,
-    className: "p-3 border rounded-2xl bg-gray-50 space-y-1 text-[11px]"
+    className: "p-2.5 border border-amber-100/70 rounded-2xl bg-[#FFFDF6] space-y-1 text-[11px]"
   }, React.createElement("div", {
     className: "flex items-center justify-between font-bold"
   }, React.createElement("span", {
@@ -14652,6 +14652,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d24814ae5ea459',t:'MTc4NDM4NjA0Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d25fa4e82dfe1d',t:'MTc4NDM4NzAxMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>

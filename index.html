@@ -13716,22 +13716,22 @@ ${note ? `<div class="note">${note}</div>` : ''}
     },
     className: "bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
   }, "Simpan Status")))), adminActiveSubMenu === 'branding' && React.createElement("div", {
-    className: "space-y-4 text-xs"
+    className: "space-y-3 text-xs"
   }, React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm space-y-4"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm space-y-3"
   }, React.createElement("div", {
-    className: "grid grid-cols-2 gap-1 border-b pb-2"
+    className: "grid grid-cols-2 gap-1.5 rounded-2xl bg-gray-50 border border-gray-100 p-1"
   }, React.createElement("button", {
     type: "button",
     onClick: () => setAdminBrandingView('branding'),
-    className: `rounded-xl px-2 py-2 text-[9px] font-black ${adminBrandingView === 'branding' ? 'bg-[#703d92] text-white' : 'bg-purple-50 text-[#703d92]'}`
+    className: `rounded-xl px-2 py-2 text-[9px] font-black transition-all ${adminBrandingView === 'branding' ? 'bg-[#703d92] text-white shadow-sm' : 'bg-white text-[#703d92] border border-purple-100'}`
   }, "Pengaturan Branding"), React.createElement("button", {
     type: "button",
     onClick: () => setAdminBrandingView('payment'),
-    className: `rounded-xl px-2 py-2 text-[9px] font-black ${adminBrandingView === 'payment' ? 'bg-[#703d92] text-white' : 'bg-amber-50 text-[#703d92]'}`
+    className: `rounded-xl px-2 py-2 text-[9px] font-black transition-all ${adminBrandingView === 'payment' ? 'bg-[#703d92] text-white shadow-sm' : 'bg-white text-amber-700 border border-amber-100'}`
   }, "QRIS & Wallet")), React.createElement("form", {
     onSubmit: handleSaveHeaderPattern,
-    className: adminBrandingView === 'branding' ? "space-y-3" : "hidden"
+    className: adminBrandingView === 'branding' ? "rounded-2xl border border-purple-100 bg-purple-50/30 p-3 space-y-2" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, "URL Gambar Pattern Header (.png/.jpg)"), React.createElement("input", {
@@ -13744,12 +13744,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "text-[9px] text-gray-400 mt-0.5"
   }, "Biarkan kosong untuk menggunakan warna solid premium #703d92.")), React.createElement("button", {
     type: "submit",
-    className: "bg-[#703d92] text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm shadow-purple-100"
+    className: "w-full bg-[#703d92] text-white font-black py-2.5 px-4 rounded-xl text-[10px] shadow-sm shadow-purple-100 active:scale-[0.99]"
   }, "Terapkan Pattern Header")), React.createElement("div", {
     className: "hidden"
   }), React.createElement("form", {
     onSubmit: handleSaveWarungAddress,
-    className: adminBrandingView === 'branding' ? "space-y-3" : "hidden"
+    className: adminBrandingView === 'branding' ? "rounded-2xl border border-purple-100 bg-purple-50/30 p-3 space-y-2" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, lang === 'id' ? '🏪 Alamat Warung Fisik (tampil di Kartu Jam Warung + tombol Maps)' : '🏪 Physical Store Address (shown on Store Hours Card + Maps button)'), React.createElement("input", {
@@ -13763,12 +13763,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "text-[9px] text-gray-400 mt-0.5"
   }, lang === 'id' ? 'Alamat ini dipakai tombol "Kunjungi Warung Kami" untuk membuka Google Maps.' : 'Used by the "Visit Our Store" button to open Google Maps.')), React.createElement("button", {
     type: "submit",
-    className: "bg-[#703d92] text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm"
+    className: "w-full bg-[#703d92] text-white font-black py-2.5 px-4 rounded-xl text-[10px] shadow-sm active:scale-[0.99]"
   }, lang === 'id' ? '🏪 Simpan Alamat Warung' : '🏪 Save Store Address')), React.createElement("div", {
     className: "hidden"
   }), React.createElement("form", {
     onSubmit: handleSaveNavPattern,
-    className: adminBrandingView === 'branding' ? "space-y-3" : "hidden"
+    className: adminBrandingView === 'branding' ? "rounded-2xl border border-purple-100 bg-purple-50/30 p-3 space-y-2" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, lang === 'id' ? 'URL Gambar Pattern Navbar Bawah (.png/.jpg)' : 'Bottom Navbar Pattern Image URL (.png/.jpg)'), React.createElement("input", {
@@ -13796,12 +13796,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "text-[9px] text-[#703d92] font-bold"
   }, lang === 'id' ? 'Pratinjau nuansa navbar saat ini ✅' : 'Preview of the current navbar tone ✅')), React.createElement("button", {
     type: "submit",
-    className: "bg-[#703d92] text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm"
+    className: "w-full bg-[#703d92] text-white font-black py-2.5 px-4 rounded-xl text-[10px] shadow-sm active:scale-[0.99]"
   }, lang === 'id' ? '🎨 Terapkan Pattern Navbar' : '🎨 Apply Navbar Pattern')), React.createElement("div", {
     className: "hidden"
   }), React.createElement("form", {
     onSubmit: handleSaveQrisImage,
-    className: adminBrandingView === 'payment' ? "space-y-3" : "hidden"
+    className: adminBrandingView === 'payment' ? "rounded-2xl border border-amber-100 bg-amber-50/25 p-3 space-y-2" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, "URL Gambar QRIS Merchant"), React.createElement("input", {
@@ -13814,12 +13814,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "text-[9px] text-gray-400 mt-0.5"
   }, "Biarkan kosong untuk memuat QRIS instan cantik yang ter-render murni secara offline.")), React.createElement("button", {
     type: "submit",
-    className: "bg-[#703d92] text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm"
+    className: "w-full bg-[#703d92] text-white font-black py-2.5 px-4 rounded-xl text-[10px] shadow-sm active:scale-[0.99]"
   }, "Terapkan Gambar QRIS")), React.createElement("div", {
     className: "hidden"
   }), React.createElement("form", {
     onSubmit: handleSaveWaNumber,
-    className: adminBrandingView === 'payment' ? "space-y-3" : "hidden"
+    className: adminBrandingView === 'payment' ? "rounded-2xl border border-amber-100 bg-amber-50/25 p-3 space-y-2" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, lang === 'id' ? 'Nomor WhatsApp Merchant (Gunakan kode negara, misal: 62812...)' : 'Merchant WhatsApp Number (With country code, e.g., 62812...)'), React.createElement("input", {
@@ -13833,12 +13833,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "text-[9px] text-gray-400 mt-0.5"
   }, lang === 'id' ? 'Nomor inilah yang akan menerima semua pesan pesanan dari pembeli.' : 'This number will receive all order messages from buyers.')), React.createElement("button", {
     type: "submit",
-    className: "bg-[#703d92] text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm shadow-purple-100 active:scale-95 transition-all"
+    className: "w-full bg-[#703d92] text-white font-black py-2.5 px-4 rounded-xl text-[10px] shadow-sm shadow-purple-100 active:scale-[0.99] transition-all"
   }, lang === 'id' ? 'Simpan Nomor WhatsApp' : 'Save WhatsApp Number')), React.createElement("div", {
     className: "hidden"
   }), React.createElement("form", {
     onSubmit: handleSavePiRate,
-    className: adminBrandingView === 'payment' ? "space-y-3" : "hidden"
+    className: adminBrandingView === 'payment' ? "rounded-2xl border border-amber-100 bg-amber-50/25 p-3 space-y-2" : "hidden"
   }, React.createElement("div", null, React.createElement("label", {
     className: "block font-semibold text-gray-600 mb-1"
   }, lang === 'id' ? 'Nilai Tukar 1 Pi dalam Rupiah (Rp)' : '1 Pi Exchange Rate in Rupiah (Rp)'), React.createElement("input", {
@@ -13858,12 +13858,12 @@ ${note ? `<div class="note">${note}</div>` : ''}
     maximumFractionDigits: 6
   })} Pi).`)), React.createElement("button", {
     type: "submit",
-    className: "bg-[#703d92] text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm shadow-purple-100 active:scale-95 transition-all"
+    className: "w-full bg-[#703d92] text-white font-black py-2.5 px-4 rounded-xl text-[10px] shadow-sm shadow-purple-100 active:scale-[0.99] transition-all"
   }, lang === 'id' ? 'Simpan Nilai Tukar Pi' : 'Save Pi Exchange Rate')), React.createElement("div", {
     className: "hidden"
   }), React.createElement("form", {
     onSubmit: handleSavePiWallet,
-    className: adminBrandingView === 'payment' ? "space-y-3" : "hidden"
+    className: adminBrandingView === 'payment' ? "rounded-2xl border border-amber-100 bg-amber-50/25 p-3 space-y-2" : "hidden"
   }, React.createElement("h5", {
     className: "font-extrabold text-amber-600 flex items-center gap-1.5 uppercase tracking-wider text-[11px]"
   }, React.createElement(LucideIcon, {
@@ -14425,5 +14425,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cfe276ceaf6003',t:'MTc4NDM2MDkxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cff0bbc84bfd95',t:'MTc4NDM2MTQ5Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -11822,7 +11822,34 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "absolute top-0.5 right-0.5 bg-red-500 text-white font-black text-[7px] min-w-[13px] h-[13px] px-1 rounded-full flex items-center justify-center animate-pulse"
   }, tab.badge)))), React.createElement("div", {
     className: "p-3 pb-28 bg-[#F8F2E9]"
-  }, adminActiveSubMenu === 'produk' && React.createElement("div", {
+  }, (() => {
+    const meta = {
+      produk: ['Produk Warung', 'Kepala Gudang', 'Pantau stok, harga, scan, dan data barang dengan rapi.'],
+      promo: ['Jelajah & Mitra', 'Relasi Warga', 'Kelola cerita, mitra, undangan, dan ruang warga.'],
+      restok: ['Restok Agen', 'Purchasing', 'Baca bon, cek barang, lalu restok setelah yakin.'],
+      kategori: ['Rak Warung', 'Penata Rak', 'Susun kategori agar pembeli mudah menemukan barang.'],
+      pelanggan: ['Sahabat Warung', 'CRM Warung', 'Jaga hubungan pelanggan dengan sapaan yang pantas.'],
+      orderan: ['Meja Pesanan', 'Operasional', 'Urus janji pelanggan dari baru sampai selesai.'],
+      pengiriman: ['Pengiriman', 'Koordinator Kirim', 'Catat kurir, resi, dan cara barang sampai.'],
+      keuangan: ['Uang Warung', 'CEO Warung', 'Baca omzet, kas nyata, shift, laci, dan tindakan.'],
+      status: ['Status Warung', 'Buka/Tutup', 'Atur warung buka, tutup, restok, atau libur.'],
+      branding: ['Branding', 'Wajah Toko', 'Rawat tampilan, QRIS, WhatsApp, dan identitas toko.']
+    };
+    const m = meta[adminActiveSubMenu] || ['Ruang Admin', 'Admin', 'Kelola pelan-pelan dengan rasa warung.'];
+    return React.createElement("div", {
+      className: "mb-3 rounded-2xl bg-white/95 border border-amber-100/70 shadow-sm px-3 py-2 flex items-center justify-between gap-3"
+    }, React.createElement("div", {
+      className: "min-w-0"
+    }, React.createElement("div", {
+      className: "text-[8px] font-black text-[#703d92] uppercase tracking-[0.22em]"
+    }, m[1]), React.createElement("h4", {
+      className: "text-[13px] font-black text-[#2d1242] leading-tight truncate"
+    }, m[0]), React.createElement("p", {
+      className: "text-[9px] text-gray-500 font-semibold leading-snug truncate"
+    }, m[2])), React.createElement("span", {
+      className: "text-[8px] font-black text-[#703d92] bg-purple-50 border border-purple-100 rounded-full px-2 py-1 flex-shrink-0"
+    }, "Clean Pro"));
+  })(), adminActiveSubMenu === 'produk' && React.createElement("div", {
     className: "space-y-4"
   }, React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-3 border border-purple-100 shadow-sm text-xs"
@@ -14369,6 +14396,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cfc67e6bb36003',t:'MTc4NDM1OTc2Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cfd8826b8b6003',t:'MTc4NDM2MDUwNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

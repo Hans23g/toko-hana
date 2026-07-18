@@ -18,6 +18,13 @@
     @keyframes slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}.animate-slide-up{animation:slide-up .25s ease-out}
     @keyframes scale-up{from{transform:scale(.96);opacity:.6}to{transform:scale(1);opacity:1}}.animate-scale-up{animation:scale-up .2s ease-out}
     @keyframes coin-drop{0%,100%{transform:translate(-50%,-2px)}50%{transform:translate(-50%,3px)}}.animate-coin-drop{animation:coin-drop 1.4s ease-in-out infinite}
+    @keyframes hana-splash-pop{0%{opacity:0;transform:scale(.62) translateY(18px)}62%{opacity:1;transform:scale(1.06) translateY(-3px)}100%{opacity:1;transform:scale(1) translateY(0)}}.animate-splash-pop{animation:hana-splash-pop .72s cubic-bezier(.2,.9,.25,1.15) both}
+    @keyframes hana-splash-rise{0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:translateY(0)}}.animate-splash-rise{animation:hana-splash-rise .58s .32s ease-out both}.animate-splash-rise-2{animation:hana-splash-rise .58s .48s ease-out both}
+    @keyframes hana-logo-breathe{0%,100%{transform:scale(1);filter:drop-shadow(0 10px 28px rgba(0,0,0,.42))}50%{transform:scale(1.035);filter:drop-shadow(0 14px 38px rgba(255,215,0,.22))}}.hana-splash-logo{animation:hana-logo-breathe 1.8s .65s ease-in-out infinite}
+    @keyframes hana-coin-flip{0%{transform:translateX(-50%) translateY(8px) rotateY(0deg) scale(.86)}42%{transform:translateX(-50%) translateY(-16px) rotateY(170deg) scale(1.08)}58%{transform:translateX(-50%) translateY(-16px) rotateY(205deg) scale(1.08)}100%{transform:translateX(-50%) translateY(8px) rotateY(360deg) scale(.86)}}.hana-splash-coin-main{animation:hana-coin-flip 1.25s .12s cubic-bezier(.45,.05,.28,1) infinite;transform-style:preserve-3d}
+    @keyframes hana-coin-left{0%,100%{transform:translate(0,4px) rotate(-16deg);opacity:.58}50%{transform:translate(-8px,-12px) rotate(18deg);opacity:1}}.hana-splash-coin-left{animation:hana-coin-left 1.65s .28s ease-in-out infinite}
+    @keyframes hana-coin-right{0%,100%{transform:translate(0,-5px) rotate(14deg);opacity:.62}50%{transform:translate(9px,10px) rotate(-18deg);opacity:1}}.hana-splash-coin-right{animation:hana-coin-right 1.8s .12s ease-in-out infinite}
+    @keyframes hana-coin-glow{0%,100%{opacity:.25;transform:scale(.88)}50%{opacity:.62;transform:scale(1.15)}}.hana-splash-coin-glow{animation:hana-coin-glow 1.25s ease-in-out infinite}
     @keyframes hana-banner-marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
     .hana-banner-marquee{width:max-content;will-change:transform;animation:hana-banner-marquee 30s linear infinite;}
     .hana-banner-marquee:hover{animation-play-state:paused;}
@@ -3384,8 +3391,8 @@ function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [splashLeaving, setSplashLeaving] = useState(false);
   useEffect(() => {
-    const t1 = setTimeout(() => setSplashLeaving(true), 2100);
-    const t2 = setTimeout(() => setShowSplash(false), 2700);
+    const t1 = setTimeout(() => setSplashLeaving(true), 2400);
+    const t2 = setTimeout(() => setShowSplash(false), 2900);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -8666,13 +8673,27 @@ ${note ? `<div class="note">${note}</div>` : ''}
       background: 'radial-gradient(circle at 50% 42%, transparent 18%, rgba(17,9,29,0.72) 78%)'
     }
   }), React.createElement("div", {
-    className: "relative z-10 animate-splash-pop"
+    className: "relative z-10 animate-splash-pop",
+    style: {
+      perspective: '500px'
+    }
   }, React.createElement("div", {
-    className: "absolute inset-0 rounded-full bg-[#FFD700]/30 blur-3xl scale-125"
-  }), React.createElement("img", {
+    className: "absolute inset-0 rounded-full bg-[#FFD700]/30 blur-3xl scale-125 hana-splash-coin-glow"
+  }), React.createElement("div", {
+    className: "absolute -top-8 left-1/2 z-20 w-11 h-11 rounded-full bg-gradient-to-br from-[#FFF3A6] via-[#FFD700] to-[#B8860B] border-2 border-white/60 shadow-[0_10px_24px_rgba(0,0,0,0.38)] flex items-center justify-center hana-splash-coin-main",
+    style: {
+      backfaceVisibility: 'visible'
+    }
+  }, React.createElement("span", {
+    className: "w-8 h-8 rounded-full border border-[#7a5410]/45 flex items-center justify-center text-[#4b286d] text-xl font-black shadow-inner"
+  }, "π")), React.createElement("span", {
+    className: "absolute -left-8 top-10 z-20 text-3xl drop-shadow-[0_8px_12px_rgba(0,0,0,0.4)] hana-splash-coin-left select-none"
+  }, "🪙"), React.createElement("span", {
+    className: "absolute -right-7 bottom-5 z-20 text-2xl drop-shadow-[0_8px_12px_rgba(0,0,0,0.4)] hana-splash-coin-right select-none"
+  }, "🪙"), React.createElement("img", {
     src: BRAND_LOGO_DATA_URI,
     alt: "Toko Hana",
-    className: "relative w-44 h-44 object-contain drop-shadow-[0_10px_35px_rgba(0,0,0,0.5)]"
+    className: "relative w-44 h-44 object-contain hana-splash-logo"
   })), React.createElement("h1", {
     className: "relative z-10 mt-5 font-black text-2xl text-white tracking-wide animate-splash-rise"
   }, "Toko ", React.createElement("span", {
@@ -14723,5 +14744,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d32a965a7ef847',t:'MTc4NDM5NTMyMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d333b6bd18f847',t:'MTc4NDM5NTY5Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

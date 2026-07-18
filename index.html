@@ -13666,51 +13666,60 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "+ ", money(o.total)))) : React.createElement("div", {
     className: "rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center text-[10px] text-gray-400 font-bold"
   }, "Belum ada pesanan selesai.")))), adminActiveSubMenu === 'keuangan' && renderFinanceAdmin(), adminActiveSubMenu === 'status' && React.createElement("div", {
-    className: "space-y-4 text-xs"
+    className: "space-y-3 text-xs"
   }, React.createElement("div", {
-    className: "bg-gradient-to-br from-purple-50 via-white to-amber-50 rounded-2xl p-4 border border-purple-100 shadow-sm"
-  }, React.createElement("h4", {
-    className: "font-extrabold text-sm text-[#703d92] flex items-center gap-2"
-  }, React.createElement("span", null, "🏪"), React.createElement("span", null, "Status Warung")), React.createElement("p", {
-    className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1"
-  }, "Atur status tampilan toko tanpa ubah kode. Cocok untuk libur, restok, atau buka/tutup manual.")), React.createElement("div", {
-    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm space-y-3"
-  }, React.createElement("label", {
-    className: "block font-bold text-gray-600"
-  }, "Mode Status"), React.createElement("select", {
-    value: warungStatusMode,
-    onChange: e => setWarungStatusMode(e.target.value),
-    className: "w-full border border-gray-200 rounded-xl p-2.5 bg-white focus:outline-none focus:border-[#703d92]"
-  }, React.createElement("option", {
-    value: "auto"
-  }, "Otomatis sesuai jam buka"), React.createElement("option", {
-    value: "open"
-  }, "Paksa Buka"), React.createElement("option", {
-    value: "closed"
-  }, "Paksa Tutup"), React.createElement("option", {
-    value: "holiday"
-  }, "Libur"), React.createElement("option", {
-    value: "restock"
-  }, "Sedang Restok"), React.createElement("option", {
-    value: "online_only"
-  }, "Online saja, toko fisik tutup")), React.createElement("div", null, React.createElement("label", {
-    className: "block font-bold text-gray-600 mb-1"
-  }, "Catatan Status (opsional)"), React.createElement("input", {
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm space-y-3"
+  }, React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, [['auto', 'Otomatis', 'ikut jam warung'], ['open', 'Buka', 'paksa buka'], ['closed', 'Tutup', 'paksa tutup'], ['restock', 'Restok', 'sedang isi barang']].map(([mode, label, desc]) => React.createElement("button", {
+    key: mode,
+    type: "button",
+    onClick: () => setWarungStatusMode(mode),
+    className: `rounded-2xl border p-2 text-left active:scale-[0.98] ${warungStatusMode === mode ? 'bg-[#703d92] border-[#703d92] text-white shadow-sm' : 'bg-[#FFFDF6] border-amber-100 text-gray-600'}`
+  }, React.createElement("span", {
+    className: `block text-[9px] font-black uppercase ${warungStatusMode === mode ? 'text-[#FFD700]' : 'text-[#703d92]'}`
+  }, label), React.createElement("span", {
+    className: `block text-[8px] font-semibold mt-0.5 ${warungStatusMode === mode ? 'text-white/75' : 'text-gray-400'}`
+  }, desc)))), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("button", {
+    type: "button",
+    onClick: () => setWarungStatusMode('holiday'),
+    className: `rounded-2xl border p-2 text-left active:scale-[0.98] ${warungStatusMode === 'holiday' ? 'bg-amber-500 border-amber-500 text-white shadow-sm' : 'bg-amber-50 border-amber-100 text-amber-700'}`
+  }, React.createElement("span", {
+    className: "block text-[9px] font-black uppercase"
+  }, "Libur"), React.createElement("span", {
+    className: "block text-[8px] font-semibold opacity-75 mt-0.5"
+  }, "warung istirahat")), React.createElement("button", {
+    type: "button",
+    onClick: () => setWarungStatusMode('online_only'),
+    className: `rounded-2xl border p-2 text-left active:scale-[0.98] ${warungStatusMode === 'online_only' ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-blue-50 border-blue-100 text-blue-700'}`
+  }, React.createElement("span", {
+    className: "block text-[9px] font-black uppercase"
+  }, "Online"), React.createElement("span", {
+    className: "block text-[8px] font-semibold opacity-75 mt-0.5"
+  }, "fisik tutup"))), React.createElement("div", null, React.createElement("label", {
+    className: "block font-black text-[9px] text-gray-500 uppercase tracking-wider mb-1"
+  }, "Catatan Status"), React.createElement("input", {
     value: warungStatusNote,
     onChange: e => setWarungStatusNote(e.target.value),
     placeholder: "Contoh: Libur Lebaran | Buka kembali 12 April",
     className: "w-full border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-[#703d92]"
   }), React.createElement("p", {
-    className: "text-[9px] text-gray-400 mt-1"
-  }, "Jika diisi, catatan ini akan menggantikan teks status otomatis di kartu sapaan.")), React.createElement("div", {
-    className: "bg-[#F5F3F7] border border-purple-100 rounded-2xl p-3"
+    className: "text-[8.5px] text-gray-400 mt-1 font-semibold leading-snug"
+  }, "Opsional. Jika diisi, catatan ini menggantikan teks status otomatis di kartu sapaan.")), React.createElement("div", {
+    className: "rounded-2xl bg-[#F5F3F7] border border-purple-100 p-3 flex items-center justify-between gap-3"
+  }, React.createElement("div", {
+    className: "min-w-0"
   }, React.createElement("span", {
-    className: "block text-[9px] font-black uppercase tracking-wider text-gray-400 mb-1"
-  }, "Preview"), React.createElement("div", {
-    className: `inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[9px] font-black ${warungStatus.isOpen ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-red-50 border-red-200 text-red-700'}`
+    className: "block text-[8px] font-black uppercase tracking-wider text-gray-400"
+  }, "Preview Status"), React.createElement("div", {
+    className: `mt-1 inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[9px] font-black ${warungStatus.isOpen ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-red-50 border-red-200 text-red-700'}`
   }, React.createElement("span", {
     className: `w-2 h-2 rounded-full ${warungStatus.isOpen ? 'bg-emerald-500' : 'bg-red-500'}`
-  }), React.createElement("span", null, warungStatus.shortText))), React.createElement("div", {
+  }), React.createElement("span", null, warungStatus.shortText))), React.createElement("span", {
+    className: "text-[8px] text-gray-400 font-bold text-right leading-snug"
+  }, warungStatusMode === 'auto' ? 'jam warung' : 'manual')), React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, React.createElement("button", {
     type: "button",
@@ -13719,14 +13728,16 @@ ${note ? `<div class="note">${note}</div>` : ''}
       setWarungStatusNote('');
       saveWarungStatusToDb('auto', '');
     },
-    className: "bg-gray-100 text-gray-600 font-bold py-2.5 rounded-xl"
+    className: "bg-gray-100 border border-gray-200 text-gray-600 font-black py-2.5 rounded-xl"
   }, "Reset Auto"), React.createElement("button", {
     type: "button",
     onClick: () => {
       saveWarungStatusToDb(warungStatusMode, warungStatusNote);
     },
-    className: "bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
-  }, "Simpan Status")))), adminActiveSubMenu === 'branding' && React.createElement("div", {
+    className: "bg-[#703d92] text-white font-black py-2.5 rounded-xl shadow-sm active:scale-[0.99]"
+  }, "Simpan Status")), React.createElement("div", {
+    className: "rounded-2xl bg-amber-50 border border-amber-100 px-3 py-2 text-[9px] text-amber-700 font-semibold leading-relaxed"
+  }, "Status warung membantu pelanggan paham tanpa perlu bertanya. Buka, tutup, libur, atau restok tetap terasa ramah ☕"))), adminActiveSubMenu === 'branding' && React.createElement("div", {
     className: "space-y-3 text-xs"
   }, React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm space-y-3"
@@ -14436,5 +14447,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0906cdadefe87',t:'MTc4NDM2ODAzNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0a2968a00fdc4',t:'MTc4NDM2ODc4MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

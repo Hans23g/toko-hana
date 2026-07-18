@@ -8425,30 +8425,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       className: "block text-[8px] text-amber-600 font-semibold"
     }, "Bukan sepi untuk disesali, tapi tanda kapan warung perlu disapa lebih hangat ☕")))), React.createElement("div", {
       className: "bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 rounded-2xl p-3 text-[10px] text-orange-700 font-semibold leading-relaxed"
-    }, "Catatan jujur: omzet, kas nyata, piutang, dan catatan laci sengaja dipisah agar warung tidak bingung. Laba bersih akan makin akurat setelah modal, susut, kemasan, dan barang titipan lengkap."), React.createElement("div", {
-      className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
-    }, React.createElement("div", {
-      className: "flex items-center justify-between mb-2"
-    }, React.createElement("span", {
-      className: "text-[9px] text-gray-400 uppercase tracking-widest font-black"
-    }, "Catatan Pesanan Selesai"), React.createElement("span", {
-      className: "text-[8px] text-gray-400 font-bold"
-    }, "terbaru")), React.createElement("div", {
-      className: "space-y-2 max-h-64 overflow-y-auto no-scrollbar"
-    }, completedOrders.length ? completedOrders.map(o => React.createElement("div", {
-      key: o.id,
-      className: "flex items-center justify-between p-2.5 border border-amber-100/70 rounded-2xl bg-[#FFFDF6]"
-    }, React.createElement("div", {
-      className: "min-w-0"
-    }, React.createElement("h6", {
-      className: "font-bold text-gray-700 text-[10px] truncate"
-    }, o.id, " - ", o.customer_name), React.createElement("span", {
-      className: "text-[9px] text-gray-400"
-    }, o.date, " | Bayar: ", o.payment_method)), React.createElement("span", {
-      className: "font-bold text-emerald-600 text-[11px] flex-shrink-0"
-    }, "+ ", money(o.total)))) : React.createElement("div", {
-      className: "rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center text-[10px] text-gray-400 font-bold"
-    }, "Belum ada pesanan selesai."))));
+    }, "Catatan jujur: omzet, kas nyata, piutang, dan catatan laci sengaja dipisah agar warung tidak bingung. Laba bersih akan makin akurat setelah modal, susut, kemasan, dan barang titipan lengkap."));
   };
   const bonAgenList = Array.isArray(bonAgenSubmissions) ? bonAgenSubmissions : [];
   const bonAgenActiveList = bonAgenList.filter(item => item && !['cancelled', 'applied'].includes(item.status));
@@ -13667,7 +13644,28 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "text-[10px] text-gray-600 font-bold"
   }, "Cara antar: ", o.kurir, " | Catatan: ", o.resi), React.createElement("div", {
     className: "text-[10px] text-gray-400"
-  }, "Diterima oleh: ", o.customer_name, " (", o.address, ")")))))), adminActiveSubMenu === 'keuangan' && renderFinanceAdmin(), adminActiveSubMenu === 'status' && React.createElement("div", {
+  }, "Diterima oleh: ", o.customer_name, " (", o.address, ")"))))), React.createElement("div", {
+    className: "bg-white/95 rounded-2xl p-4 border border-emerald-100/70 shadow-sm"
+  }, React.createElement("h4", {
+    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2"
+  }, "Catatan Pesanan Selesai"), React.createElement("p", {
+    className: "text-[9px] text-gray-500 font-semibold -mt-1 mb-2"
+  }, "Pesanan selesai dipindah ke halaman Kirim agar catatan akhir order satu rumah dengan pengiriman."), React.createElement("div", {
+    className: "space-y-2 max-h-64 overflow-y-auto no-scrollbar pr-1"
+  }, (orders || []).filter(o => o && o.status === 'Selesai').length ? (orders || []).filter(o => o && o.status === 'Selesai').slice(0, 20).map(o => React.createElement("div", {
+    key: `done-order-${o.id}`,
+    className: "flex items-center justify-between p-2.5 border border-emerald-100/70 rounded-2xl bg-emerald-50/35"
+  }, React.createElement("div", {
+    className: "min-w-0"
+  }, React.createElement("h6", {
+    className: "font-bold text-gray-700 text-[10px] truncate"
+  }, o.id, " - ", o.customer_name), React.createElement("span", {
+    className: "text-[9px] text-gray-400"
+  }, o.date, " | Bayar: ", o.payment_method, o.resi ? ` | ${o.resi}` : '')), React.createElement("span", {
+    className: "font-bold text-emerald-600 text-[11px] flex-shrink-0"
+  }, "+ ", money(o.total)))) : React.createElement("div", {
+    className: "rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center text-[10px] text-gray-400 font-bold"
+  }, "Belum ada pesanan selesai.")))), adminActiveSubMenu === 'keuangan' && renderFinanceAdmin(), adminActiveSubMenu === 'status' && React.createElement("div", {
     className: "space-y-4 text-xs"
   }, React.createElement("div", {
     className: "bg-gradient-to-br from-purple-50 via-white to-amber-50 rounded-2xl p-4 border border-purple-100 shadow-sm"
@@ -14437,6 +14435,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d05b900f1270ef',t:'MTc4NDM2NTg3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d06b6f0f3670ef',t:'MTc4NDM2NjUyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

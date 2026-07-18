@@ -5552,12 +5552,24 @@ Not recognized as active cashier/admin in staff_roles.`);
     window.location.hash = '#';
     showToast(lang === 'id' ? '🙏 Matur nuwun, Juragan! Sampai jumpa lagi~' : '🙏 Thank you, Boss! See you again~');
   };
-  const handleUpdateCustomerProfile = e => {
+  const handleUpdateCustomerProfile = async e => {
     e.preventDefault();
     if (!currentUser) return;
     const updatedName = e.target.elements.profileName.value.trim();
     const updatedPhone = e.target.elements.profilePhone.value.trim();
     const updatedAddress = e.target.elements.profileAddress.value.trim();
+    const newPassword = e.target.elements.profilePassword?.value || '';
+    const confirmPassword = e.target.elements.profilePasswordConfirm?.value || '';
+    if (newPassword || confirmPassword) {
+      if (newPassword.length < 6) {
+        alert(lang === 'id' ? 'Password baru minimal 6 karakter.' : 'New password must be at least 6 characters.');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        alert(lang === 'id' ? 'Konfirmasi password belum sama.' : 'Password confirmation does not match.');
+        return;
+      }
+    }
     const updatedSession = {
       ...currentUser,
       name: updatedName,
@@ -5565,7 +5577,7 @@ Not recognized as active cashier/admin in staff_roles.`);
       address: updatedAddress
     };
     setCurrentUser(updatedSession);
-    setCustomers(prev => prev.map(c => c.phone === currentUser.phone || c.name === currentUser.name ? {
+    setCustomers(prev => prev.map(c => c.phone === currentUser.phone || c.name === currentUser.name || c.email && currentUser.email && c.email === currentUser.email ? {
       ...c,
       name: updatedName,
       phone: updatedPhone,
@@ -5573,7 +5585,23 @@ Not recognized as active cashier/admin in staff_roles.`);
     } : c));
     const dbClient = getSupabaseClient();
     if (dbClient) {
-      const matched = customers.find(c => c.phone === currentUser.phone || c.name === currentUser.name);
+      try {
+        const authPatch = {
+          data: {
+            name: updatedName,
+            phone: updatedPhone,
+            address: updatedAddress
+          }
+        };
+        if (newPassword) authPatch.password = newPassword;
+        const {
+          error: authError
+        } = await dbClient.auth.updateUser(authPatch);
+        if (authError) console.warn('Gagal update auth user:', authError.message);
+      } catch (authErr) {
+        console.warn('Update auth user dilewati:', authErr.message || authErr);
+      }
+      const matched = customers.find(c => c.phone === currentUser.phone || c.name === currentUser.name || c.email && currentUser.email && c.email === currentUser.email);
       if (matched) {
         dbClient.from('customers').update({
           name: updatedName,
@@ -5586,7 +5614,9 @@ Not recognized as active cashier/admin in staff_roles.`);
         });
       }
     }
-    showToast('💾 Profil berhasil diperbarui!');
+    if (e.target.elements.profilePassword) e.target.elements.profilePassword.value = '';
+    if (e.target.elements.profilePasswordConfirm) e.target.elements.profilePasswordConfirm.value = '';
+    showToast(newPassword ? '💾 Profil & password berhasil diperbarui!' : '💾 Profil berhasil diperbarui!');
   };
   const parseCsvLine = line => {
     const result = [];
@@ -10883,7 +10913,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       showToast(`🧺 Order ${o.id} siap diambil.`);
     },
     className: "w-full bg-amber-500 text-white rounded-xl py-2 text-[9px] font-black active:scale-95"
-  }, "Siap Diambil"), !(o.status === 'Diproses' && !(o.delivery_zone === 'pickup_later' || String(o.payment_method || '').toLowerCase().includes('toko') || String(o.payment_method || '').toLowerCase().includes('offline') || String(o.payment_method || '').toLowerCase().includes('ambil'))) && React.createElement("div", {
+  }, "Siap Diambil"), React.createElement("div", {
     className: "grid grid-cols-3 gap-1.5 pt-1"
   }, React.createElement("button", {
     type: "button",
@@ -11703,7 +11733,25 @@ ${note ? `<div class="note">${note}</div>` : ''}
     rows: "2",
     defaultValue: currentUser.address,
     className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
-  })), React.createElement("button", {
+  })), React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, React.createElement("div", null, React.createElement("label", {
+    className: `block font-bold mb-1 ${darkMode ? 'text-purple-300' : 'text-gray-500'}`
+  }, "Password Baru"), React.createElement("input", {
+    type: "password",
+    name: "profilePassword",
+    placeholder: "Kosongkan jika tidak diganti",
+    className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
+  })), React.createElement("div", null, React.createElement("label", {
+    className: `block font-bold mb-1 ${darkMode ? 'text-purple-300' : 'text-gray-500'}`
+  }, "Konfirmasi"), React.createElement("input", {
+    type: "password",
+    name: "profilePasswordConfirm",
+    placeholder: "Ulangi password baru",
+    className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
+  }))), React.createElement("p", {
+    className: `text-[9px] font-semibold leading-snug ${darkMode ? 'text-purple-300' : 'text-gray-400'}`
+  }, "Nama, nomor HP, alamat, dan password bisa diperbarui di sini. Password minimal 6 karakter."), React.createElement("button", {
     type: "submit",
     className: "bg-[#703d92] text-white font-bold py-2 px-5 rounded-xl"
   }, "Simpan Perubahan"))))), React.createElement("div", {
@@ -14542,6 +14590,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d210413e9bf8da',t:'MTc4NDM4Mzc1OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d220f74d01f8da',t:'MTc4NDM4NDQ0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

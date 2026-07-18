@@ -5556,10 +5556,18 @@ Not recognized as active cashier/admin in staff_roles.`);
     e.preventDefault();
     if (!currentUser) return;
     const updatedName = e.target.elements.profileName.value.trim();
+    const updatedEmail = (e.target.elements.profileEmail?.value || currentUser.email || '').trim();
     const updatedPhone = e.target.elements.profilePhone.value.trim();
     const updatedAddress = e.target.elements.profileAddress.value.trim();
+    const oldPassword = e.target.elements.profileOldPassword?.value || '';
     const newPassword = e.target.elements.profilePassword?.value || '';
     const confirmPassword = e.target.elements.profilePasswordConfirm?.value || '';
+    const emailChanged = updatedEmail && currentUser.email && updatedEmail.toLowerCase() !== String(currentUser.email || '').toLowerCase();
+    const protectedChange = emailChanged || !!newPassword || !!confirmPassword;
+    if (protectedChange && !oldPassword) {
+      alert(lang === 'id' ? 'Isi password lama dulu untuk mengganti email/password.' : 'Enter your current password to change email/password.');
+      return;
+    }
     if (newPassword || confirmPassword) {
       if (newPassword.length < 6) {
         alert(lang === 'id' ? 'Password baru minimal 6 karakter.' : 'New password must be at least 6 characters.');
@@ -5572,6 +5580,7 @@ Not recognized as active cashier/admin in staff_roles.`);
     }
     const updatedSession = {
       ...currentUser,
+      email: updatedEmail || currentUser.email,
       name: updatedName,
       phone: updatedPhone,
       address: updatedAddress
@@ -5579,6 +5588,7 @@ Not recognized as active cashier/admin in staff_roles.`);
     setCurrentUser(updatedSession);
     setCustomers(prev => prev.map(c => c.phone === currentUser.phone || c.name === currentUser.name || c.email && currentUser.email && c.email === currentUser.email ? {
       ...c,
+      email: updatedEmail || c.email,
       name: updatedName,
       phone: updatedPhone,
       address: updatedAddress
@@ -5586,6 +5596,18 @@ Not recognized as active cashier/admin in staff_roles.`);
     const dbClient = getSupabaseClient();
     if (dbClient) {
       try {
+        if (protectedChange) {
+          const {
+            error: verifyError
+          } = await dbClient.auth.signInWithPassword({
+            email: currentUser.email,
+            password: oldPassword
+          });
+          if (verifyError) {
+            alert(lang === 'id' ? `Password lama tidak cocok: ${verifyError.message}` : `Current password is incorrect: ${verifyError.message}`);
+            return;
+          }
+        }
         const authPatch = {
           data: {
             name: updatedName,
@@ -5593,17 +5615,22 @@ Not recognized as active cashier/admin in staff_roles.`);
             address: updatedAddress
           }
         };
+        if (emailChanged) authPatch.email = updatedEmail;
         if (newPassword) authPatch.password = newPassword;
         const {
           error: authError
         } = await dbClient.auth.updateUser(authPatch);
-        if (authError) console.warn('Gagal update auth user:', authError.message);
+        if (authError) {
+          alert(lang === 'id' ? `Gagal update akun: ${authError.message}` : `Failed to update account: ${authError.message}`);
+          return;
+        }
       } catch (authErr) {
         console.warn('Update auth user dilewati:', authErr.message || authErr);
       }
       const matched = customers.find(c => c.phone === currentUser.phone || c.name === currentUser.name || c.email && currentUser.email && c.email === currentUser.email);
       if (matched) {
         dbClient.from('customers').update({
+          email: updatedEmail || matched.email,
           name: updatedName,
           phone: updatedPhone,
           address: updatedAddress
@@ -5614,9 +5641,10 @@ Not recognized as active cashier/admin in staff_roles.`);
         });
       }
     }
+    if (e.target.elements.profileOldPassword) e.target.elements.profileOldPassword.value = '';
     if (e.target.elements.profilePassword) e.target.elements.profilePassword.value = '';
     if (e.target.elements.profilePasswordConfirm) e.target.elements.profilePasswordConfirm.value = '';
-    showToast(newPassword ? '💾 Profil & password berhasil diperbarui!' : '💾 Profil berhasil diperbarui!');
+    showToast(protectedChange ? '💾 Profil akun berhasil diperbarui. Jika email diganti, cek email untuk konfirmasi.' : '💾 Profil berhasil diperbarui!');
   };
   const parseCsvLine = line => {
     const result = [];
@@ -11719,6 +11747,14 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
   })), React.createElement("div", null, React.createElement("label", {
     className: `block font-bold mb-1 ${darkMode ? 'text-purple-300' : 'text-gray-500'}`
+  }, "Email Akun"), React.createElement("input", {
+    type: "email",
+    name: "profileEmail",
+    required: true,
+    defaultValue: currentUser.email || '',
+    className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
+  })), React.createElement("div", null, React.createElement("label", {
+    className: `block font-bold mb-1 ${darkMode ? 'text-purple-300' : 'text-gray-500'}`
   }, t('phoneLabel')), React.createElement("input", {
     type: "tel",
     name: "profilePhone",
@@ -11732,6 +11768,13 @@ ${note ? `<div class="note">${note}</div>` : ''}
     required: true,
     rows: "2",
     defaultValue: currentUser.address,
+    className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
+  })), React.createElement("div", null, React.createElement("label", {
+    className: `block font-bold mb-1 ${darkMode ? 'text-purple-300' : 'text-gray-500'}`
+  }, "Password Lama"), React.createElement("input", {
+    type: "password",
+    name: "profileOldPassword",
+    placeholder: "Wajib jika ganti email/password",
     className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
   })), React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
@@ -11751,7 +11794,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: `w-full border rounded-xl p-2.5 font-medium ${darkMode ? 'bg-[#2d1242] border-[#553C9A]/50 text-white' : ''}`
   }))), React.createElement("p", {
     className: `text-[9px] font-semibold leading-snug ${darkMode ? 'text-purple-300' : 'text-gray-400'}`
-  }, "Nama, nomor HP, alamat, dan password bisa diperbarui di sini. Password minimal 6 karakter."), React.createElement("button", {
+  }, "Nama, email, nomor HP, alamat, dan password bisa diperbarui di sini. Ganti email/password wajib isi password lama."), React.createElement("button", {
     type: "submit",
     className: "bg-[#703d92] text-white font-bold py-2 px-5 rounded-xl"
   }, "Simpan Perubahan"))))), React.createElement("div", {
@@ -14591,5 +14634,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d220f74d01f8da',t:'MTc4NDM4NDQ0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d22f6339efa459',t:'MTc4NDM4NTAzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -9939,11 +9939,11 @@ ${note ? `<div class="note">${note}</div>` : ''}
     },
     className: "mt-1 inline-flex items-center gap-1 bg-green-50 text-green-700 font-black text-[8px] px-2 py-0.5 rounded-full"
   }, "Share WA"))))))), React.createElement("div", {
-    className: "bg-gradient-to-r from-purple-50 to-amber-50 border border-purple-100 rounded-2xl p-3"
+    className: `border rounded-2xl p-3 transition-colors ${darkMode ? 'bg-gradient-to-r from-[#22142f] to-[#2b2016] border-[#FFD76A]/15 shadow-[0_5px_16px_rgba(0,0,0,0.18)]' : 'bg-gradient-to-r from-purple-50 to-amber-50 border-purple-100'}`
   }, React.createElement("h4", {
-    className: "font-black text-[#703d92] text-sm"
+    className: `font-black text-sm ${darkMode ? 'text-[#FFD76A]' : 'text-[#703d92]'}`
   }, "Jelajah Toko Hana"), React.createElement("p", {
-    className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1"
+    className: `text-[10px] font-semibold leading-relaxed mt-1 ${darkMode ? 'text-purple-200/65' : 'text-gray-500'}`
   }, "Ruang belanja bertemu cerita: aplikasi kecil, edukasi, kabar warga, undangan, ucapan, dan pintu kemitraan untuk tumbuh bersama."))), currentTab === 'SponsorDetail' && (() => {
     const sponsor = selectedSponsor || sponsorBanners && sponsorBanners[0] || defaultSponsorBanners[0];
     const eventTime = sponsor.eventDate ? new Date(sponsor.eventDate).getTime() : null;
@@ -14866,5 +14866,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d3b6d4bede7abd',t:'MTc4NDQwMTA2OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d3c2bae8837abd',t:'MTc4NDQwMTU1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

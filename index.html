@@ -7193,9 +7193,6 @@ ${TOKO_HANA_PUBLIC_URL}`;
       if (!o) return false;
       const status = o.status || '';
       if (!['Baru', 'Belum Bayar', 'Diproses', 'Siap Bayar', 'Siap Diambil'].includes(status)) return false;
-      const method = String(o.payment_method || '');
-      const isStorePickup = o.delivery_zone === 'pickup_later' || /toko|offline|ambil/i.test(method);
-      if (status === 'Diproses' && !isStorePickup) return false;
       if (!q) return true;
       const haystack = [o.id, o.customer_name, o.phone, o.payment_method, o.status, o.payment_note].filter(Boolean).join(' ').toLowerCase();
       return haystack.includes(q);
@@ -7346,6 +7343,43 @@ ${note ? `<div class="note">${note}</div>` : ''}
       });
     }
     showToast(`🤝 Sisa Rp ${remaining.toLocaleString('id-ID')} dicatat sebagai piutang. Order ${order.id} ditutup dengan baik.`);
+  };
+  const handleCashierShipOrder = order => {
+    if (!order) return;
+    const currentCourier = order.courier || 'Kurir Toko Hana';
+    const courier = window.prompt(lang === 'id' ? `Kurir / cara antar untuk ${order.id}:` : `Courier / delivery method for ${order.id}:`, currentCourier);
+    if (courier === null) return;
+    const resi = window.prompt(lang === 'id' ? `Nomor resi / catatan antar untuk ${order.id}:` : `Tracking number / delivery note for ${order.id}:`, order.resi || 'Diantar kurir warung');
+    if (resi === null) return;
+    if (!String(resi || '').trim()) {
+      alert(lang === 'id' ? 'Resi/catatan antar wajib diisi agar pelanggan bisa melihat info pengiriman.' : 'Tracking/delivery note is required.');
+      return;
+    }
+    const patch = {
+      status: 'Selesai',
+      courier: courier || 'Kurir Toko Hana',
+      resi: String(resi).trim(),
+      payment_note: [order.payment_note || '', `Dikirim via ${courier || 'Kurir Toko Hana'}: ${String(resi).trim()}`].filter(Boolean).join(' | ')
+    };
+    const shippedOrder = {
+      ...order,
+      ...patch
+    };
+    setCashierLastClosedOrder(shippedOrder);
+    setOrders(prev => prev.map(o => o.id === order.id ? shippedOrder : o));
+    const client = getSupabaseClient();
+    if (client) {
+      client.from('orders').update(patch).eq('id', order.id).then(({
+        error
+      }) => {
+        if (error) {
+          console.warn('Gagal input resi dari kasir:', error.message);
+          alert(lang === 'id' ? `Gagal simpan resi di database: ${error.message}` : `Failed to save tracking number: ${error.message}`);
+        } else {
+          showToast(`🚚 Resi/catatan antar ${order.id} tersimpan. Pesanan selesai dikirim.`);
+        }
+      });
+    }
   };
   const handleCashierFinishOrder = order => {
     if (!order) return;
@@ -10825,7 +10859,11 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "text-[9px] text-gray-400 font-bold"
   }, "Total"), React.createElement("strong", {
     className: "text-[#703d92] text-[12px]"
-  }, "Rp ", Number(o.total || 0).toLocaleString('id-ID'))), o.delivery_zone === 'pickup_later' && !['Siap Diambil', 'Selesai'].includes(o.status || '') && React.createElement("button", {
+  }, "Rp ", Number(o.total || 0).toLocaleString('id-ID'))), o.status === 'Diproses' && !(o.delivery_zone === 'pickup_later' || String(o.payment_method || '').toLowerCase().includes('toko') || String(o.payment_method || '').toLowerCase().includes('offline') || String(o.payment_method || '').toLowerCase().includes('ambil')) && React.createElement("button", {
+    type: "button",
+    onClick: () => handleCashierShipOrder(o),
+    className: "w-full bg-blue-600 text-white rounded-xl py-2 text-[9px] font-black active:scale-95"
+  }, "Input Resi / Antar"), o.delivery_zone === 'pickup_later' && !['Siap Diambil', 'Selesai'].includes(o.status || '') && React.createElement("button", {
     type: "button",
     onClick: () => {
       const patch = {
@@ -10845,7 +10883,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       showToast(`🧺 Order ${o.id} siap diambil.`);
     },
     className: "w-full bg-amber-500 text-white rounded-xl py-2 text-[9px] font-black active:scale-95"
-  }, "Siap Diambil"), React.createElement("div", {
+  }, "Siap Diambil"), !(o.status === 'Diproses' && !(o.delivery_zone === 'pickup_later' || String(o.payment_method || '').toLowerCase().includes('toko') || String(o.payment_method || '').toLowerCase().includes('offline') || String(o.payment_method || '').toLowerCase().includes('ambil'))) && React.createElement("div", {
     className: "grid grid-cols-3 gap-1.5 pt-1"
   }, React.createElement("button", {
     type: "button",
@@ -14504,6 +14542,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d1cb7cbbebfd1b',t:'MTc4NDM4MDk0Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d1d90d4c14fd1b',t:'MTc4NDM4MTQ5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

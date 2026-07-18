@@ -7941,7 +7941,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     } : null].filter(Boolean);
     const actionToneClass = tone => tone === 'red' ? 'bg-red-50 border-red-100 text-red-700' : tone === 'emerald' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : tone === 'blue' ? 'bg-blue-50 border-blue-100 text-blue-700' : 'bg-amber-50 border-amber-100 text-amber-700';
     return React.createElement("div", {
-      className: "space-y-3 text-xs"
+      className: "space-y-2.5 text-xs"
     }, React.createElement("div", {
       className: "flex items-center justify-between px-1 pt-1"
     }, React.createElement("span", {
@@ -8038,7 +8038,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, money(financeRecap?.omzetOffline)), React.createElement("span", {
       className: "text-[9px] text-amber-500 font-bold"
     }, financeRecap?.countOffline || 0, " transaksi")))), React.createElement("div", {
-      className: "bg-white/95 rounded-3xl p-3 border border-emerald-100 shadow-sm"
+      className: "bg-white/95 rounded-2xl p-3 border border-emerald-100/80 shadow-sm"
     }, React.createElement("div", {
       className: "flex items-start justify-between gap-3 mb-3"
     }, React.createElement("div", {
@@ -8050,7 +8050,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, "diagram bulat ini memecah isi kartu-kartu kas di bawahnya")), React.createElement("span", {
       className: "text-[8px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-full font-black flex-shrink-0"
     }, flowTotalRaw > 0 ? '100%' : '0%')), React.createElement("div", {
-      className: "rounded-3xl bg-gradient-to-br from-white via-emerald-50/40 to-purple-50/40 border border-emerald-100 p-3 mb-3"
+      className: "rounded-2xl bg-white border border-emerald-100 p-3 mb-3"
     }, React.createElement("div", {
       className: "flex items-center gap-3"
     }, React.createElement("div", {
@@ -8220,7 +8220,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, money(realCashToday)), React.createElement("span", {
       className: "block text-[8.5px] text-emerald-700/75 font-semibold mt-0.5"
     }, "Omzet menunjukkan barang terjual; kas nyata menunjukkan uang yang benar-benar bergerak di laci/QRIS."))), React.createElement("div", {
-      className: "bg-white/95 rounded-3xl p-3 border border-blue-100 shadow-sm"
+      className: "bg-white/95 rounded-2xl p-3 border border-blue-100/80 shadow-sm"
     }, React.createElement("div", {
       className: "flex items-center justify-between gap-3 mb-2"
     }, React.createElement("div", {
@@ -8277,7 +8277,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, "Selisih bukan untuk menyalahkan, tapi untuk dicari ceritanya bersama ☕"))) : React.createElement("div", {
       className: "rounded-2xl border border-dashed border-blue-100 bg-blue-50/40 p-3 text-center text-[10px] text-gray-500 font-semibold"
     }, "Belum ada shift tercatat. Buka shift dari halaman Catatan Warung agar laporan kasir punya rumah waktu.")), React.createElement("div", {
-      className: "bg-white/95 rounded-3xl p-3 border border-purple-100 shadow-sm"
+      className: "bg-white/95 rounded-2xl p-3 border border-purple-100/80 shadow-sm"
     }, React.createElement("div", {
       className: "flex items-center justify-between gap-2 mb-2"
     }, React.createElement("div", {
@@ -8323,9 +8323,9 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, todayInNotes[0] ? `+${money(todayInNotes[0].amount)}` : money(0)), React.createElement("span", {
       className: "block text-[8px] text-amber-700/75 font-semibold leading-tight truncate"
     }, todayInNotes[0] ? categoryLabel(todayInNotes[0].category) : 'belum ada masuk laci'))), React.createElement("div", {
-      className: "mt-2 rounded-2xl bg-gradient-to-r from-purple-50 to-amber-50 border border-purple-100 px-2 py-1.5 text-[8.5px] text-[#703d92] font-semibold leading-relaxed"
+      className: "mt-2 rounded-2xl bg-purple-50/60 border border-purple-100 px-2 py-1.5 text-[8.5px] text-[#703d92] font-semibold leading-relaxed"
     }, "Angka besar menjawab berapa uangnya; catatan operasional menjawab kenapa uang bergerak. Jadi admin membaca laporan tanpa kehilangan cerita warung ☕")), React.createElement("div", {
-      className: "bg-white/95 rounded-3xl p-3 border border-red-100/70 shadow-sm"
+      className: "bg-white/95 rounded-2xl p-3 border border-red-100/70 shadow-sm"
     }, React.createElement("div", {
       className: "flex items-center justify-between gap-2 mb-2"
     }, React.createElement("div", {
@@ -8358,9 +8358,9 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, item.tag))))) : React.createElement("div", {
       className: "rounded-2xl bg-emerald-50 border border-emerald-100 p-3 text-center text-[9.5px] text-emerald-700 font-bold leading-relaxed"
     }, "Belum ada catatan yang mendesak. Warung boleh tetap diseruput pelan-pelan, sambil tetap dipantau ☕")), React.createElement("div", {
-      className: "bg-white/95 rounded-3xl p-3 border border-amber-100/70 shadow-sm overflow-hidden relative"
+      className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm overflow-hidden relative"
     }, React.createElement("div", {
-      className: "absolute -right-10 -top-10 w-28 h-28 rounded-full bg-[#FFD700]/10 blur-sm pointer-events-none"
+      className: "absolute -right-10 -top-10 w-28 h-28 rounded-full bg-[#FFD700]/8 blur-sm pointer-events-none"
     }), React.createElement("div", {
       className: "relative flex items-start justify-between gap-2 mb-2"
     }, React.createElement("div", {
@@ -8376,7 +8376,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, "Total ", year), React.createElement("b", {
       className: "block text-[12px] text-[#703d92] leading-tight"
     }, money(yearTotal)))), React.createElement("div", {
-      className: "relative h-28 rounded-2xl bg-gradient-to-b from-purple-50/60 to-amber-50/35 border border-purple-50 px-2 pt-3 pb-2"
+      className: "relative h-28 rounded-2xl bg-[#FFFDF6] border border-purple-50 px-2 pt-3 pb-2"
     }, React.createElement("div", {
       className: "absolute left-2 right-2 top-[42%] border-t border-dashed border-[#D4AF37]/45"
     }), React.createElement("div", {
@@ -8422,7 +8422,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, monthNames[(minMonth.month || 1) - 1], " • ", money(minMonth.total)), React.createElement("span", {
       className: "block text-[8px] text-amber-600 font-semibold"
     }, "Bukan sepi untuk disesali, tapi tanda kapan warung perlu disapa lebih hangat ☕")))), React.createElement("div", {
-      className: "bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 rounded-2xl p-3 text-[10px] text-orange-700 font-semibold leading-relaxed"
+      className: "bg-white/95 border border-amber-100/70 rounded-2xl p-3 text-[10px] text-amber-700 font-semibold leading-relaxed shadow-sm"
     }, "Catatan jujur: omzet, kas nyata, piutang, dan catatan laci sengaja dipisah agar warung tidak bingung. Laba bersih akan makin akurat setelah modal, susut, kemasan, dan barang titipan lengkap."));
   };
   const bonAgenList = Array.isArray(bonAgenSubmissions) ? bonAgenSubmissions : [];
@@ -14494,6 +14494,6 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d10d82d80ccdd1',t:'MTc4NDM3MzE2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d119bcbedecdd1',t:'MTc4NDM3MzY2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

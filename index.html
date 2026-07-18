@@ -11807,7 +11807,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     };
     const adminSummary = adminSummaryMap[adminActiveSubMenu] || [['Data', '-'], ['Saran', '-'], ['Aksi', '-'], ['Rasa', '☕']];
     return React.createElement("div", {
-      className: "rounded-2xl text-white border border-[#FFD700]/35 px-3 py-2 shadow-sm relative overflow-hidden",
+      className: "rounded-2xl text-white border border-[#FFD700]/35 px-3 py-1.5 shadow-sm relative overflow-hidden",
       style: {
         backgroundImage: BRAND_BATIK_DATA_URI ? `linear-gradient(135deg, rgba(45,18,66,.88), rgba(112,61,146,.82) 55%, rgba(85,60,154,.88)), url(${BRAND_BATIK_DATA_URI})` : 'linear-gradient(135deg, #2d1242, #703d92 55%, #553C9A)',
         backgroundSize: 'cover, 220px auto',
@@ -11820,23 +11820,21 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, React.createElement("div", {
       className: "min-w-0"
     }, React.createElement("div", {
-      className: "font-black text-[#FFD700] text-[8px] uppercase tracking-[0.28em]"
-    }, "Mode CEO Warung"), React.createElement("div", {
-      className: "font-black text-white text-[12px] uppercase tracking-wider mt-1"
+      className: "font-black text-white text-[12px] uppercase tracking-wider"
     }, info[0]), React.createElement("div", {
       className: "text-[9px] text-white/75 font-semibold leading-snug mt-0.5"
     }, info[1])), React.createElement("span", {
       className: "bg-white/12 border border-white/20 text-[#FFD700] rounded-full px-2 py-1 text-[8px] font-black whitespace-nowrap"
     }, roleMap[adminActiveSubMenu] || 'Ruang Admin')), React.createElement("div", {
-      className: "relative grid grid-cols-3 gap-1.5 mt-2"
+      className: "relative grid grid-cols-3 gap-1 mt-1.5"
     }, ['Baca data', 'Saran sistem', 'Manusia putuskan'].map(label => React.createElement("span", {
       key: label,
       className: "rounded-xl bg-white/10 border border-white/15 text-white/85 px-2 py-1 text-[7.5px] font-black text-center"
     }, label))), React.createElement("div", {
-      className: "relative grid grid-cols-4 gap-1.5 mt-2"
+      className: "relative grid grid-cols-4 gap-1 mt-1.5"
     }, adminSummary.map(([label, value]) => React.createElement("div", {
       key: label,
-      className: "rounded-2xl bg-white/95 text-[#2d1242] border border-white/60 px-2 py-1.5 min-w-0 shadow-sm"
+      className: "rounded-xl bg-white/95 text-[#2d1242] border border-white/60 px-2 py-1 min-w-0 shadow-sm"
     }, React.createElement("span", {
       className: "block text-[7px] font-black text-gray-400 uppercase leading-none truncate"
     }, label), React.createElement("b", {
@@ -14448,5 +14446,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cd2fb74f119c51',t:'MTc4NDMzMjYxOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cd3bbe9e3b9c51',t:'MTc4NDMzMzExMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

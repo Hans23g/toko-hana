@@ -13583,7 +13583,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     onClick: () => setSelectedOrderToShip(o),
     className: "flex-1 bg-amber-500 text-white font-bold py-1.5 rounded-lg text-[10px]"
   }, "Antar / Input Resi")))))), adminActiveSubMenu === 'pengiriman' && React.createElement("div", {
-    className: "space-y-4 text-xs"
+    className: "space-y-3 text-xs"
   }, selectedOrderToShip && React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
@@ -13641,8 +13641,10 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: "bg-white/95 rounded-2xl p-4 border border-amber-100/70 shadow-sm"
   }, React.createElement("h4", {
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
-  }, "Catatan Pesanan Terkirim"), React.createElement("div", {
-    className: "space-y-2"
+  }, "Catatan Pesanan Terkirim"), React.createElement("p", {
+    className: "text-[9px] text-gray-500 font-semibold -mt-2 mb-2"
+  }, "Daftar ini dibuat scroll sendiri agar halaman kirim tetap pendek dan nyaman."), React.createElement("div", {
+    className: "space-y-2 max-h-72 overflow-y-auto no-scrollbar pr-1"
   }, (orders || []).filter(o => o && o.status === 'Selesai' && o.resi).map(o => React.createElement("div", {
     key: o.id,
     className: "p-3 border border-amber-100/70 rounded-2xl bg-[#FFFDF6] space-y-1"
@@ -14425,5 +14427,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cff0bbc84bfd95',t:'MTc4NDM2MTQ5Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1cff7bdcd43fd95',t:'MTc4NDM2MTc4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

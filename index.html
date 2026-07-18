@@ -10264,7 +10264,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, React.createElement("div", {
     className: "w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-3"
   }), React.createElement("div", {
-    className: "flex items-start justify-between gap-3 mb-3"
+    className: "flex items-start justify-between gap-3 mb-2"
   }, React.createElement("div", null, React.createElement("h4", {
     className: "font-black text-[#703d92] text-sm uppercase tracking-wider"
   }, "Scan Produk"), React.createElement("p", {
@@ -11936,7 +11936,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "lengkapi scan"))))) : React.createElement("div", {
     className: "mt-2 rounded-2xl bg-emerald-50 border border-emerald-100 p-3 text-center text-[9.5px] text-emerald-700 font-bold leading-relaxed"
   }, "Stok tampak aman. Tetap pantau pelan-pelan sambil ngopi ☕")), React.createElement("div", {
-    className: "bg-gradient-to-br from-amber-50 via-white to-purple-50 rounded-2xl p-4 border-2 border-dashed border-amber-200 shadow-sm text-xs"
+    className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm text-xs"
   }, React.createElement("div", {
     className: "flex items-start justify-between gap-3 mb-3"
   }, React.createElement("div", null, React.createElement("h4", {
@@ -11946,18 +11946,18 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, "Masukkan produk asli warung lewat CSV. Mode aman: update jika id/nama+kategori sama, tambah jika belum ada.")), React.createElement("button", {
     type: "button",
     onClick: downloadProductCsvTemplate,
-    className: "bg-[#703d92] text-white px-3 py-2 rounded-xl font-bold text-[10px] whitespace-nowrap"
+    className: "bg-purple-50 border border-purple-100 text-[#703d92] px-3 py-2 rounded-xl font-black text-[10px] whitespace-nowrap"
   }, "Template")), React.createElement("label", {
-    className: "block border-2 border-dashed border-purple-200 bg-white rounded-2xl p-4 text-center cursor-pointer active:scale-[0.99] transition-all"
+    className: "block border border-purple-100 bg-purple-50/30 rounded-2xl p-3 text-center cursor-pointer active:scale-[0.99] transition-all"
   }, React.createElement("input", {
     type: "file",
     accept: ".csv,text/csv",
     onChange: handleBulkCsvFile,
     className: "hidden"
   }), React.createElement("span", {
-    className: "block text-2xl mb-1"
+    className: "block text-xl mb-1"
   }, "📄"), React.createElement("span", {
-    className: "block font-extrabold text-[#703d92]"
+    className: "block font-extrabold text-[#703d92] text-[11px]"
   }, "Pilih File CSV Produk"), React.createElement("span", {
     className: "block text-[9px] text-gray-400 mt-1"
   }, "Kolom wajib: name, price, category_id, stock. Kolom scan: brand, variant, sku, barcode, rack_location. cost_price untuk laporan laba; desc membantu pembeli.")), bulkImportError && React.createElement("div", {
@@ -12144,13 +12144,17 @@ ${note ? `<div class="note">${note}</div>` : ''}
     className: `font-extrabold py-2.5 rounded-xl ${bulkImportBusy || bulkImportRows.some(r => r.errors.length) ? 'bg-gray-200 text-gray-400' : 'bg-emerald-600 text-white shadow'}`
   }, bulkImportBusy ? 'Mengimpor...' : 'Import Produk')))), React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
-  }, React.createElement("h4", {
-    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-3"
-  }, editingProduct ? '✏️ Edit Produk' : '✨ Tambah Produk Baru'), React.createElement("form", {
+  }, React.createElement("div", {
+    className: "flex items-center justify-between gap-2 mb-2"
+  }, React.createElement("div", null, React.createElement("h4", {
+    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider"
+  }, editingProduct ? 'Edit Produk' : 'Tambah Produk Baru'), React.createElement("p", {
+    className: "text-[9px] text-gray-500 font-semibold leading-snug"
+  }, "Produk yang rapi membuat kasir cepat, stok jujur, dan pelanggan tidak kecewa ☕"))), React.createElement("form", {
     onSubmit: handleSaveProduct,
     className: "space-y-2 text-xs"
   }, React.createElement("div", {
-    className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-purple-50 border border-purple-100 rounded-xl px-2.5 py-1.5"
+    className: "flex items-center gap-2 text-[8px] font-black text-[#703d92] uppercase tracking-wider bg-purple-50/70 border border-purple-100 rounded-xl px-2.5 py-1.5"
   }, "1. Barangnya Apa?"), React.createElement("p", {
     className: "text-[9px] text-gray-400 font-semibold -mt-1"
   }, "Isi yang penting dulu. Kalau bingung, pakai contoh harga di bawah."), React.createElement("input", {
@@ -12240,7 +12244,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }),
     className: "accent-[#703d92]"
   }), React.createElement("span", null, "Produk aktif / tampil di etalase")), React.createElement("div", {
-    className: "flex items-center gap-2 text-[9px] font-black text-[#703d92] uppercase tracking-wider bg-amber-50 border border-amber-100 rounded-xl px-2.5 py-1.5"
+    className: "flex items-center gap-2 text-[8px] font-black text-[#703d92] uppercase tracking-wider bg-amber-50/70 border border-amber-100 rounded-xl px-2.5 py-1.5"
   }, "3. Harga & Stoknya"), React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, React.createElement("input", {
@@ -12457,45 +12461,49 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, React.createElement("button", {
     type: "button",
     onClick: () => fillWithRandomUnsplash('product'),
-    className: "bg-purple-100 text-[#703d92] px-4 py-2.5 rounded-xl font-bold"
+    className: "bg-purple-50 border border-purple-100 text-[#703d92] px-4 py-2.5 rounded-xl font-black"
   }, "Cari Gambar"), React.createElement("button", {
     type: "submit",
-    className: "flex-1 bg-[#703d92] text-white font-bold py-2.5 rounded-xl"
+    className: "flex-1 bg-[#703d92] text-white font-black py-2.5 rounded-xl shadow-sm active:scale-[0.99]"
   }, editingProduct ? 'Simpan' : 'Tambah')))), React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between gap-2 mb-2"
   }, React.createElement("h4", {
-    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider mb-2"
-  }, "Daftar Produk (", (products || []).length, ")"), React.createElement("div", {
-    className: "space-y-2 max-h-96 overflow-y-auto no-scrollbar"
+    className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider"
+  }, "Daftar Produk"), React.createElement("span", {
+    className: "text-[8px] font-black text-[#703d92] bg-purple-50 border border-purple-100 rounded-full px-2 py-1"
+  }, (products || []).length, " item")), React.createElement("div", {
+    className: "space-y-2 max-h-96 overflow-y-auto no-scrollbar pr-1"
   }, (products || []).map(p => React.createElement("div", {
     key: p.id,
-    className: "flex items-center justify-between p-2 border rounded-xl hover:bg-gray-50 text-xs"
+    className: "flex items-center justify-between p-2.5 border border-amber-100/70 rounded-2xl bg-[#FFFDF6] hover:bg-white text-xs gap-2"
   }, React.createElement("div", {
     className: "flex items-center space-x-2"
   }, React.createElement("img", {
     src: p.image,
     alt: "",
-    className: "w-10 h-10 object-cover rounded border",
+    className: "w-10 h-10 object-cover rounded-xl border border-amber-100 flex-shrink-0",
     onError: e => {
       e.currentTarget.src = getPlaceholderImage(p.name, p.category);
     }
   }), React.createElement("div", {
     className: "min-w-0"
   }, React.createElement("h6", {
-    className: "font-bold truncate w-32"
+    className: "font-black truncate w-36 text-[10px] text-[#2d1242]"
   }, p.name), React.createElement("span", {
     className: "text-[10px] text-gray-400"
   }, "Rp ", p.price.toLocaleString(), " | Stok: ", p.stock, " | Terjual: ", p.sold))), React.createElement("div", {
     className: "flex space-x-1"
   }, React.createElement("button", {
     onClick: () => handleEditProductClick(p),
-    className: "p-1.5 text-blue-600 hover:bg-blue-50 rounded"
+    className: "w-7 h-7 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center"
   }, React.createElement(LucideIcon, {
     name: "Edit",
     size: 12
   })), React.createElement("button", {
     onClick: () => handleDeleteProduct(p.id),
-    className: "p-1.5 text-red-600 hover:bg-red-50 rounded"
+    className: "w-7 h-7 rounded-xl bg-red-50 border border-red-100 text-red-600 flex items-center justify-center"
   }, React.createElement(LucideIcon, {
     name: "Trash2",
     size: 12
@@ -14487,5 +14495,5 @@ try {
 }
   </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d0f52dbd5bcdd1',t:'MTc4NDM3MjE2NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d103f2ceeecdd1',t:'MTc4NDM3Mjc2OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

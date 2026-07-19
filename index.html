@@ -8898,14 +8898,14 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement("header", {
     className: `relative text-white px-3.5 pb-2.5 pt-[calc(env(safe-area-inset-top,20px)+0px)] overflow-hidden transition-all duration-300 ${darkMode ? 'bg-[#08070A] shadow-[inset_0_-1px_0_rgba(255,215,0,0.28),0_8px_24px_rgba(0,0,0,0.38)]' : 'bg-[#703d92] shadow-md'}`,
     style: {
-      backgroundImage: headerPatternUrl ? darkMode ? `linear-gradient(105deg, rgba(0,0,0,0.12), rgba(13,9,16,0.18)), url(${BRAND_BATIK_NIGHT_DATA_URI || headerPatternUrl})` : `url(${headerPatternUrl})` : 'none',
+      backgroundImage: headerPatternUrl ? darkMode ? `linear-gradient(105deg, rgba(0,0,0,0.18), rgba(13,9,16,0.25)), url(${BRAND_BATIK_NIGHT_DATA_URI || headerPatternUrl})` : `url(${headerPatternUrl})` : 'none',
       backgroundSize: 'cover',
       backgroundPosition: 'center'
     }
   }, headerPatternUrl && React.createElement("div", {
     className: "absolute inset-0 z-0",
     style: {
-      background: darkMode ? 'linear-gradient(to right, rgba(0,0,0,0.03), rgba(10,7,13,0.07))' : 'linear-gradient(to right, rgba(112,61,146,0.55), rgba(85,60,154,0.50))'
+      background: darkMode ? 'linear-gradient(to right, rgba(0,0,0,0.06), rgba(10,7,13,0.12))' : 'linear-gradient(to right, rgba(112,61,146,0.55), rgba(85,60,154,0.50))'
     }
   }), React.createElement("div", {
     className: "relative z-10 flex items-center justify-between gap-2.5"
@@ -9040,7 +9040,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }), React.createElement("div", {
     className: "absolute inset-0",
     style: {
-      background: darkMode ? 'linear-gradient(to right, rgba(0,0,0,0.03), rgba(10,7,13,0.07))' : 'linear-gradient(to right, rgba(112,61,146,0.55), rgba(85,60,154,0.50))'
+      background: darkMode ? 'linear-gradient(to right, rgba(0,0,0,0.06), rgba(10,7,13,0.12))' : 'linear-gradient(to right, rgba(112,61,146,0.55), rgba(85,60,154,0.50))'
     }
   }), React.createElement("div", {
     className: "relative px-3 pt-3 pb-3.5"
@@ -12142,9 +12142,9 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, "Top"))) : React.createElement("div", {
     className: `admin-clean flex-1 min-h-0 overflow-y-auto no-scrollbar text-xs ${darkMode ? 'bg-[#11091d]' : 'bg-[#F8F2E9]'}`
   }, React.createElement("div", {
-    className: `sticky top-0 z-50 text-white px-3.5 pb-2.5 pt-[calc(env(safe-area-inset-top,20px)+2px)] flex items-end justify-between flex-shrink-0 overflow-hidden border-b ${darkMode ? 'bg-[#08070A] border-[#FFD700]/20 shadow-[inset_0_-1px_0_rgba(255,215,0,0.28),0_8px_24px_rgba(0,0,0,0.38)]' : 'bg-[#703d92] border-[#FFD700]/20 shadow-[0_8px_22px_rgba(45,18,66,0.28)]'}`,
+    className: `sticky top-0 z-50 text-white px-3.5 pb-2.5 pt-[calc(env(safe-area-inset-top,20px)+4px)] flex items-end justify-between flex-shrink-0 overflow-hidden border-b ${darkMode ? 'bg-[#08070A] border-[#FFD700]/20 shadow-[inset_0_-1px_0_rgba(255,215,0,0.28),0_8px_24px_rgba(0,0,0,0.38)]' : 'bg-[#703d92] border-[#FFD700]/20 shadow-[0_8px_22px_rgba(45,18,66,0.28)]'}`,
     style: {
-      backgroundImage: headerPatternUrl ? darkMode ? `linear-gradient(105deg, rgba(0,0,0,0.12), rgba(13,9,16,0.18)), url(${BRAND_BATIK_NIGHT_DATA_URI || headerPatternUrl})` : `url(${headerPatternUrl})` : 'none',
+      backgroundImage: headerPatternUrl ? darkMode ? `linear-gradient(105deg, rgba(0,0,0,0.18), rgba(13,9,16,0.25)), url(${BRAND_BATIK_NIGHT_DATA_URI || headerPatternUrl})` : `url(${headerPatternUrl})` : 'none',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundColor: darkMode ? '#08070A' : '#703d92'
@@ -12152,7 +12152,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement("div", {
     className: "absolute inset-0",
     style: {
-      background: darkMode ? 'linear-gradient(to right, rgba(0,0,0,0.03), rgba(10,7,13,0.07))' : 'linear-gradient(to right, rgba(112,61,146,0.55), rgba(85,60,154,0.50))'
+      background: darkMode ? 'linear-gradient(to right, rgba(0,0,0,0.06), rgba(10,7,13,0.12))' : 'linear-gradient(to right, rgba(112,61,146,0.55), rgba(85,60,154,0.50))'
     }
   }), React.createElement("div", {
     className: "relative flex items-center space-x-2"
@@ -14916,5 +14916,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1dd43d4dcb05fa3',t:'MTc4NDUwMTIxNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1dd31df98566005',t:'MTc4NDUwMDQ3OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

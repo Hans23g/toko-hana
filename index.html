@@ -189,6 +189,20 @@
     .dark-mode-root .admin-clean select,
     .dark-mode-root .admin-clean textarea{background:#1d1130!important;color:#f8f1fb!important;border-color:rgba(255,215,112,.18)!important;}
 
+    /* Search header punya cahaya malam sendiri: tetap terlihat di atas batik, tetapi tidak menyilaukan. */
+    .dark-mode-root input.hana-header-search{
+      background:rgba(29,17,48,.82)!important;
+      color:#fff8e8!important;
+      border-color:rgba(255,215,0,.58)!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 5px 16px rgba(0,0,0,.24),0 0 0 1px rgba(255,215,0,.06)!important;
+    }
+    .dark-mode-root input.hana-header-search::placeholder{color:rgba(236,218,244,.58)!important;}
+    .dark-mode-root input.hana-header-search:focus{
+      background:rgba(33,21,45,.96)!important;
+      border-color:rgba(255,215,0,.82)!important;
+      box-shadow:0 0 0 3px rgba(255,215,0,.10),0 0 18px rgba(255,215,0,.18)!important;
+    }
+
     /* Harga kertas, chip emas, QR, dan tombol kuning tetap terang sebagai aksen warung. */
     .dark-mode-root [class~="bg-[#FFF8E1]"],
     .dark-mode-root [class~="bg-[#FFF8E1]/95"],
@@ -8893,7 +8907,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
       setSearchQuery(e.target.value);
       if (currentTab !== 'Home' && currentTab !== 'Promo') setCurrentTab('Home');
     },
-    className: "w-full bg-white/58 backdrop-blur-sm text-gray-800 placeholder-gray-400 pl-9 pr-8 py-1.5 rounded-full text-[16px] leading-none border-[2px] border-[#FFD700]/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_6px_18px_rgba(45,18,66,0.12)] focus:bg-white/82 focus:shadow-[0_0_15px_rgba(255,215,0,0.45)] focus:outline-none transition-all font-normal tracking-[-0.02em]"
+    className: "hana-header-search w-full bg-white/58 backdrop-blur-sm text-gray-800 placeholder-gray-400 pl-9 pr-8 py-1.5 rounded-full text-[16px] leading-none border-[2px] border-[#FFD700]/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_6px_18px_rgba(45,18,66,0.12)] focus:bg-white/82 focus:shadow-[0_0_15px_rgba(255,215,0,0.45)] focus:outline-none transition-all font-normal tracking-[-0.02em]"
   }), React.createElement("div", {
     className: "absolute left-3 top-1/2 -translate-y-1/2 text-[#B8860B] drop-shadow-sm"
   }, React.createElement(LucideIcon, {
@@ -14875,5 +14889,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d73ba7ebc2fdfa',t:'MTc4NDQzNzk2Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d74752dcaffdfa',t:'MTc4NDQzODQ0Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

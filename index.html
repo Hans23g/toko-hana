@@ -8221,7 +8221,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, "omzet & kanal pesanan")), React.createElement("div", {
       className: "grid grid-cols-2 gap-2"
     }, React.createElement("div", {
-      className: "relative overflow-hidden bg-gradient-to-br from-purple-50 to-white p-3 rounded-2xl border border-purple-100 shadow-sm"
+      className: `relative overflow-hidden bg-gradient-to-br p-3 rounded-2xl border shadow-sm transition-colors ${darkMode ? 'from-[#281735] to-[#1b1427] border-purple-300/15 shadow-[0_6px_18px_rgba(0,0,0,0.20)]' : 'from-purple-50 to-white border-purple-100'}`
     }, React.createElement("div", {
       className: "absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full opacity-70 pointer-events-none",
       style: {
@@ -8238,7 +8238,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, money(financeRecap?.omzetHariIni)), React.createElement("span", {
       className: "text-[9px] text-gray-400 font-bold"
     }, "uang masuk hari ini"))), React.createElement("div", {
-      className: "relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white p-3 rounded-2xl border border-emerald-100 shadow-sm"
+      className: `relative overflow-hidden bg-gradient-to-br p-3 rounded-2xl border shadow-sm transition-colors ${darkMode ? 'from-[#123126] to-[#1b1427] border-emerald-300/15 shadow-[0_6px_18px_rgba(0,0,0,0.20)]' : 'from-emerald-50 to-white border-emerald-100'}`
     }, React.createElement("div", {
       className: "absolute right-2 top-2 bottom-2 w-14 flex items-end gap-1 opacity-55 pointer-events-none"
     }, weekMiniBars.map((bar, idx) => React.createElement("div", {
@@ -8262,7 +8262,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, "7 hari terakhir")))), React.createElement("div", {
       className: "grid grid-cols-2 gap-2"
     }, React.createElement("div", {
-      className: "relative overflow-hidden bg-gradient-to-br from-blue-50 to-white p-3 rounded-2xl border border-blue-100"
+      className: `relative overflow-hidden bg-gradient-to-br p-3 rounded-2xl border transition-colors ${darkMode ? 'from-[#172238] to-[#1b1427] border-blue-300/15' : 'from-blue-50 to-white border-blue-100'}`
     }, React.createElement("div", {
       className: "absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-70 pointer-events-none",
       style: {
@@ -8285,7 +8285,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, money(financeRecap?.omzetOnline)), React.createElement("span", {
       className: "text-[9px] text-blue-500 font-bold"
     }, financeRecap?.countOnline || 0, " transaksi"))), React.createElement("div", {
-      className: "relative overflow-hidden bg-gradient-to-br from-amber-50 to-white p-3 rounded-2xl border border-amber-100"
+      className: `relative overflow-hidden bg-gradient-to-br p-3 rounded-2xl border transition-colors ${darkMode ? 'from-[#2b2016] to-[#1b1427] border-amber-300/15' : 'from-amber-50 to-white border-amber-100'}`
     }, React.createElement("div", {
       className: "absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-70 pointer-events-none",
       style: {
@@ -8442,7 +8442,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     }, "-", money(ledgerCashOutToday)), React.createElement("span", {
       className: "block text-[8px] text-red-600 font-bold leading-tight"
     }, "iuran, plastik, pengamen, sedekah, biaya kecil"))), React.createElement("div", {
-      className: "col-span-2 rounded-2xl bg-gradient-to-br from-amber-50 via-white to-orange-50 border border-amber-100 p-2"
+      className: `col-span-2 rounded-2xl bg-gradient-to-br border p-2 transition-colors ${darkMode ? 'from-[#2b2016] via-[#21152d] to-[#2b1a16] border-amber-300/15 shadow-[0_5px_16px_rgba(0,0,0,0.18)]' : 'from-amber-50 via-white to-orange-50 border-amber-100'}`
     }, React.createElement("div", {
       className: "text-[8px] font-black text-amber-700 uppercase tracking-wider mb-1"
     }, "Catatan yang perlu diawasi"), React.createElement("div", {
@@ -14873,5 +14873,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d7033ffaebff86',t:'MTc4NDQzNTY1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d711fd2944ff86',t:'MTc4NDQzNjI1OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

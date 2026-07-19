@@ -190,17 +190,20 @@
     .dark-mode-root .admin-clean textarea{background:#1d1130!important;color:#f8f1fb!important;border-color:rgba(255,215,112,.18)!important;}
 
     /* Search header punya cahaya malam sendiri: tetap terlihat di atas batik, tetapi tidak menyilaukan. */
+    /* Gunakan border milik input CPO sendiri agar selalu berada di lapisan paling atas. */
     .dark-mode-root input.hana-header-search{
-      background:linear-gradient(rgba(29,17,48,.90),rgba(29,17,48,.90)) padding-box,linear-gradient(100deg,#FFF6BF 0%,#FFD700 48%,#FFF1A0 100%) border-box!important;
+      background:rgba(29,17,48,.88)!important;
       color:#fff8e8!important;
-      border:2px solid transparent!important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 5px 16px rgba(0,0,0,.26),0 0 13px rgba(255,226,72,.34)!important;
+      border:2px solid #FFD700!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 5px 16px rgba(0,0,0,.26),0 0 12px rgba(255,215,0,.42)!important;
+      -webkit-appearance:none;
+      appearance:none;
     }
     .dark-mode-root input.hana-header-search::placeholder{color:rgba(244,228,250,.68)!important;}
     .dark-mode-root input.hana-header-search:focus{
-      background:linear-gradient(rgba(33,21,45,.97),rgba(33,21,45,.97)) padding-box,linear-gradient(100deg,#FFF9D2 0%,#FFE44D 48%,#FFF5B8 100%) border-box!important;
-      border:2px solid transparent!important;
-      box-shadow:0 0 0 3px rgba(255,228,77,.14),0 0 22px rgba(255,228,77,.46)!important;
+      background:rgba(33,21,45,.98)!important;
+      border:2px solid #FFF3A6!important;
+      box-shadow:0 0 0 3px rgba(255,215,0,.16),0 0 20px rgba(255,215,0,.55)!important;
     }
 
     /* Harga kertas, chip emas, QR, dan tombol kuning tetap terang sebagai aksen warung. */
@@ -14889,5 +14892,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d7799def64203d',t:'MTc4NDQ0MDUwMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d8bfaedcd5c1c8',t:'MTc4NDQ1Mzg1OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

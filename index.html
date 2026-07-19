@@ -91,7 +91,8 @@
     .dark-mode-root [class~="bg-white/72"],
     .dark-mode-root [class~="bg-white/70"],
     .dark-mode-root [class~="bg-[#FFFDF6]"],
-    .dark-mode-root [class~="bg-[#F5F3F7]"]{background-color:#21152d!important;}
+    .dark-mode-root [class~="bg-[#F5F3F7]"],
+    .dark-mode-root [class~="bg-[#F8F2E9]"]{background-color:#21152d!important;}
     .dark-mode-root [class~="bg-gray-50"],
     .dark-mode-root [class~="bg-gray-100"]{background-color:#1d1426!important;}
     .dark-mode-root [class~="bg-gray-200"]{background-color:#33263e!important;}
@@ -12097,7 +12098,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }), React.createElement("span", {
     className: "text-[7px] font-black text-[#FFD700] uppercase leading-none mt-0.5 drop-shadow-sm"
   }, "Top"))) : React.createElement("div", {
-    className: "admin-clean flex-1 min-h-0 overflow-y-auto no-scrollbar bg-[#F8F2E9] animate-fade-in text-xs"
+    className: `admin-clean flex-1 min-h-0 overflow-y-auto no-scrollbar animate-fade-in text-xs transition-colors duration-300 ${darkMode ? 'bg-[#11091d]' : 'bg-[#F8F2E9]'}`
   }, React.createElement("div", {
     className: "sticky top-0 z-50 text-white px-4 pb-2 pt-[calc(env(safe-area-inset-top,20px)+8px)] flex items-end justify-between flex-shrink-0 overflow-hidden border-b border-[#FFD700]/20 shadow-[0_8px_22px_rgba(45,18,66,0.28)]",
     style: {
@@ -12141,7 +12142,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
     name: "LogOut",
     size: 12
   }), React.createElement("span", null, lang === 'id' ? 'Keluar' : 'Logout')))), React.createElement("div", {
-    className: "sticky z-40 grid grid-cols-5 bg-white/72 backdrop-blur-md p-1.5 gap-1 border-y border-transparent shadow-[0_10px_26px_rgba(112,61,146,0.08)]",
+    className: `sticky z-40 grid grid-cols-5 backdrop-blur-md p-1.5 gap-1 border-y transition-colors ${darkMode ? 'bg-[#190d26]/95 border-white/[0.06] shadow-[0_10px_26px_rgba(0,0,0,0.25)]' : 'bg-white/72 border-transparent shadow-[0_10px_26px_rgba(112,61,146,0.08)]'}`,
     style: {
       top: 'calc(env(safe-area-inset-top, 0px) + 52px)'
     }
@@ -12199,7 +12200,7 @@ ${note ? `<div class="note">${note}</div>` : ''}
   }, tab.label), tab.badge > 0 && React.createElement("span", {
     className: "absolute top-0.5 right-0.5 bg-red-500 text-white font-black text-[7px] min-w-[13px] h-[13px] px-1 rounded-full flex items-center justify-center animate-pulse"
   }, tab.badge)))), React.createElement("div", {
-    className: "px-3 pt-0 pb-28 bg-[#F8F2E9]"
+    className: `px-3 pt-0 pb-28 min-h-full transition-colors ${darkMode ? 'bg-[#11091d]' : 'bg-[#F8F2E9]'}`
   }, (() => {
     const meta = {
       produk: ['Produk Warung', 'Kepala Gudang', 'Pantau stok, harga, scan, dan data barang dengan rapi.'],
@@ -14872,5 +14873,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d6f970dd36fd95',t:'MTc4NDQzNTI1Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1d7033ffaebff86',t:'MTc4NDQzNTY1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

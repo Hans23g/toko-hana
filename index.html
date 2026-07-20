@@ -183,14 +183,14 @@
     /* Info Jelajah malam: tanpa garis pemisah; tiap tulisan menyatu tenang dengan lorong. */
     .dark-mode-root .jelajah-info-list{
       background:#17101f!important;
-      border-color:rgba(198,125,255,.14)!important;
-      box-shadow:0 0 14px rgba(143,76,190,.07);
+      border-color:rgba(198,125,255,.22)!important;
+      box-shadow:0 0 10px rgba(143,76,190,.06);
     }
     .dark-mode-root .jelajah-info-row{
       background:rgba(33,21,45,.78)!important;
       border-top:0!important;
-      border-bottom:1px solid rgba(198,125,255,.30)!important;
-      box-shadow:inset 0 -1px 0 rgba(198,125,255,.22), 0 1px 10px rgba(198,125,255,.10)!important;
+      border-bottom:1px solid rgba(198,125,255,.16)!important;
+      box-shadow:inset 0 -1px 0 rgba(198,125,255,.08), 0 1px 6px rgba(198,125,255,.045)!important;
     }
     .dark-mode-root .jelajah-info-row:last-child{border-bottom:0!important;box-shadow:none!important;}
     .dark-mode-root .jelajah-info-row:active{background:rgba(72,39,94,.72)!important;}
@@ -9469,7 +9469,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
       },
       className: `relative w-full overflow-hidden rounded-2xl border px-3 py-2.5 shadow-sm text-left active:scale-[0.99] transition-all mb-3 ${darkMode ? 'border-amber-300/15 bg-gradient-to-br from-[#1b1427] via-[#2b2016] to-[#24162f] shadow-[0_7px_20px_rgba(0,0,0,0.22)]' : 'border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50'}`
     }, React.createElement("div", {
-      className: "absolute -right-8 -top-8 w-24 h-24 bg-[#FFD700]/20 rounded-full blur-xl"
+      className: "absolute -right-8 -top-8 w-24 h-24 bg-[#FFD700]/8 rounded-full blur-xl pointer-events-none"
     }), React.createElement("div", {
       className: "relative flex items-center gap-2.5"
     }, React.createElement("img", {
@@ -9586,7 +9586,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, "Aplikasi")), React.createElement("p", {
     className: "text-[10px] text-white/80 font-semibold leading-snug mt-0.5"
   }, "Rekomendasi harga jual dari modal, kemasan, margin dan pembulatan warung.")))), selectedJelajahCategory === 'Mitra' && React.createElement("div", {
-    className: `mx-2 my-1 rounded-3xl border p-3 shadow-sm transition-colors ${darkMode ? 'border-amber-300/15 bg-gradient-to-br from-[#1b1427] via-[#2b2016] to-[#24162f] shadow-[0_8px_24px_rgba(0,0,0,0.24)]' : 'border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50'}`
+    className: `mx-2 my-1 rounded-3xl border p-3 shadow-sm transition-colors ${darkMode ? 'border-purple-300/20 bg-gradient-to-br from-[#1b1427] via-[#21152d] to-[#24162f] shadow-[0_8px_22px_rgba(0,0,0,0.22)]' : 'border-amber-100 bg-gradient-to-br from-white via-amber-50 to-purple-50'}`
   }, React.createElement("div", {
     className: "flex items-start gap-2.5 mb-3"
   }, React.createElement("div", {
@@ -14922,5 +14922,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1def0091fe5f904',t:'MTc4NDUxODc1NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1df0797efa1f904',t:'MTc4NDUxOTcxOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

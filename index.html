@@ -11980,22 +11980,14 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement(LucideIcon, {
     name: passwordVisible ? "EyeOff" : "Eye",
     size: 14
-  })), React.createElement("div", {
-    className: "text-right -mt-1"
-  }, React.createElement("button", {
-    type: "button",
-    onClick: handleForgotPassword,
-    className: "text-[9.5px] font-bold text-[#703d92] hover:underline"
-  }, lang === 'id' ? 'Lupa password?' : 'Forgot password?'))), React.createElement("button", {
+  })))), React.createElement("button", {
     type: "submit",
     className: "w-full bg-[#703d92] hover:bg-[#553C9A] text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-xs"
   }, t('loginBtn')), React.createElement("button", {
     type: "button",
-    onClick: () => setAuthActiveTab('register'),
-    className: "w-full bg-amber-50 border border-amber-200 text-amber-700 font-black py-3 rounded-xl active:scale-[0.99] text-xs"
-  }, lang === 'id' ? 'Daftar Akun Baru' : 'Create New Account'), React.createElement("p", {
-    className: "text-[9px] text-gray-400 font-semibold leading-relaxed text-center -mt-1"
-  }, lang === 'id' ? 'Gunakan email asli dan aktif. Link reset password/konfirmasi akun akan dikirim ke email itu — jangan pakai email palsu ya kawan ☕' : 'Use a real, active email. Password reset/account confirmation links will be sent there — do not use a fake email ☕')), authActiveTab === 'register' && React.createElement("form", {
+    onClick: handleForgotPassword,
+    className: "w-full text-center text-[10px] font-black text-[#703d92] bg-purple-50 border border-purple-100 rounded-xl py-2 active:scale-[0.99]"
+  }, lang === 'id' ? 'Lupa Password?' : 'Forgot Password?')), authActiveTab === 'register' && React.createElement("form", {
     onSubmit: handleCustomerSignUp,
     className: "space-y-3.5"
   }, React.createElement("div", null, React.createElement("label", {
@@ -12079,7 +12071,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     size: 15
   }), React.createElement("span", null, lang === 'id' ? 'Masuk sebagai Tamu (Belanja di Toko)' : 'Continue as Guest (In-Store Shopping)')), React.createElement("p", {
     className: "text-center text-[9px] text-gray-400 mt-2 leading-relaxed"
-  }, lang === 'id' ? 'Khusus pelanggan langsung/offline — tanpa daftar & login. Pembayaran Cash/QRIS di kasir. Koin Pi hanya untuk tukar potongan bila tersedia.' : 'For walk-in/offline customers — no registration needed. Payment via Cash/QRIS at the counter. Pi Coin is only for redeeming a discount when available.'))))) : currentUser.role === 'guest' ? React.createElement("div", {
+  }, lang === 'id' ? 'Khusus pelanggan langsung/offline — tanpa daftar & login. Pembayaran Cash/QRIS di kasir. Koin Pi hanya untuk tukar potongan bila tersedia.' : 'For walk-in/offline customers — no registration needed. Payment via Cash/QRIS at the counter. Pi Coin is only for redeeming a discount when available.')))) : currentUser.role === 'guest' ? React.createElement("div", {
     className: "space-y-4 animate-fade-in"
   }, React.createElement("div", {
     className: "-mx-4"
@@ -15425,5 +15417,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e4bbab4b2a9c3e',t:'MTc4NDU3OTUyNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e49b906aa3f91a',t:'MTc4NDU3ODIwOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

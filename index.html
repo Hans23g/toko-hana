@@ -203,11 +203,20 @@
     .dark-mode-root .admin-clean input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
     .dark-mode-root .admin-clean select,
     .dark-mode-root .admin-clean textarea{background:#1d1130!important;color:#f8f1fb!important;border-color:rgba(255,215,112,.18)!important;}
+    .dark-mode-root .cashier-order-search-line{
+      background:transparent!important;
+      background-color:transparent!important;
+      box-shadow:inset 0 0 0 1px rgba(255,215,112,.08)!important;
+    }
+    .dark-mode-root .cashier-order-search-line input,
     .dark-mode-root input.cashier-order-search-input{
       background:transparent!important;
       background-color:transparent!important;
+      background-image:none!important;
       border-color:transparent!important;
       box-shadow:none!important;
+      -webkit-box-shadow:0 0 0 1000px transparent inset!important;
+      outline:none!important;
     }
 
     /* Search header punya cahaya malam sendiri: tetap terlihat di atas batik, tetapi tidak menyilaukan. */
@@ -11216,7 +11225,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }), React.createElement("span", {
     className: `block text-[8px] font-black leading-tight ${darkMode ? 'text-amber-100' : 'text-[#703d92]'}`
   }, label)))), React.createElement("div", {
-    className: `mb-2 border rounded-2xl px-3 py-2 flex items-center gap-2 ${darkMode ? 'bg-[#160f22] border-[#FFD700]/15' : 'bg-white border-purple-100'}`
+    className: `cashier-order-search-line mb-2 border rounded-2xl px-3 py-2 flex items-center gap-2 ${darkMode ? 'bg-transparent border-[#FFD700]/14' : 'bg-white border-purple-100'}`
   }, React.createElement(LucideIcon, {
     name: "Search",
     size: 13,
@@ -15119,5 +15128,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e32face9c75f3b',t:'MTc4NDU2MzMwNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e338eccb25585b',t:'MTc4NDU2MzY4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

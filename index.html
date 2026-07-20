@@ -9598,7 +9598,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   })(), React.createElement("div", {
     className: "bg-white rounded-2xl p-3 border border-purple-50 shadow-sm mb-3"
   }, React.createElement("h4", {
-    className: "font-black text-[#703d92] text-sm"
+    className: `${darkMode ? 'font-black text-[#FFD700] text-sm' : 'font-black text-[#703d92] text-sm'}`
   }, "Ruang Jelajah"), React.createElement("p", {
     className: "text-[10px] text-gray-500 font-semibold mt-1 leading-relaxed"
   }, "Buka alat bantu, kabar warga, mitra, dan pengetahuan meski sedang tidak belanja."), React.createElement("div", {
@@ -11185,7 +11185,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, "Qty ", row.qty, " ", row.unit || 'unit', " • harga bon Rp ", Number(row.price || 0).toLocaleString('id-ID')), React.createElement("div", {
     className: `mt-1 font-bold ${row.match ? 'text-emerald-700' : 'text-amber-700'}`
   }, row.match ? `Cocok: ${row.match.name}` : 'Belum cocok ke produk — nanti pilih manual')))))), currentTab === 'Cart' && React.createElement("div", {
-    className: `animate-fade-in p-4 pb-24 ${currentUser?.role === 'cashier' ? 'bg-gradient-to-b from-purple-50/70 via-white to-amber-50/50' : ''}`
+    className: `animate-fade-in p-4 pb-24 ${currentUser?.role === 'cashier' ? darkMode ? 'bg-gradient-to-b from-[#120c1c] via-[#1a1028] to-[#211526]' : 'bg-gradient-to-b from-purple-50/70 via-white to-amber-50/50' : ''}`
   }, currentUser?.role === 'cashier' && React.createElement("div", {
     className: `mb-3 rounded-3xl border p-3 shadow-sm transition-colors ${darkMode ? 'border-[#FFD700]/20 bg-gradient-to-br from-[#15101f] via-[#24162f] to-[#2b2016] shadow-[0_8px_24px_rgba(0,0,0,0.24)]' : 'border-purple-100 bg-white shadow-[0_8px_20px_rgba(112,61,146,0.08)]'}`
   }, React.createElement("div", {
@@ -11195,32 +11195,32 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, "🧾"), React.createElement("div", {
     className: "min-w-0"
   }, React.createElement("h4", {
-    className: "font-black text-[#703d92] text-[12px] uppercase tracking-wider leading-tight"
+    className: `font-black text-[12px] uppercase tracking-wider leading-tight ${darkMode ? 'text-[#FFD700]' : 'text-[#703d92]'}`
   }, lang === 'id' ? 'Konfirmasi Order Kasir' : 'Cashier Order Confirmation'), React.createElement("p", {
-    className: "text-[9.5px] text-gray-500 font-semibold leading-relaxed mt-0.5"
+    className: `text-[9.5px] font-semibold leading-relaxed mt-0.5 ${darkMode ? 'text-purple-100/75' : 'text-gray-500'}`
   }, lang === 'id' ? 'Meja khusus kasir: cek order masuk, beri potongan bila perlu, lalu tutup pembayaran tanpa ramai banner.' : 'Cashier-only desk: review incoming orders, set discounts when needed, then close payment cleanly.'))), React.createElement("div", {
     className: "grid grid-cols-3 gap-1.5 mb-2"
   }, [[lang === 'id' ? '1. Cek' : '1. Check', 'FileSearch'], [lang === 'id' ? '2. Potongan' : '2. Discount', 'BadgePercent'], [lang === 'id' ? '3. Lunas' : '3. Paid', 'BadgeCheck']].map(([label, icon]) => React.createElement("div", {
     key: label,
-    className: "rounded-2xl bg-purple-50 border border-purple-100 px-2 py-2 text-center"
+    className: `rounded-2xl border px-2 py-2 text-center ${darkMode ? 'bg-[#22152f] border-[#FFD700]/15' : 'bg-purple-50 border-purple-100'}`
   }, React.createElement(LucideIcon, {
     name: icon,
     size: 13,
-    className: "mx-auto text-[#703d92] mb-1"
+    className: `${darkMode ? 'mx-auto text-[#FFD700] mb-1' : 'mx-auto text-[#703d92] mb-1'}`
   }), React.createElement("span", {
-    className: "block text-[8px] font-black text-[#703d92] leading-tight"
+    className: `block text-[8px] font-black leading-tight ${darkMode ? 'text-amber-100' : 'text-[#703d92]'}`
   }, label)))), React.createElement("div", {
-    className: "mb-2 bg-white border border-purple-100 rounded-2xl px-3 py-2 flex items-center gap-2"
+    className: `mb-2 border rounded-2xl px-3 py-2 flex items-center gap-2 ${darkMode ? 'bg-[#160f22] border-[#FFD700]/15' : 'bg-white border-purple-100'}`
   }, React.createElement(LucideIcon, {
     name: "Search",
     size: 13,
-    className: "text-[#703d92] flex-shrink-0"
+    className: `${darkMode ? 'text-[#FFD700]' : 'text-[#703d92]'} flex-shrink-0`
   }), React.createElement("input", {
     type: "text",
     value: cashierOrderSearch,
     onChange: e => setCashierOrderSearch(e.target.value),
     placeholder: lang === 'id' ? 'Cari kode order / nama / WA...' : 'Search order code / name / phone...',
-    className: "flex-1 bg-transparent text-[16px] font-normal outline-none text-gray-700 placeholder-gray-400"
+    className: `flex-1 bg-transparent text-[16px] font-normal outline-none ${darkMode ? 'text-purple-50 placeholder-purple-200/45' : 'text-gray-700 placeholder-gray-400'}`
   }), cashierOrderSearch && React.createElement("button", {
     type: "button",
     onClick: () => setCashierOrderSearch(''),
@@ -11373,7 +11373,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, item.desc)))))))), React.createElement("div", {
     className: "-mx-4"
   }, currentUser?.role === 'cashier' ? React.createElement("div", {
-    className: "-mx-4 mb-3 bg-[#2d1242] text-white border-y border-[#FFD700]/25 pl-7 pr-4 py-3 shadow-sm"
+    className: `-mx-4 mb-3 text-white border-y pl-7 pr-4 py-3 shadow-sm ${darkMode ? 'bg-gradient-to-r from-[#120c1c] via-[#2d1242] to-[#1b1427] border-[#FFD700]/30 shadow-[0_8px_24px_rgba(0,0,0,0.28)]' : 'bg-[#2d1242] border-[#FFD700]/25'}`
   }, React.createElement("div", {
     className: "flex items-center justify-between gap-3"
   }, React.createElement("div", null, React.createElement("div", {
@@ -11389,13 +11389,13 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, lang === 'id' ? 'Kasir' : 'Cashier'))) : React.createElement(GununganDivider, {
     title: lang === 'id' ? 'Keranjang Warung' : 'Warung Cart'
   })), cart.length === 0 ? currentUser?.role === 'cashier' ? React.createElement("div", {
-    className: "bg-white rounded-3xl p-5 text-center border border-dashed border-purple-200 shadow-sm"
+    className: `rounded-3xl p-5 text-center border border-dashed shadow-sm ${darkMode ? 'bg-[#160f22] border-[#FFD700]/20 shadow-[0_8px_22px_rgba(0,0,0,.22)]' : 'bg-white border-purple-200'}`
   }, React.createElement("div", {
-    className: "w-14 h-14 mx-auto rounded-2xl bg-purple-50 text-[#703d92] flex items-center justify-center text-2xl shadow-sm mb-3"
+    className: `w-14 h-14 mx-auto rounded-2xl flex items-center justify-center text-2xl shadow-sm mb-3 ${darkMode ? 'bg-[#2d1242] text-[#FFD700] border border-[#FFD700]/20' : 'bg-purple-50 text-[#703d92]'}`
   }, "🧾"), React.createElement("h4", {
-    className: "font-black text-[#703d92] text-sm"
+    className: `${darkMode ? 'font-black text-[#FFD700] text-sm' : 'font-black text-[#703d92] text-sm'}`
   }, lang === 'id' ? 'Keranjang kasir masih kosong' : 'Cashier cart is empty'), React.createElement("p", {
-    className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1.5 max-w-[280px] mx-auto"
+    className: `text-[10px] font-semibold leading-relaxed mt-1.5 max-w-[280px] mx-auto ${darkMode ? 'text-purple-100/70' : 'text-gray-500'}`
   }, lang === 'id' ? 'Tambahkan barang dari Kasir Cepat. Meja ini sengaja bersih supaya daftar belanjaan pelanggan mudah dibaca.' : 'Add products from Quick Cashier. This desk is intentionally clean so customer items are easy to read.'), React.createElement("button", {
     type: "button",
     onClick: () => setCurrentTab('Cashier'),
@@ -15113,5 +15113,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e3053f9d299d14',t:'MTc4NDU2MTU2Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e3235f5b77a1b5',t:'MTc4NDU2MjgwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

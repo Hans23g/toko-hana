@@ -1098,6 +1098,31 @@ const supabaseService = {
       };
     }
   },
+  resetPassword: async email => {
+    const client = getSupabaseClient();
+    if (!client) return {
+      data: null,
+      error: new Error('Supabase client not loaded')
+    };
+    try {
+      const redirectTo = window.location.origin && window.location.origin !== 'null' ? `${window.location.origin}${window.location.pathname}` : window.location.href.split('#')[0];
+      const {
+        data,
+        error
+      } = await client.auth.resetPasswordForEmail(email, {
+        redirectTo
+      });
+      return {
+        data,
+        error
+      };
+    } catch (e) {
+      return {
+        data: null,
+        error: e
+      };
+    }
+  },
   signOut: async () => {
     const client = getSupabaseClient();
     if (!client) return {
@@ -3505,6 +3530,10 @@ function App() {
   const [authPhone, setAuthPhone] = useState('');
   const [authAddress, setAuthAddress] = useState('');
   const [authReferralCode, setAuthReferralCode] = useState('');
+  const [passwordRecoveryMode, setPasswordRecoveryMode] = useState(false);
+  const [resetPasswordNew, setResetPasswordNew] = useState('');
+  const [resetPasswordConfirm, setResetPasswordConfirm] = useState('');
+  const [resetPasswordStatus, setResetPasswordStatus] = useState('');
   const [headerPatternUrl, setHeaderPatternUrl] = useState(() => {
     return safeStorage.getItem('toko_hana_header_pattern') || BRAND_BATIK_DATA_URI;
   });
@@ -3613,6 +3642,18 @@ function App() {
   useEffect(() => {
     const t = setInterval(() => setClockTick(Date.now()), 60000);
     return () => clearInterval(t);
+  }, []);
+  useEffect(() => {
+    const urlText = `${window.location.href} ${window.location.hash}`;
+    if (/type=recovery|reset-password/i.test(urlText)) {
+      setPasswordRecoveryMode(true);
+      setCurrentUser(null);
+      setAdminLoggedIn(false);
+      safeStorage.setItem('toko_hana_admin', 'false');
+      setCurrentTab('Profil');
+      setAuthActiveTab('login');
+      setResetPasswordStatus(lang === 'id' ? '🔐 Silakan buat password baru untuk akun Anda.' : '🔐 Please create a new password for your account.');
+    }
   }, []);
   const warungStatus = useMemo(() => {
     const h = new Date().getHours();
@@ -5670,6 +5711,53 @@ Not recognized as active cashier/admin in staff_roles.`);
     recognition.onend = () => {
       setVoiceSearching(false);
     };
+  };
+  const handleForgotPassword = async () => {
+    const emailInput = window.prompt(lang === 'id' ? 'Masukkan email akun Toko Hana Anda:' : 'Enter your Toko Hana account email:', authEmail || '');
+    const email = String(emailInput || '').trim();
+    if (!email) return;
+    showToast(lang === 'id' ? '📧 Mengirim link reset password...' : '📧 Sending password reset link...');
+    const {
+      error
+    } = await supabaseService.resetPassword(email);
+    if (error) {
+      alert(lang === 'id' ? `Gagal kirim reset password: ${error.message || error}` : `Failed to send reset password: ${error.message || error}`);
+      return;
+    }
+    alert(lang === 'id' ? '📧 Link reset password sudah dikirim. Buka email Anda, klik link dari Supabase/Toko Hana, lalu buat password baru.' : '📧 Password reset link has been sent. Open your email, click the link from Supabase/Toko Hana, then create a new password.');
+  };
+  const handleCompletePasswordReset = async e => {
+    e.preventDefault();
+    if (resetPasswordNew.length < 6) {
+      alert(lang === 'id' ? 'Password baru minimal 6 karakter.' : 'New password must be at least 6 characters.');
+      return;
+    }
+    if (resetPasswordNew !== resetPasswordConfirm) {
+      alert(lang === 'id' ? 'Konfirmasi password belum sama.' : 'Password confirmation does not match.');
+      return;
+    }
+    const client = getSupabaseClient();
+    if (!client) {
+      alert(lang === 'id' ? 'Supabase belum aktif. Coba buka ulang link reset.' : 'Supabase is not active. Try opening the reset link again.');
+      return;
+    }
+    setResetPasswordStatus(lang === 'id' ? '⏳ Menyimpan password baru...' : '⏳ Saving new password...');
+    const {
+      error
+    } = await client.auth.updateUser({
+      password: resetPasswordNew
+    });
+    if (error) {
+      setResetPasswordStatus(lang === 'id' ? `❌ Gagal: ${error.message}` : `❌ Failed: ${error.message}`);
+      return;
+    }
+    setResetPasswordNew('');
+    setResetPasswordConfirm('');
+    setPasswordRecoveryMode(false);
+    setResetPasswordStatus('');
+    window.location.hash = '#';
+    showToast(lang === 'id' ? '✅ Password baru tersimpan. Silakan masuk kembali.' : '✅ New password saved. Please sign in again.');
+    await supabaseService.signOut();
   };
   const handleUnifiedLogin = async e => {
     e.preventDefault();
@@ -11829,9 +11917,11 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement("div", {
     className: "flex bg-[#F5F3F7] p-1.5 rounded-2xl"
   }, React.createElement("button", {
+    type: "button",
     onClick: () => setAuthActiveTab('login'),
     className: `flex-1 py-2.5 rounded-xl text-center font-bold transition-all text-xs ${authActiveTab === 'login' ? 'bg-[#703d92] text-white shadow' : 'text-gray-500 hover:text-[#703d92]'}`
   }, t('loginCustomer')), React.createElement("button", {
+    type: "button",
     onClick: () => setAuthActiveTab('register'),
     className: `flex-1 py-2.5 rounded-xl text-center font-bold transition-all text-xs ${authActiveTab === 'register' ? 'bg-[#703d92] text-white shadow' : 'text-gray-500 hover:text-[#703d92]'}`
   }, t('registerCustomer'))), authActiveTab === 'login' && React.createElement("form", {
@@ -11867,10 +11957,23 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   })))), React.createElement("button", {
     type: "submit",
     className: "w-full bg-[#703d92] hover:bg-[#553C9A] text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-xs"
-  }, t('loginBtn'))), authActiveTab === 'register' && React.createElement("form", {
+  }, t('loginBtn')), React.createElement("button", {
+    type: "button",
+    onClick: e => {
+      e.preventDefault();
+      setAuthActiveTab('register');
+    },
+    className: "w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-xl shadow-md active:scale-[0.99] text-xs"
+  }, lang === 'id' ? 'Daftar Sekarang' : 'Register Now'), React.createElement("p", {
+    className: "text-[9px] text-gray-400 font-semibold leading-relaxed text-center -mt-1"
+  }, lang === 'id' ? 'Gunakan email asli dan aktif. Link konfirmasi akun dikirim ke email itu — jangan pakai email palsu ya kawan ☕' : 'Use a real, active email. Account confirmation links will be sent there — do not use a fake email ☕')), authActiveTab === 'register' && React.createElement("form", {
     onSubmit: handleCustomerSignUp,
     className: "space-y-3.5"
-  }, React.createElement("div", null, React.createElement("label", {
+  }, React.createElement("div", {
+    className: "rounded-2xl bg-emerald-50 border border-emerald-100 px-3 py-2 text-[9.5px] text-emerald-700 font-semibold leading-relaxed"
+  }, React.createElement("div", {
+    className: "font-black uppercase tracking-wider text-[9px] mb-0.5"
+  }, lang === 'id' ? 'Form Daftar Akun Baru' : 'New Account Form'), React.createElement("p", null, lang === 'id' ? 'Gunakan email asli dan aktif supaya konfirmasi akun bisa sampai ke inbox Anda.' : 'Use a real, active email so account confirmation can reach your inbox.')), React.createElement("div", null, React.createElement("label", {
     className: "block text-gray-600 font-bold mb-1"
   }, "Nama Lengkap *"), React.createElement("input", {
     type: "text",
@@ -11921,7 +12024,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement(LucideIcon, {
     name: "Gift",
     size: 12
-  }), React.createElement("span", null, lang === 'id' ? 'Kode Referal Teman (opsional)' : 'Friend\'s Referral Code (optional)')), React.createElement("input", {
+  }), React.createElement("span", null, lang === 'id' ? 'Kode Referal Teman (opsional)' : "Friend's Referral Code (optional)")), React.createElement("input", {
     type: "text",
     placeholder: "Contoh: HANA-3",
     value: authReferralCode,
@@ -15297,5 +15400,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e4891e4c464109',t:'MTc4NDU3NzQ1Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e4e1b54bf3ce2a',t:'MTc4NDU4MTA4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

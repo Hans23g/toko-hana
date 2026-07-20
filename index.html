@@ -11954,7 +11954,13 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement(LucideIcon, {
     name: passwordVisible ? "EyeOff" : "Eye",
     size: 14
-  })))), React.createElement("button", {
+  })))), React.createElement("div", {
+    className: "text-right -mt-1 mb-2"
+  }, React.createElement("button", {
+    type: "button",
+    onClick: handleForgotPassword,
+    className: "text-[9.5px] font-bold text-[#703d92] hover:underline"
+  }, lang === 'id' ? 'Lupa password?' : 'Forgot password?')), React.createElement("button", {
     type: "submit",
     className: "w-full bg-[#703d92] hover:bg-[#553C9A] text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-xs"
   }, t('loginBtn')), React.createElement("button", {
@@ -15400,5 +15406,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e4e1b54bf3ce2a',t:'MTc4NDU4MTA4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e4edd4490b243f',t:'MTc4NDU4MTU3OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

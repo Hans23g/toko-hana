@@ -4372,6 +4372,39 @@ function App() {
     return (customers || []).find(c => c.name && currentUser.name && c.name.toLowerCase() === currentUser.name.toLowerCase() || c.phone && c.phone === currentUser.phone || c.email && currentUser.email && c.email === currentUser.email) || null;
   }, [customers, currentUser]);
   const memberProfilePhoto = String(myCustomerRecord?.profile_photo_url || currentUser?.profile_photo_url || '').trim();
+  const accountCardMeta = useMemo(() => {
+    const role = currentUser?.role || 'customer';
+    if (role === 'admin') return {
+      short: lang === 'id' ? 'Kartu Admin' : 'Admin Card',
+      title: lang === 'id' ? 'Kartu Admin Toko Hana' : 'Toko Hana Admin Card',
+      official: lang === 'id' ? '⚡ Admin Resmi Toko Hana' : '⚡ Toko Hana Official Admin'
+    };
+    if (role === 'cashier') return {
+      short: lang === 'id' ? 'Kartu Kasir' : 'Cashier Card',
+      title: lang === 'id' ? 'Kartu Kasir Toko Hana' : 'Toko Hana Cashier Card',
+      official: lang === 'id' ? '🧾 Kasir Resmi Toko Hana' : '🧾 Toko Hana Official Cashier'
+    };
+    if (role === 'stock_staff') return {
+      short: lang === 'id' ? 'Kartu Stok' : 'Stock Staff Card',
+      title: lang === 'id' ? 'Kartu Stok Toko Hana' : 'Toko Hana Stock Staff Card',
+      official: lang === 'id' ? '📦 Staff Stok Toko Hana' : '📦 Toko Hana Stock Staff'
+    };
+    if (/courier|kurir/i.test(role)) return {
+      short: lang === 'id' ? 'Kartu Kurir' : 'Courier Card',
+      title: lang === 'id' ? 'Kartu Mitra Kurir Toko Hana' : 'Toko Hana Courier Partner Card',
+      official: lang === 'id' ? '🛵 Mitra Kurir Toko Hana' : '🛵 Toko Hana Courier Partner'
+    };
+    if (/partner|mitra/i.test(role)) return {
+      short: lang === 'id' ? 'Kartu Mitra' : 'Partner Card',
+      title: lang === 'id' ? 'Kartu Mitra Toko Hana' : 'Toko Hana Partner Card',
+      official: lang === 'id' ? '🤝 Mitra Resmi Toko Hana' : '🤝 Toko Hana Official Partner'
+    };
+    return {
+      short: lang === 'id' ? 'Kartu Member' : 'Member Card',
+      title: lang === 'id' ? 'Kartu Member Toko Hana' : 'Toko Hana Member Card',
+      official: lang === 'id' ? '☕ Member Resmi Toko Hana' : '☕ Toko Hana Official Member'
+    };
+  }, [currentUser?.role, lang]);
   const myPoints = myCustomerRecord ? myCustomerRecord.loyalty_points || 0 : currentUser?.role === 'customer' ? currentUser.loyalty_points || 0 : 0;
   const hasCustomerPointRecord = currentUser?.role === 'customer' && !!myCustomerRecord;
   const loyaltyLevel = useMemo(() => {
@@ -11755,7 +11788,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement("div", {
     className: "-mx-4"
   }, React.createElement(GununganDivider, {
-    title: lang === 'id' ? 'Kartu Member' : 'Member Card'
+    title: accountCardMeta.short
   })), React.createElement("div", {
     className: "-mx-1 rounded-[20px] p-4 min-h-[210px] border border-[#FFD700]/35 relative overflow-hidden",
     style: {
@@ -11782,7 +11815,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: "min-w-0"
   }, React.createElement("span", {
     className: "block font-black text-[#FFD700] text-[13.5px] uppercase tracking-[0.08em] truncate leading-tight drop-shadow-sm"
-  }, lang === 'id' ? 'Kartu Member Toko Hana' : 'Toko Hana Member Card'), React.createElement("span", {
+  }, accountCardMeta.title), React.createElement("span", {
     className: "block text-white/85 text-[8px] font-extrabold uppercase tracking-[0.18em] truncate mt-0.5"
   }, lang === 'id' ? 'Toko Hana • Warungnya Rakyat' : 'Toko Hana • The People’s Store'))), React.createElement("div", {
     className: "absolute right-0 top-[64px] flex items-center gap-2"
@@ -11824,7 +11857,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: "font-bold text-[13.5px] text-white truncate leading-tight drop-shadow-sm"
   }, currentUser.name), React.createElement("p", {
     className: "text-[7.5px] text-[#FFD700]/85 font-bold uppercase tracking-wider mb-1"
-  }, lang === 'id' ? '☕ Member Resmi Toko Hana' : '☕ Toko Hana Official Member'), React.createElement("div", {
+  }, accountCardMeta.official), React.createElement("div", {
     className: "flex items-center gap-2.5"
   }, React.createElement("div", {
     className: "relative flex-shrink-0"
@@ -12015,7 +12048,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: "min-w-0"
   }, React.createElement("span", {
     className: `block font-extrabold text-[10.5px] ${darkMode ? 'text-white' : 'text-[#703d92]'}`
-  }, lang === 'id' ? 'Foto Kartu Member' : 'Member Card Photo'), React.createElement("span", {
+  }, lang === 'id' ? `Foto ${accountCardMeta.short}` : `${accountCardMeta.short} Photo`), React.createElement("span", {
     className: `block text-[8.5px] leading-snug ${darkMode ? 'text-purple-300' : 'text-gray-500'}`
   }, lang === 'id' ? 'Tempel link foto publik. Kosongkan kalau ingin kembali memakai avatar.' : 'Paste a public photo link. Clear it to use the avatar again.'))), React.createElement("label", {
     className: `block font-bold mb-1 ${darkMode ? 'text-purple-300' : 'text-gray-500'}`
@@ -14926,5 +14959,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e23aa719df49a2',t:'MTc4NDU1MzI2OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e24be9dc9f260c',t:'MTc4NDU1Mzk3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

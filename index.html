@@ -2727,16 +2727,16 @@ const translations = {
     qrisHeader: "QRIS Payment Method",
     qrisDesc: "Scan using your m-Banking / e-Wallet to complete the payment.",
     donePaymentBtn: "Payment Completed",
-    authTitle: "Masuk / Register Account",
-    loginCustomer: "Masuk Pelanggan",
+    authTitle: "Login / Register Account",
+    loginCustomer: "Customer Login",
     registerCustomer: "New Register",
-    loginAdmin: "Masuk Admin",
+    loginAdmin: "Admin Login",
     fullName: "Full Name",
     emailLabel: "Email Address",
     phoneLabel: "WhatsApp Number",
     addressLabel: "Full Address",
     passwordLabel: "Password",
-    loginBtn: "Masuk Sekarang",
+    loginBtn: "Login Now",
     registerBtn: "Register Customer",
     welcomeBack: "Welcome back",
     logoutSuccess: "Logged out successfully.",
@@ -11823,7 +11823,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement("div", {
     className: "-mx-4"
   }, React.createElement(GununganDivider, {
-    title: lang === 'id' ? 'Masuk atau Daftar Juragan' : 'Masuk or Register'
+    title: lang === 'id' ? 'Masuk atau Daftar Juragan' : 'Login or Register'
   })), React.createElement("div", {
     className: "bg-white rounded-2xl p-5 border shadow-md space-y-4"
   }, React.createElement("div", {
@@ -11954,26 +11954,58 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, lang === 'id' ? 'Khusus pelanggan langsung/offline — tanpa daftar & login. Pembayaran Cash/QRIS di kasir. Koin Pi hanya untuk tukar potongan bila tersedia.' : 'For walk-in/offline customers — no registration needed. Payment via Cash/QRIS at the counter. Pi Coin is only for redeeming a discount when available.')))) : currentUser.role === 'guest' ? React.createElement("div", {
     className: "space-y-4 animate-fade-in"
   }, React.createElement("div", {
-    className: "bg-gradient-to-tr from-amber-400 to-amber-500 text-[#2d1242] p-5 rounded-3xl shadow-md text-center relative overflow-hidden"
+    className: "rounded-[24px] p-4 min-h-[218px] border relative overflow-hidden text-white shadow-[0_16px_30px_rgba(45,18,66,0.20)]",
+    style: {
+      backgroundImage: BRAND_BATIK_DATA_URI ? `linear-gradient(135deg, rgba(45,18,66,.88), rgba(112,61,146,.72), rgba(154,116,29,.58)), url(${BRAND_BATIK_DATA_URI})` : 'linear-gradient(135deg,#2d1242,#703d92,#9A741D)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      borderColor: 'rgba(255,215,0,.34)'
+    }
   }, React.createElement("div", {
-    className: "absolute -right-10 -top-10 w-28 h-28 bg-white/10 rounded-full"
+    className: "absolute -right-10 -top-10 w-32 h-32 rounded-full bg-[#FFD700]/18 blur-sm"
   }), React.createElement("div", {
-    className: "absolute -left-10 -bottom-10 w-28 h-28 bg-white/10 rounded-full"
+    className: "absolute -left-12 -bottom-12 w-36 h-36 rounded-full bg-white/10 blur-sm"
   }), React.createElement("div", {
-    className: "relative w-16 h-16 bg-[#703d92] rounded-full mx-auto flex items-center justify-center shadow-lg border-2 border-white/30"
-  }, React.createElement(LucideIcon, {
-    name: "Store",
-    className: "text-amber-300",
-    size: 28
-  })), React.createElement("h3", {
-    className: "font-extrabold text-base mt-2"
-  }, lang === 'id' ? 'Pelanggan Tamu' : 'Guest Customer'), React.createElement("p", {
-    className: "text-[10px] font-black uppercase tracking-wider opacity-80"
-  }, lang === 'id' ? 'Mode Belanja Offline di Toko' : 'In-Store Offline Shopping Mode')), React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border shadow-sm text-[11px] text-gray-600 space-y-2"
+    className: "absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-[#FFD700]/80 to-transparent"
+  }), React.createElement("div", {
+    className: "relative flex items-start justify-between gap-3"
+  }, React.createElement("div", {
+    className: "flex items-center gap-2.5 min-w-0"
+  }, React.createElement("img", {
+    src: BRAND_LOGO_DATA_URI,
+    alt: "Toko Hana",
+    className: "w-10 h-10 object-contain drop-shadow-md flex-shrink-0"
+  }), React.createElement("div", {
+    className: "min-w-0"
+  }, React.createElement("span", {
+    className: "block text-[8px] font-black text-[#FFD700] uppercase tracking-[0.22em]"
+  }, lang === 'id' ? 'Kartu Tamu Hana' : 'Hana Guest Pass'), React.createElement("h3", {
+    className: "font-black text-base leading-tight truncate"
+  }, lang === 'id' ? 'Pelanggan Tamu' : 'Guest Customer'))), React.createElement("span", {
+    className: "rounded-full bg-white/12 border border-white/20 px-2.5 py-1 text-[8px] font-black uppercase tracking-wider text-[#FFD700]"
+  }, "Guest")), React.createElement("div", {
+    className: "relative mt-5 flex items-center gap-3"
+  }, React.createElement("div", {
+    className: "w-[76px] h-[76px] rounded-[24px] bg-white/12 border border-white/15 flex items-center justify-center shadow-[0_12px_24px_rgba(0,0,0,.22)]"
+  }, React.createElement("span", {
+    className: "text-[38px]"
+  }, "☕")), React.createElement("div", {
+    className: "min-w-0 flex-1"
+  }, React.createElement("p", {
+    className: "text-[11px] font-extrabold text-white leading-snug"
+  }, lang === 'id' ? 'Hari ini bisa belanja sebagai tamu. Kalau daftar, kartu ini naik kelas jadi Kartu Member Toko Hana.' : 'Shop as a guest today. Register anytime to turn this into a Toko Hana Member Card.'), React.createElement("div", {
+    className: "mt-2 grid grid-cols-2 gap-1.5"
+  }, React.createElement("span", {
+    className: "rounded-xl bg-white/12 border border-white/15 px-2 py-1 text-[8px] font-black text-[#FFD700] text-center"
+  }, "HanaPoin"), React.createElement("span", {
+    className: "rounded-xl bg-white/12 border border-white/15 px-2 py-1 text-[8px] font-black text-[#FFD700] text-center"
+  }, "Tier Card")))), React.createElement("div", {
+    className: "relative mt-4 rounded-2xl bg-white/10 border border-white/15 px-3 py-2 text-[9px] font-bold text-purple-50 leading-relaxed"
+  }, lang === 'id' ? 'Daftar member untuk simpan riwayat belanja, kumpulkan HanaPoin, dan buka kartu sakti sesuai tier.' : 'Register to save order history, collect HanaPoints, and unlock your tier-based card.')), React.createElement("div", {
+    className: "bg-white/95 rounded-2xl p-4 border border-amber-100/80 shadow-sm text-[11px] text-gray-600 space-y-2"
   }, React.createElement("h4", {
-    className: "font-extrabold text-[#703d92] uppercase tracking-wider text-[11px] border-b pb-2"
-  }, lang === 'id' ? 'ℹ️ Info Mode Tamu' : 'ℹ️ Guest Mode Info'), React.createElement("p", null, "• ", lang === 'id' ? 'Pembayaran Cash/QRIS langsung di kasir. Koin Pi hanya untuk tukar potongan bila tersedia.' : 'Payment via Cash/QRIS at the counter. Pi Coin is only for redeeming a discount when available.'), React.createElement("p", null, "• ", lang === 'id' ? '🪙 Baru dengar Koin Pi? Tanyakan ke kasir cara menambang Pi gratis dari HP Anda!' : '🪙 New to Pi Coin? Ask our cashier how to mine Pi for free from your phone!'), React.createElement("p", null, "• ", lang === 'id' ? 'Tanpa ongkir — barang diambil langsung di toko.' : 'No shipping fee — items picked up in-store.'), React.createElement("p", null, "• ", lang === 'id' ? 'Ingin belanja online + pengiriman? Silakan daftar akun pelanggan!' : 'Want online shopping + delivery? Please register a customer account!')), React.createElement("button", {
+    className: "font-extrabold text-[#703d92] uppercase tracking-wider text-[11px] border-b border-amber-100 pb-2"
+  }, lang === 'id' ? 'ℹ️ Info Mode Tamu' : 'ℹ️ Guest Mode Info'), React.createElement("p", null, "• ", lang === 'id' ? 'Pembayaran Cash/QRIS langsung di kasir. Koin Pi hanya untuk tukar potongan bila tersedia.' : 'Payment via Cash/QRIS at the counter. Pi Coin is only for redeeming a discount when available.'), React.createElement("p", null, "• ", lang === 'id' ? 'Tanpa ongkir — barang diambil langsung di toko.' : 'No shipping fee — items picked up in-store.'), React.createElement("p", null, "• ", lang === 'id' ? 'Daftar member kapan saja untuk riwayat belanja, HanaPoin, dan kartu tier.' : 'Register anytime for order history, HanaPoints, and your tier card.')), React.createElement("button", {
     onClick: () => {
       setCurrentUser(null);
       setAuthActiveTab('register');
@@ -15261,5 +15293,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e45a829d93a024',t:'MTc4NDU3NTU0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e470d22ca8f884',t:'MTc4NDU3NjQ1OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

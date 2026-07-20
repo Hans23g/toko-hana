@@ -4437,6 +4437,74 @@ function App() {
       nextAt: 1000
     };
   }, [myPoints]);
+  const accountCardTheme = useMemo(() => {
+    const role = currentUser?.role || 'customer';
+    const themes = {
+      admin: {
+        accent: '#FFD700',
+        border: 'rgba(255,215,0,.42)',
+        overlay: 'linear-gradient(135deg, rgba(9,7,12,.92), rgba(45,18,66,.82), rgba(132,94,24,.62))',
+        fallback: 'linear-gradient(135deg,#08070A,#2d1242,#8A6A18)'
+      },
+      cashier: {
+        accent: '#93C5FD',
+        border: 'rgba(147,197,253,.42)',
+        overlay: 'linear-gradient(135deg, rgba(23,34,56,.90), rgba(85,60,154,.80), rgba(45,18,66,.72))',
+        fallback: 'linear-gradient(135deg,#172238,#553C9A,#2d1242)'
+      },
+      stock: {
+        accent: '#F4CB70',
+        border: 'rgba(244,203,112,.42)',
+        overlay: 'linear-gradient(135deg, rgba(49,32,18,.90), rgba(86,58,24,.78), rgba(45,18,66,.62))',
+        fallback: 'linear-gradient(135deg,#2b2016,#6b4217,#2d1242)'
+      },
+      courier: {
+        accent: '#6EE7B7',
+        border: 'rgba(110,231,183,.42)',
+        overlay: 'linear-gradient(135deg, rgba(12,42,31,.90), rgba(20,91,63,.76), rgba(45,18,66,.64))',
+        fallback: 'linear-gradient(135deg,#0c2a1f,#145b3f,#2d1242)'
+      },
+      partner: {
+        accent: '#A7F3D0',
+        border: 'rgba(167,243,208,.42)',
+        overlay: 'linear-gradient(135deg, rgba(12,45,36,.90), rgba(23,104,82,.75), rgba(132,94,24,.55))',
+        fallback: 'linear-gradient(135deg,#0f2d24,#176852,#8A6A18)'
+      },
+      bronze: {
+        accent: '#F4A261',
+        border: 'rgba(244,162,97,.42)',
+        overlay: 'linear-gradient(135deg, rgba(67,40,28,.90), rgba(112,61,45,.76), rgba(45,18,66,.68))',
+        fallback: 'linear-gradient(135deg,#43281c,#703d2d,#2d1242)'
+      },
+      silver: {
+        accent: '#D8DCE8',
+        border: 'rgba(216,220,232,.42)',
+        overlay: 'linear-gradient(135deg, rgba(35,39,52,.90), rgba(84,91,112,.72), rgba(45,18,66,.64))',
+        fallback: 'linear-gradient(135deg,#232734,#545b70,#2d1242)'
+      },
+      gold: {
+        accent: '#FFD700',
+        border: 'rgba(255,215,0,.42)',
+        overlay: 'linear-gradient(135deg, rgba(45,18,66,.88), rgba(112,61,146,.78), rgba(154,116,29,.66))',
+        fallback: 'linear-gradient(135deg,#2d1242,#703d92,#9A741D)'
+      },
+      pioneer: {
+        accent: '#FFD76A',
+        border: 'rgba(255,215,0,.50)',
+        overlay: 'linear-gradient(135deg, rgba(26,12,40,.92), rgba(88,49,130,.80), rgba(172,125,25,.68))',
+        fallback: 'linear-gradient(135deg,#1a0c28,#583182,#AC7D19)'
+      }
+    };
+    if (role === 'admin') return themes.admin;
+    if (role === 'cashier') return themes.cashier;
+    if (role === 'stock_staff') return themes.stock;
+    if (/courier|kurir/i.test(role)) return themes.courier;
+    if (/partner|mitra/i.test(role)) return themes.partner;
+    if (loyaltyLevel.name === 'Pi Pioneer') return themes.pioneer;
+    if (loyaltyLevel.name === 'Gold') return themes.gold;
+    if (loyaltyLevel.name === 'Silver') return themes.silver;
+    return themes.bronze;
+  }, [currentUser?.role, loyaltyLevel.name]);
   const calcPointsEarned = (totalRp, paymentMethod) => {
     let pts = Math.floor(totalRp / 1000) * pointsPerThousand;
     pts = Math.floor(pts * loyaltyLevel.multiplier);
@@ -11790,11 +11858,12 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement(GununganDivider, {
     title: accountCardMeta.short
   })), React.createElement("div", {
-    className: "-mx-1 rounded-[20px] p-4 min-h-[210px] border border-[#FFD700]/35 relative overflow-hidden",
+    className: "-mx-1 rounded-[20px] p-4 min-h-[210px] border relative overflow-hidden",
     style: {
-      backgroundImage: BRAND_BATIK_DATA_URI ? `linear-gradient(135deg, rgba(45,18,66,0.88), rgba(112,61,146,0.80)), url(${BRAND_BATIK_DATA_URI})` : 'linear-gradient(135deg,#2d1242,#553C9A,#703d92)',
+      backgroundImage: BRAND_BATIK_DATA_URI ? `${accountCardTheme.overlay}, url(${BRAND_BATIK_DATA_URI})` : accountCardTheme.fallback,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
+      borderColor: accountCardTheme.border,
       boxShadow: '0 12px 24px rgba(45,18,66,0.18), 0 2px 0 rgba(212,175,55,0.08)'
     }
   }, React.createElement("div", {
@@ -11802,7 +11871,10 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }), React.createElement("div", {
     className: "absolute -left-12 -bottom-12 w-32 h-32 bg-white/7 rounded-full blur-sm"
   }), React.createElement("div", {
-    className: "absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-[#FFD700]/70 to-transparent"
+    className: "absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent to-transparent",
+    style: {
+      backgroundImage: `linear-gradient(to right, transparent, ${accountCardTheme.accent}AA, transparent)`
+    }
   }), React.createElement("div", {
     className: "relative flex items-center justify-between gap-3 mb-4"
   }, React.createElement("div", {
@@ -11814,7 +11886,10 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }), React.createElement("div", {
     className: "min-w-0"
   }, React.createElement("span", {
-    className: "block font-black text-[#FFD700] text-[13.5px] uppercase tracking-[0.08em] truncate leading-tight drop-shadow-sm"
+    className: "block font-black text-[13.5px] uppercase tracking-[0.08em] truncate leading-tight drop-shadow-sm",
+    style: {
+      color: accountCardTheme.accent
+    }
   }, accountCardMeta.title), React.createElement("span", {
     className: "block text-white/85 text-[8px] font-extrabold uppercase tracking-[0.18em] truncate mt-0.5"
   }, lang === 'id' ? 'Toko Hana • Warungnya Rakyat' : 'Toko Hana • The People’s Store'))), React.createElement("div", {
@@ -11850,13 +11925,21 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
       transform: 'translateY(2px)'
     }
   }, avatarGender === 'wanita' ? '👩🏻' : '👨🏻')), React.createElement("span", {
-    className: "absolute bottom-0 left-1/2 -translate-x-1/2 bg-[#2d1242]/90 text-[#FFD700] rounded-full px-2.5 py-1 text-[8px] leading-none font-black whitespace-nowrap shadow-lg backdrop-blur-md"
+    className: "absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full px-2.5 py-1 text-[8px] leading-none font-black whitespace-nowrap shadow-lg backdrop-blur-md",
+    style: {
+      color: accountCardTheme.accent,
+      background: 'rgba(45,18,66,.86)',
+      border: `1px solid ${accountCardTheme.border}`
+    }
   }, loyaltyLevel.emoji, " ", loyaltyLevel.name)), React.createElement("div", {
     className: "flex-1 min-w-0"
   }, React.createElement("h3", {
     className: "font-bold text-[13.5px] text-white truncate leading-tight drop-shadow-sm"
   }, currentUser.name), React.createElement("p", {
-    className: "text-[7.5px] text-[#FFD700]/85 font-bold uppercase tracking-wider mb-1"
+    className: "text-[7.5px] font-bold uppercase tracking-wider mb-1",
+    style: {
+      color: `${accountCardTheme.accent}D9`
+    }
   }, accountCardMeta.official), React.createElement("div", {
     className: "flex items-center gap-2.5"
   }, React.createElement("div", {
@@ -14959,5 +15042,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e24be9dc9f260c',t:'MTc4NDU1Mzk3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e26aa4cc92fe1f',t:'MTc4NDU1NTIzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

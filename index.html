@@ -3602,6 +3602,12 @@ function App() {
   const [warungStatusNote, setWarungStatusNote] = useState(() => {
     return safeStorage.getItem('toko_hana_status_note') || '';
   });
+  const [headerMoodMode, setHeaderMoodMode] = useState(() => {
+    return safeStorage.getItem('toko_hana_header_mood_mode') || 'random';
+  });
+  const [headerMoodFixed, setHeaderMoodFixed] = useState(() => {
+    return safeStorage.getItem('toko_hana_header_mood_fixed') || 'diagonal';
+  });
   const [clockTick, setClockTick] = useState(Date.now());
   useEffect(() => {
     const t = setInterval(() => setClockTick(Date.now()), 60000);
@@ -4130,6 +4136,14 @@ function App() {
         if (map.warung_status_note !== undefined) {
           setWarungStatusNote(map.warung_status_note || '');
           safeStorage.setItem('toko_hana_status_note', map.warung_status_note || '');
+        }
+        if (map.header_mood_mode) {
+          setHeaderMoodMode(map.header_mood_mode);
+          safeStorage.setItem('toko_hana_header_mood_mode', map.header_mood_mode);
+        }
+        if (map.header_mood_fixed) {
+          setHeaderMoodFixed(map.header_mood_fixed);
+          safeStorage.setItem('toko_hana_header_mood_fixed', map.header_mood_fixed);
         }
         if (map.nav_pattern !== undefined) {
           setNavPatternUrl(map.nav_pattern || BRAND_BATIK_DATA_URI);
@@ -6767,6 +6781,13 @@ Not recognized as active cashier/admin in staff_roles.`);
     const hasError = results.some(r => r && r.error);
     showToast(hasError ? '☕ Status tersimpan lokal. Database belum menerima.' : '🏪 Status warung tersimpan ke database.');
   };
+  const saveHeaderMoodToDb = async (mode = headerMoodMode, fixed = headerMoodFixed) => {
+    safeStorage.setItem('toko_hana_header_mood_mode', mode);
+    safeStorage.setItem('toko_hana_header_mood_fixed', fixed);
+    const results = await Promise.all([persistSettingToDb('header_mood_mode', mode), persistSettingToDb('header_mood_fixed', fixed)]);
+    const hasError = results.some(r => r && r.error);
+    showToast(hasError ? '☕ Rasa header tersimpan lokal dulu.' : '✨ Rasa header tersimpan. Buka ulang aplikasi untuk random baru.');
+  };
   const handleSaveHeaderPattern = e => {
     e.preventDefault();
     const urlInput = e.target.elements.headerPattern.value.trim();
@@ -8946,10 +8967,27 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: "rounded-2xl bg-gray-50 border border-dashed border-gray-200 p-2 text-[9px] text-gray-500 font-semibold leading-snug"
   }, "Belum ada shift berjalan. Isi nama penjaga dan kas awal, nanti hitungan shift muncul di sini.");
   const headerGlowVariant = useMemo(() => Math.floor(Math.random() * 4), []);
+  const headerMoodIndex = useMemo(() => {
+    const fixedMap = {
+      emboss: 0,
+      diagonal: 1,
+      halo: 2,
+      v: 3
+    };
+    if (headerMoodMode === 'fixed') return fixedMap[headerMoodFixed] ?? 1;
+    if (headerMoodMode === 'time') {
+      const hour = new Date(clockTick).getHours();
+      if (hour >= 5 && hour < 11) return 0;
+      if (hour >= 11 && hour < 16) return 1;
+      if (hour >= 16 && hour < 19) return 2;
+      return 3;
+    }
+    return headerGlowVariant;
+  }, [clockTick, headerGlowVariant, headerMoodFixed, headerMoodMode]);
   const headerGlowOverlay = useMemo(() => {
-    const variants = darkMode ? ['radial-gradient(circle at 50% 0%, rgba(255,215,0,0.10), transparent 34%), linear-gradient(90deg, rgba(12,7,18,0.42) 0%, rgba(45,18,66,0.28) 28%, rgba(112,61,146,0.18) 50%, rgba(45,18,66,0.28) 72%, rgba(12,7,18,0.42) 100%)', 'linear-gradient(118deg, transparent 0%, transparent 33%, rgba(255,215,0,0.12) 46%, rgba(255,215,0,0.06) 54%, transparent 68%, transparent 100%), linear-gradient(62deg, transparent 0%, transparent 38%, rgba(112,61,146,0.16) 50%, transparent 66%, transparent 100%), linear-gradient(90deg, rgba(12,7,18,0.46) 0%, rgba(45,18,66,0.26) 30%, rgba(112,61,146,0.16) 50%, rgba(45,18,66,0.26) 70%, rgba(12,7,18,0.46) 100%)', 'radial-gradient(circle at 50% 42%, rgba(255,215,0,0.13), transparent 27%), radial-gradient(circle at 50% 42%, rgba(112,61,146,0.18), transparent 54%), linear-gradient(90deg, rgba(12,7,18,0.46) 0%, rgba(45,18,66,0.24) 32%, rgba(45,18,66,0.18) 50%, rgba(45,18,66,0.24) 68%, rgba(12,7,18,0.46) 100%)', 'linear-gradient(128deg, transparent 0%, transparent 42%, rgba(255,215,0,0.10) 50%, transparent 58%, transparent 100%), linear-gradient(52deg, transparent 0%, transparent 42%, rgba(255,215,0,0.08) 50%, transparent 58%, transparent 100%), linear-gradient(90deg, rgba(12,7,18,0.46) 0%, rgba(45,18,66,0.25) 28%, rgba(112,61,146,0.15) 50%, rgba(45,18,66,0.25) 72%, rgba(12,7,18,0.46) 100%)'] : ['radial-gradient(circle at 50% 0%, rgba(255,215,0,0.18), transparent 34%), linear-gradient(90deg, rgba(45,18,66,0.74) 0%, rgba(112,61,146,0.52) 28%, rgba(255,215,0,0.12) 50%, rgba(112,61,146,0.52) 72%, rgba(45,18,66,0.74) 100%)', 'linear-gradient(118deg, transparent 0%, transparent 32%, rgba(255,215,0,0.22) 46%, rgba(255,215,0,0.10) 55%, transparent 70%, transparent 100%), linear-gradient(62deg, transparent 0%, transparent 38%, rgba(255,255,255,0.08) 49%, rgba(112,61,146,0.18) 58%, transparent 72%, transparent 100%), linear-gradient(90deg, rgba(45,18,66,0.76) 0%, rgba(112,61,146,0.50) 28%, rgba(255,215,0,0.10) 50%, rgba(112,61,146,0.50) 72%, rgba(45,18,66,0.76) 100%)', 'radial-gradient(circle at 50% 42%, rgba(255,215,0,0.22), transparent 28%), radial-gradient(circle at 50% 42%, rgba(255,255,255,0.10), transparent 46%), linear-gradient(90deg, rgba(45,18,66,0.76) 0%, rgba(112,61,146,0.48) 30%, rgba(255,215,0,0.08) 50%, rgba(112,61,146,0.48) 70%, rgba(45,18,66,0.76) 100%)', 'linear-gradient(128deg, transparent 0%, transparent 42%, rgba(255,215,0,0.18) 50%, transparent 58%, transparent 100%), linear-gradient(52deg, transparent 0%, transparent 42%, rgba(255,255,255,0.08) 50%, transparent 58%, transparent 100%), linear-gradient(90deg, rgba(45,18,66,0.78) 0%, rgba(112,61,146,0.50) 28%, rgba(255,215,0,0.10) 50%, rgba(112,61,146,0.50) 72%, rgba(45,18,66,0.78) 100%)'];
-    return variants[headerGlowVariant % variants.length];
-  }, [darkMode, headerGlowVariant]);
+    const variants = darkMode ? ['radial-gradient(circle at 50% 0%, rgba(255,215,0,0.18), transparent 32%), radial-gradient(circle at 50% 0%, rgba(198,125,255,0.18), transparent 48%), linear-gradient(90deg, rgba(7,4,12,0.58) 0%, rgba(45,18,66,0.34) 28%, rgba(198,125,255,0.16) 50%, rgba(45,18,66,0.34) 72%, rgba(7,4,12,0.58) 100%)', 'linear-gradient(118deg, transparent 0%, transparent 31%, rgba(255,215,0,0.18) 44%, rgba(198,125,255,0.20) 51%, transparent 69%, transparent 100%), linear-gradient(62deg, transparent 0%, transparent 37%, rgba(0,229,255,0.08) 49%, rgba(198,125,255,0.18) 57%, transparent 72%, transparent 100%), linear-gradient(90deg, rgba(7,4,12,0.60) 0%, rgba(45,18,66,0.30) 30%, rgba(198,125,255,0.14) 50%, rgba(45,18,66,0.30) 70%, rgba(7,4,12,0.60) 100%)', 'radial-gradient(circle at 50% 44%, rgba(198,125,255,0.24), transparent 25%), radial-gradient(circle at 50% 44%, rgba(255,215,0,0.18), transparent 39%), linear-gradient(90deg, rgba(7,4,12,0.60) 0%, rgba(45,18,66,0.28) 32%, rgba(198,125,255,0.12) 50%, rgba(45,18,66,0.28) 68%, rgba(7,4,12,0.60) 100%)', 'linear-gradient(128deg, transparent 0%, transparent 41%, rgba(198,125,255,0.20) 49%, rgba(255,215,0,0.13) 54%, transparent 62%, transparent 100%), linear-gradient(52deg, transparent 0%, transparent 41%, rgba(255,215,0,0.12) 50%, rgba(198,125,255,0.14) 56%, transparent 64%, transparent 100%), linear-gradient(90deg, rgba(7,4,12,0.60) 0%, rgba(45,18,66,0.30) 28%, rgba(198,125,255,0.14) 50%, rgba(45,18,66,0.30) 72%, rgba(7,4,12,0.60) 100%)'] : ['radial-gradient(circle at 50% 0%, rgba(255,215,0,0.18), transparent 34%), linear-gradient(90deg, rgba(45,18,66,0.74) 0%, rgba(112,61,146,0.52) 28%, rgba(255,215,0,0.12) 50%, rgba(112,61,146,0.52) 72%, rgba(45,18,66,0.74) 100%)', 'linear-gradient(118deg, transparent 0%, transparent 32%, rgba(255,215,0,0.22) 46%, rgba(255,215,0,0.10) 55%, transparent 70%, transparent 100%), linear-gradient(62deg, transparent 0%, transparent 38%, rgba(255,255,255,0.08) 49%, rgba(112,61,146,0.18) 58%, transparent 72%, transparent 100%), linear-gradient(90deg, rgba(45,18,66,0.76) 0%, rgba(112,61,146,0.50) 28%, rgba(255,215,0,0.10) 50%, rgba(112,61,146,0.50) 72%, rgba(45,18,66,0.76) 100%)', 'radial-gradient(circle at 50% 42%, rgba(255,215,0,0.22), transparent 28%), radial-gradient(circle at 50% 42%, rgba(255,255,255,0.10), transparent 46%), linear-gradient(90deg, rgba(45,18,66,0.76) 0%, rgba(112,61,146,0.48) 30%, rgba(255,215,0,0.08) 50%, rgba(112,61,146,0.48) 70%, rgba(45,18,66,0.76) 100%)', 'linear-gradient(128deg, transparent 0%, transparent 42%, rgba(255,215,0,0.18) 50%, transparent 58%, transparent 100%), linear-gradient(52deg, transparent 0%, transparent 42%, rgba(255,255,255,0.08) 50%, transparent 58%, transparent 100%), linear-gradient(90deg, rgba(45,18,66,0.78) 0%, rgba(112,61,146,0.50) 28%, rgba(255,215,0,0.10) 50%, rgba(112,61,146,0.50) 72%, rgba(45,18,66,0.78) 100%)'];
+    return variants[headerMoodIndex % variants.length];
+  }, [darkMode, headerMoodIndex]);
   return React.createElement("div", {
     className: `flex-1 flex flex-col relative transition-colors duration-300 ${darkMode ? 'dark-mode-root bg-[#11091d]' : 'bg-[#2d1242]'}`,
     style: {
@@ -9039,7 +9077,9 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, headerPatternUrl && React.createElement("div", {
     className: "absolute inset-0 z-0",
     style: {
-      background: headerGlowOverlay
+      background: headerGlowOverlay,
+      boxShadow: darkMode ? 'inset 0 -1px 0 rgba(198,125,255,0.28), inset 0 -10px 22px rgba(198,125,255,0.08), inset 0 1px 0 rgba(255,215,0,0.18)' : undefined,
+      filter: darkMode ? 'saturate(1.16)' : undefined
     }
   }), React.createElement("div", {
     className: "relative z-10 flex items-center justify-between gap-2.5"
@@ -14432,7 +14472,50 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: "bg-[#703d92] text-white font-black py-2.5 rounded-xl shadow-sm active:scale-[0.99]"
   }, "Simpan Status")), React.createElement("div", {
     className: "rounded-2xl bg-amber-50 border border-amber-100 px-3 py-2 text-[9px] text-amber-700 font-semibold leading-relaxed"
-  }, "Status warung membantu pelanggan paham tanpa perlu bertanya. Buka, tutup, libur, atau restok tetap terasa ramah ☕"))), adminActiveSubMenu === 'branding' && React.createElement("div", {
+  }, "Status warung membantu pelanggan paham tanpa perlu bertanya. Buka, tutup, libur, atau restok tetap terasa ramah ☕")), React.createElement("div", {
+    className: "bg-white/95 rounded-2xl p-3 border border-purple-100 shadow-sm space-y-3"
+  }, React.createElement("div", null, React.createElement("h4", {
+    className: "font-black text-[#703d92] text-[12px] uppercase tracking-wider"
+  }, "✨ Pengaturan Rasa Header"), React.createElement("p", {
+    className: "text-[9px] text-gray-500 font-semibold leading-relaxed mt-0.5"
+  }, "Lampu suasana digital Toko Hana. Bisa ikut waktu, random tiap buka aplikasi, atau dikunci pilihan admin.")), React.createElement("div", {
+    className: "grid grid-cols-3 gap-1.5"
+  }, [['time', 'Ikut Waktu', 'pagi/siang/sore/malam'], ['random', 'Random', 'tiap buka app'], ['fixed', 'Tetap', 'pilihan admin']].map(([mode, label, desc]) => React.createElement("button", {
+    key: `header-mood-${mode}`,
+    type: "button",
+    onClick: () => setHeaderMoodMode(mode),
+    className: `rounded-2xl border p-2 text-left active:scale-[0.98] ${headerMoodMode === mode ? 'bg-[#703d92] border-[#703d92] text-white shadow-sm' : 'bg-[#FFFDF6] border-amber-100 text-gray-600'}`
+  }, React.createElement("span", {
+    className: `block text-[8.5px] font-black uppercase ${headerMoodMode === mode ? 'text-[#FFD700]' : 'text-[#703d92]'}`
+  }, label), React.createElement("span", {
+    className: `block text-[7.5px] font-semibold mt-0.5 ${headerMoodMode === mode ? 'text-white/75' : 'text-gray-400'}`
+  }, desc)))), React.createElement("div", {
+    className: "grid grid-cols-4 gap-1.5"
+  }, [['emboss', 'Embos'], ['diagonal', 'Diagonal'], ['halo', 'Halo'], ['v', 'V']].map(([mood, label]) => React.createElement("button", {
+    key: `header-fixed-${mood}`,
+    type: "button",
+    onClick: () => {
+      setHeaderMoodMode('fixed');
+      setHeaderMoodFixed(mood);
+    },
+    className: `rounded-xl border px-2 py-2 text-[8.5px] font-black active:scale-[0.98] ${headerMoodMode === 'fixed' && headerMoodFixed === mood ? 'bg-[#FFD700] border-[#D4AF37] text-[#2d1242] shadow-sm' : 'bg-purple-50 border-purple-100 text-[#703d92]'}`
+  }, label))), React.createElement("div", {
+    className: "rounded-2xl bg-[#F5F3F7] border border-purple-100 p-3 flex items-center justify-between gap-3"
+  }, React.createElement("div", {
+    className: "min-w-0"
+  }, React.createElement("span", {
+    className: "block text-[8px] font-black uppercase tracking-wider text-gray-400"
+  }, "Preview Rasa"), React.createElement("span", {
+    className: "block text-[10px] font-black text-[#2d1242] mt-0.5"
+  }, headerMoodMode === 'time' ? 'Otomatis sesuai waktu' : headerMoodMode === 'random' ? 'Random tiap buka aplikasi' : `Tetap: ${headerMoodFixed}`)), React.createElement("span", {
+    className: "text-[8px] text-gray-400 font-bold text-right leading-snug"
+  }, "kesan buka app")), React.createElement("button", {
+    type: "button",
+    onClick: () => saveHeaderMoodToDb(headerMoodMode, headerMoodFixed),
+    className: "w-full bg-gradient-to-r from-[#703d92] to-[#553C9A] text-white font-black py-2.5 rounded-xl shadow-sm active:scale-[0.99]"
+  }, "Simpan Rasa Header"), React.createElement("div", {
+    className: "rounded-2xl bg-amber-50 border border-amber-100 px-3 py-2 text-[9px] text-amber-700 font-semibold leading-relaxed"
+  }, "Toko Hana tidak menyambut pengunjung dengan tampilan mati. Lampu header bisa berganti rasa, seperti warung yang menata cahaya untuk tamunya ☕"))), adminActiveSubMenu === 'branding' && React.createElement("div", {
     className: "space-y-3 text-xs"
   }, React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm space-y-3"
@@ -15142,5 +15225,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e3bd4e2beb0cce',t:'MTc4NDU2OTEwNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e3e4db2ab6ce26',t:'MTc4NDU3MDcyNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

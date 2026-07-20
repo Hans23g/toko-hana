@@ -3514,6 +3514,7 @@ function App() {
   const [adminActiveSubMenu, setAdminActiveSubMenu] = useState('produk');
   const [adminJelajahView, setAdminJelajahView] = useState('posts');
   const [adminBrandingView, setAdminBrandingView] = useState('branding');
+  const [showAdminProductForm, setShowAdminProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingBanner, setEditingBanner] = useState(null);
   const [bannerForm, setBannerForm] = useState({
@@ -6518,9 +6519,11 @@ Not recognized as active cashier/admin in staff_roles.`);
       price_tiers: ''
     });
     setEditingProduct(null);
+    setShowAdminProductForm(false);
   };
   const handleEditProductClick = p => {
     setEditingProduct(p);
+    setShowAdminProductForm(true);
     setProdForm({
       name: p.name,
       price: p.price.toString(),
@@ -12851,7 +12854,18 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: "font-extrabold text-xs text-[#703d92] uppercase tracking-wider"
   }, editingProduct ? 'Edit Produk' : 'Tambah Produk Baru'), React.createElement("p", {
     className: "text-[9px] text-gray-500 font-semibold leading-snug"
-  }, "Produk yang rapi membuat kasir cepat, stok jujur, dan pelanggan tidak kecewa ☕"))), React.createElement("form", {
+  }, "Produk yang rapi membuat kasir cepat, stok jujur, dan pelanggan tidak kecewa ☕")), React.createElement("button", {
+    type: "button",
+    onClick: () => {
+      if (editingProduct) {
+        setEditingProduct(null);
+        setShowAdminProductForm(false);
+      } else {
+        setShowAdminProductForm(!showAdminProductForm);
+      }
+    },
+    className: `flex-shrink-0 rounded-xl px-3 py-2 text-[9px] font-black active:scale-95 ${showAdminProductForm || editingProduct ? 'bg-gray-100 text-gray-500 border border-gray-200' : 'bg-[#703d92] text-white shadow-sm'}`
+  }, editingProduct ? 'Batal Edit' : showAdminProductForm ? 'Tutup' : '+ Produk')), showAdminProductForm || editingProduct ? React.createElement("form", {
     onSubmit: handleSaveProduct,
     className: "space-y-2 text-xs"
   }, React.createElement("div", {
@@ -13166,7 +13180,15 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, "Cari Gambar"), React.createElement("button", {
     type: "submit",
     className: "flex-1 bg-[#703d92] text-white font-black py-2.5 rounded-xl shadow-sm active:scale-[0.99]"
-  }, editingProduct ? 'Simpan' : 'Tambah')))), React.createElement("div", {
+  }, editingProduct ? 'Simpan' : 'Tambah'))) : React.createElement("div", {
+    className: "rounded-2xl border border-dashed border-purple-100 bg-purple-50/35 p-3 text-[10px] text-gray-500 font-semibold leading-relaxed"
+  }, React.createElement("div", {
+    className: "font-black text-[#703d92] text-[10px] uppercase tracking-wider mb-1"
+  }, "Form produk disimpan rapi"), React.createElement("p", null, "Klik + Produk saat ingin tambah barang baru. Daftar produk tetap dekat, halaman admin tidak terlalu panjang."), React.createElement("button", {
+    type: "button",
+    onClick: () => setShowAdminProductForm(true),
+    className: "mt-2 bg-[#703d92] text-white rounded-xl px-3 py-2 text-[9px] font-black active:scale-95"
+  }, "Buka Form Produk"))), React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-3 border border-amber-100/70 shadow-sm"
   }, React.createElement("div", {
     className: "flex items-center justify-between gap-2 mb-2"
@@ -15239,5 +15261,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e43100dce1f853',t:'MTc4NDU3Mzg0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e44d3528f381c5',t:'MTc4NDU3NDk5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

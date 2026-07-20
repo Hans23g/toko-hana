@@ -203,6 +203,12 @@
     .dark-mode-root .admin-clean input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
     .dark-mode-root .admin-clean select,
     .dark-mode-root .admin-clean textarea{background:#1d1130!important;color:#f8f1fb!important;border-color:rgba(255,215,112,.18)!important;}
+    .dark-mode-root input.cashier-order-search-input{
+      background:transparent!important;
+      background-color:transparent!important;
+      border-color:transparent!important;
+      box-shadow:none!important;
+    }
 
     /* Search header punya cahaya malam sendiri: tetap terlihat di atas batik, tetapi tidak menyilaukan. */
     /* Build 19JULI-02: border search emas dibuat sengaja tegas untuk CQ satu meja. */
@@ -11220,7 +11226,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     value: cashierOrderSearch,
     onChange: e => setCashierOrderSearch(e.target.value),
     placeholder: lang === 'id' ? 'Cari kode order / nama / WA...' : 'Search order code / name / phone...',
-    className: `flex-1 bg-transparent text-[16px] font-normal outline-none ${darkMode ? 'text-purple-50 placeholder-purple-200/45' : 'text-gray-700 placeholder-gray-400'}`
+    className: `cashier-order-search-input flex-1 bg-transparent text-[16px] font-normal outline-none ${darkMode ? 'text-purple-50 placeholder-purple-200/45' : 'text-gray-700 placeholder-gray-400'}`
   }), cashierOrderSearch && React.createElement("button", {
     type: "button",
     onClick: () => setCashierOrderSearch(''),
@@ -15113,5 +15119,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e3235f5b77a1b5',t:'MTc4NDU2MjgwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e32face9c75f3b',t:'MTc4NDU2MzMwNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -4437,6 +4437,12 @@ function App() {
       nextAt: 1000
     };
   }, [myPoints]);
+  const loyaltyTierNote = useMemo(() => {
+    if (loyaltyLevel.name === 'Pi Pioneer') return lang === 'id' ? 'Pi Pioneer — level inspiratif Toko Hana. Terima kasih sudah tumbuh bareng warung; setiap belanja poin 2x dan kartu Anda sudah di puncak perjalanan. 💎' : 'Pi Pioneer — Toko Hana inspirational tier. Thank you for growing with the store; every order earns 2x points and your card has reached the top. 💎';
+    if (loyaltyLevel.name === 'Gold') return lang === 'id' ? 'Gold — pelanggan setia warung. Kejar Pi Pioneer agar kartu naik kelas lagi, poin makin deras, dan perjalanan belanja makin membanggakan. 🥇' : 'Gold — loyal store friend. Chase Pi Pioneer so your card levels up again, points flow faster, and every order feels more rewarding. 🥇';
+    if (loyaltyLevel.name === 'Silver') return lang === 'id' ? 'Silver — sudah mulai rutin belanja dan ngopi bareng Hana. Kejar Gold, kartu akan berubah lebih hangat dan bonus poin makin terasa. 🥈' : 'Silver — you are becoming a regular Hana friend. Chase Gold; your card will become warmer and bonus points will feel better. 🥈';
+    return lang === 'id' ? 'Bronze — awal perjalanan member. Kumpulkan HanaPoin sedikit demi sedikit; saat naik tier, warna kartu ikut berubah sebagai tanda langkah Anda. 🥉' : 'Bronze — the beginning of your member journey. Collect HanaPoints step by step; when you level up, your card theme changes with you. 🥉';
+  }, [lang, loyaltyLevel.name]);
   const accountCardTheme = useMemo(() => {
     const role = currentUser?.role || 'customer';
     const themes = {
@@ -11973,7 +11979,31 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     }
   }))) : React.createElement("div", {
     className: "relative mt-3.5 text-[9px] font-black text-[#FFD700]"
-  }, "💎 ", lang === 'id' ? 'LEVEL TERTINGGI TERCAPAI — Poin 2x setiap belanja!' : 'MAX LEVEL REACHED — 2x points every order!')), React.createElement("div", {
+  }, "💎 ", lang === 'id' ? 'LEVEL TERTINGGI TERCAPAI — Poin 2x setiap belanja!' : 'MAX LEVEL REACHED — 2x points every order!')), currentUser?.role === 'customer' && React.createElement("div", {
+    className: "rounded-2xl p-3 border shadow-sm relative overflow-hidden",
+    style: {
+      background: `linear-gradient(135deg, ${accountCardTheme.accent}1A, rgba(255,255,255,.96))`,
+      borderColor: accountCardTheme.border
+    }
+  }, React.createElement("div", {
+    className: "absolute -right-6 -top-6 w-20 h-20 rounded-full blur-sm opacity-60",
+    style: {
+      background: accountCardTheme.accent
+    }
+  }), React.createElement("div", {
+    className: "relative flex items-start gap-2"
+  }, React.createElement("span", {
+    className: "text-[15px] leading-none mt-0.5"
+  }, loyaltyLevel.emoji), React.createElement("div", {
+    className: "min-w-0"
+  }, React.createElement("div", {
+    className: "font-black text-[10px] uppercase tracking-[0.14em] mb-1",
+    style: {
+      color: accountCardTheme.accent
+    }
+  }, lang === 'id' ? 'Keterangan Tier Member' : 'Member Tier Note'), React.createElement("p", {
+    className: "text-[9.5px] text-gray-600 font-semibold leading-relaxed"
+  }, loyaltyTierNote)))), React.createElement("div", {
     className: "bg-white/95 rounded-2xl p-3 border border-amber-100/80 shadow-sm text-[9.5px] text-gray-600 space-y-1.5"
   }, React.createElement("div", {
     className: "flex items-start gap-2"
@@ -15042,5 +15072,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e26aa4cc92fe1f',t:'MTc4NDU1NTIzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e287e56f9c9d0e',t:'MTc4NDU1NjQzMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

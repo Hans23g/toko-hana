@@ -4409,7 +4409,7 @@ function App() {
   const hasCustomerPointRecord = currentUser?.role === 'customer' && !!myCustomerRecord;
   const loyaltyLevel = useMemo(() => {
     if (myPoints >= 10000) return {
-      name: 'Pi Pioneer',
+      name: 'Hana Pioneer',
       emoji: '💎',
       multiplier: 2,
       next: null,
@@ -4419,7 +4419,7 @@ function App() {
       name: 'Gold',
       emoji: '🥇',
       multiplier: 1.5,
-      next: 'Pi Pioneer',
+      next: 'Hana Pioneer',
       nextAt: 10000
     };
     if (myPoints >= 1000) return {
@@ -4438,8 +4438,8 @@ function App() {
     };
   }, [myPoints]);
   const loyaltyTierNote = useMemo(() => {
-    if (loyaltyLevel.name === 'Pi Pioneer') return lang === 'id' ? 'Pi Pioneer — level inspiratif Toko Hana. Terima kasih sudah tumbuh bareng warung; setiap belanja poin 2x dan kartu Anda sudah di puncak perjalanan. 💎' : 'Pi Pioneer — Toko Hana inspirational tier. Thank you for growing with the store; every order earns 2x points and your card has reached the top. 💎';
-    if (loyaltyLevel.name === 'Gold') return lang === 'id' ? 'Gold — pelanggan setia warung. Kejar Pi Pioneer agar kartu naik kelas lagi, poin makin deras, dan perjalanan belanja makin membanggakan. 🥇' : 'Gold — loyal store friend. Chase Pi Pioneer so your card levels up again, points flow faster, and every order feels more rewarding. 🥇';
+    if (loyaltyLevel.name === 'Hana Pioneer') return lang === 'id' ? 'Hana Pioneer — level inspiratif Toko Hana. Terima kasih sudah tumbuh bareng warung; setiap belanja poin 2x dan kartu Anda sudah di puncak perjalanan. 💎' : 'Hana Pioneer — Toko Hana inspirational tier. Thank you for growing with the store; every order earns 2x points and your card has reached the top. 💎';
+    if (loyaltyLevel.name === 'Gold') return lang === 'id' ? 'Gold — pelanggan setia warung. Kejar Hana Pioneer agar kartu naik kelas lagi, poin makin deras, dan perjalanan belanja makin membanggakan. 🥇' : 'Gold — loyal store friend. Chase Hana Pioneer so your card levels up again, points flow faster, and every order feels more rewarding. 🥇';
     if (loyaltyLevel.name === 'Silver') return lang === 'id' ? 'Silver — sudah mulai rutin belanja dan ngopi bareng Hana. Kejar Gold, kartu akan berubah lebih hangat dan bonus poin makin terasa. 🥈' : 'Silver — you are becoming a regular Hana friend. Chase Gold; your card will become warmer and bonus points will feel better. 🥈';
     return lang === 'id' ? 'Bronze — awal perjalanan member. Kumpulkan HanaPoin sedikit demi sedikit; saat naik tier, warna kartu ikut berubah sebagai tanda langkah Anda. 🥉' : 'Bronze — the beginning of your member journey. Collect HanaPoints step by step; when you level up, your card theme changes with you. 🥉';
   }, [lang, loyaltyLevel.name]);
@@ -4506,7 +4506,7 @@ function App() {
     if (role === 'stock_staff') return themes.stock;
     if (/courier|kurir/i.test(role)) return themes.courier;
     if (/partner|mitra/i.test(role)) return themes.partner;
-    if (loyaltyLevel.name === 'Pi Pioneer') return themes.pioneer;
+    if (loyaltyLevel.name === 'Hana Pioneer') return themes.pioneer;
     if (loyaltyLevel.name === 'Gold') return themes.gold;
     if (loyaltyLevel.name === 'Silver') return themes.silver;
     return themes.bronze;
@@ -11181,9 +11181,9 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, "Qty ", row.qty, " ", row.unit || 'unit', " • harga bon Rp ", Number(row.price || 0).toLocaleString('id-ID')), React.createElement("div", {
     className: `mt-1 font-bold ${row.match ? 'text-emerald-700' : 'text-amber-700'}`
   }, row.match ? `Cocok: ${row.match.name}` : 'Belum cocok ke produk — nanti pilih manual')))))), currentTab === 'Cart' && React.createElement("div", {
-    className: "animate-fade-in p-4 pb-24"
+    className: `animate-fade-in p-4 pb-24 ${currentUser?.role === 'cashier' ? 'bg-gradient-to-b from-purple-50/70 via-white to-amber-50/50' : ''}`
   }, currentUser?.role === 'cashier' && React.createElement("div", {
-    className: `mb-4 rounded-3xl border p-3 shadow-sm transition-colors ${darkMode ? 'border-amber-300/15 bg-gradient-to-br from-[#1b1427] via-[#2b2016] to-[#24162f] shadow-[0_8px_24px_rgba(0,0,0,0.24)]' : 'border-amber-200 bg-gradient-to-br from-white via-amber-50 to-purple-50'}`
+    className: `mb-3 rounded-3xl border p-3 shadow-sm transition-colors ${darkMode ? 'border-[#FFD700]/20 bg-gradient-to-br from-[#15101f] via-[#24162f] to-[#2b2016] shadow-[0_8px_24px_rgba(0,0,0,0.24)]' : 'border-purple-100 bg-white shadow-[0_8px_20px_rgba(112,61,146,0.08)]'}`
   }, React.createElement("div", {
     className: "flex items-start gap-2.5 mb-3"
   }, React.createElement("div", {
@@ -11194,8 +11194,19 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: "font-black text-[#703d92] text-[12px] uppercase tracking-wider leading-tight"
   }, lang === 'id' ? 'Konfirmasi Order Kasir' : 'Cashier Order Confirmation'), React.createElement("p", {
     className: "text-[9.5px] text-gray-500 font-semibold leading-relaxed mt-0.5"
-  }, lang === 'id' ? 'Alur lembut: tetapkan potongan → pelanggan bayar sisa → klik Bayar & Lunas. Untuk tunai, kasir dibantu hitung kembalian.' : 'For customer-phone orders: set discount first, customer pays the remaining amount, then mark paid.'))), React.createElement("div", {
-    className: "mb-2 bg-white/80 border border-purple-100 rounded-2xl px-3 py-2 flex items-center gap-2"
+  }, lang === 'id' ? 'Meja khusus kasir: cek order masuk, beri potongan bila perlu, lalu tutup pembayaran tanpa ramai banner.' : 'Cashier-only desk: review incoming orders, set discounts when needed, then close payment cleanly.'))), React.createElement("div", {
+    className: "grid grid-cols-3 gap-1.5 mb-2"
+  }, [[lang === 'id' ? '1. Cek' : '1. Check', 'FileSearch'], [lang === 'id' ? '2. Potongan' : '2. Discount', 'BadgePercent'], [lang === 'id' ? '3. Lunas' : '3. Paid', 'BadgeCheck']].map(([label, icon]) => React.createElement("div", {
+    key: label,
+    className: "rounded-2xl bg-purple-50 border border-purple-100 px-2 py-2 text-center"
+  }, React.createElement(LucideIcon, {
+    name: icon,
+    size: 13,
+    className: "mx-auto text-[#703d92] mb-1"
+  }), React.createElement("span", {
+    className: "block text-[8px] font-black text-[#703d92] leading-tight"
+  }, label)))), React.createElement("div", {
+    className: "mb-2 bg-white border border-purple-100 rounded-2xl px-3 py-2 flex items-center gap-2"
   }, React.createElement(LucideIcon, {
     name: "Search",
     size: 13,
@@ -11293,7 +11304,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     type: "button",
     onClick: () => handleCashierFinishOrder(o),
     className: "bg-emerald-600 text-white rounded-xl py-2 text-[8.5px] font-black active:scale-95"
-  }, lang === 'id' ? 'Konfirm Bayar' : 'Confirm')))))), cart.length === 0 && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
+  }, lang === 'id' ? 'Konfirm Bayar' : 'Confirm')))))), cart.length === 0 && currentUser?.role !== 'cashier' && dynamicPromoHighlights && dynamicPromoHighlights.length > 0 && React.createElement("div", {
     className: "-mx-4 mb-4 overflow-hidden bg-white shadow-sm"
   }, React.createElement("div", {
     className: "px-5 pt-3 pb-2 flex items-center justify-between"
@@ -11357,9 +11368,35 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: "text-[7.4px] text-white font-semibold leading-tight line-clamp-2 mt-0.5 drop-shadow"
   }, item.desc)))))))), React.createElement("div", {
     className: "-mx-4"
-  }, React.createElement(GununganDivider, {
+  }, currentUser?.role === 'cashier' ? React.createElement("div", {
+    className: "mb-3 rounded-3xl bg-[#2d1242] text-white border border-[#FFD700]/25 px-3 py-3 shadow-sm"
+  }, React.createElement("div", {
+    className: "flex items-center justify-between gap-3"
+  }, React.createElement("div", null, React.createElement("div", {
+    className: "text-[8px] font-black text-[#FFD700] uppercase tracking-[0.22em]"
+  }, lang === 'id' ? 'Ruang Khusus Kasir' : 'Cashier Workspace'), React.createElement("h3", {
+    className: "font-black text-sm leading-tight mt-0.5"
+  }, lang === 'id' ? 'Keranjang Kasir' : 'Cashier Cart'), React.createElement("p", {
+    className: "text-[9px] text-white/70 font-semibold leading-snug mt-0.5"
+  }, lang === 'id' ? 'Fokus ke daftar belanjaan dan pembayaran. Promo disimpan dulu biar meja kasir rapi.' : 'Focused on cart items and payment. Promo content is hidden to keep the cashier desk tidy.')), React.createElement("button", {
+    type: "button",
+    onClick: () => setCurrentTab('Cashier'),
+    className: "bg-[#FFD700] text-[#2d1242] rounded-full px-3 py-2 text-[9px] font-black active:scale-95 flex-shrink-0"
+  }, lang === 'id' ? 'Kasir' : 'Cashier'))) : React.createElement(GununganDivider, {
     title: lang === 'id' ? 'Keranjang Warung' : 'Warung Cart'
-  })), cart.length === 0 ? React.createElement("div", {
+  })), cart.length === 0 ? currentUser?.role === 'cashier' ? React.createElement("div", {
+    className: "bg-white rounded-3xl p-5 text-center border border-dashed border-purple-200 shadow-sm"
+  }, React.createElement("div", {
+    className: "w-14 h-14 mx-auto rounded-2xl bg-purple-50 text-[#703d92] flex items-center justify-center text-2xl shadow-sm mb-3"
+  }, "🧾"), React.createElement("h4", {
+    className: "font-black text-[#703d92] text-sm"
+  }, lang === 'id' ? 'Keranjang kasir masih kosong' : 'Cashier cart is empty'), React.createElement("p", {
+    className: "text-[10px] text-gray-500 font-semibold leading-relaxed mt-1.5 max-w-[280px] mx-auto"
+  }, lang === 'id' ? 'Tambahkan barang dari Kasir Cepat. Meja ini sengaja bersih supaya daftar belanjaan pelanggan mudah dibaca.' : 'Add products from Quick Cashier. This desk is intentionally clean so customer items are easy to read.'), React.createElement("button", {
+    type: "button",
+    onClick: () => setCurrentTab('Cashier'),
+    className: "mt-4 bg-[#703d92] text-white rounded-2xl px-4 py-2.5 text-[10px] font-black active:scale-95"
+  }, lang === 'id' ? 'Kembali ke Kasir Cepat' : 'Back to Quick Cashier')) : React.createElement("div", {
     className: "bg-white rounded-2xl p-5 text-center border border-purple-50 shadow-sm"
   }, React.createElement("div", {
     className: "w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-[#703d92] to-[#553C9A] text-[#FFD700] flex items-center justify-center text-2xl shadow-md mb-3"
@@ -11400,11 +11437,11 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: "space-y-4"
   }, cart.map(item => React.createElement("div", {
     key: item.product.id,
-    className: "bg-white rounded-xl p-2.5 flex items-center gap-3 border shadow-sm"
+    className: `bg-white rounded-2xl p-2.5 flex items-center gap-3 border shadow-sm ${currentUser?.role === 'cashier' ? 'border-purple-100 shadow-[0_6px_16px_rgba(112,61,146,0.07)]' : ''}`
   }, React.createElement("img", {
     src: item.product.image,
     alt: item.product.name,
-    className: "w-14 h-14 object-cover rounded",
+    className: `w-14 h-14 object-cover ${currentUser?.role === 'cashier' ? 'rounded-2xl border border-amber-100 bg-amber-50' : 'rounded'}`,
     onError: e => {
       e.currentTarget.src = getPlaceholderImage(item.product.name, item.product.category);
     }
@@ -11439,7 +11476,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     onClick: () => handleUpdateCartQty(item.product.id, 1),
     className: "w-5 h-5 bg-white text-gray-600 rounded text-[10px] font-bold"
   }, "+"))))), React.createElement("div", {
-    className: "bg-white rounded-2xl p-4 border space-y-2"
+    className: `bg-white rounded-2xl p-4 border space-y-2 ${currentUser?.role === 'cashier' ? 'border-purple-100 shadow-[0_8px_18px_rgba(112,61,146,0.08)]' : ''}`
   }, React.createElement("div", {
     className: "flex justify-between text-xs text-gray-500"
   }, React.createElement("span", null, lang === 'id' ? 'Subtotal Belanja' : 'Shopping Subtotal'), React.createElement("span", null, "Rp ", cartSubtotal.toLocaleString('id-ID'))), currentUser?.role === 'customer' && React.createElement("div", {
@@ -11953,7 +11990,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement("span", {
     className: "leading-none select-none block",
     style: {
-      fontSize: `${26 + (loyaltyLevel.name === 'Pi Pioneer' ? 14 : loyaltyLevel.name === 'Gold' ? 10 : loyaltyLevel.name === 'Silver' ? 5 : 0)}px`
+      fontSize: `${26 + (loyaltyLevel.name === 'Hana Pioneer' ? 14 : loyaltyLevel.name === 'Gold' ? 10 : loyaltyLevel.name === 'Silver' ? 5 : 0)}px`
     },
     title: lang === 'id' ? 'Celengan Ayam HanaPoin Anda' : 'Your HanaPoint Rooster Bank'
   }, "🐓"), React.createElement("span", {
@@ -15072,5 +15109,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e287e56f9c9d0e',t:'MTc4NDU1NjQzMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e2eb01ab49cdea',t:'MTc4NDU2MDQ5MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

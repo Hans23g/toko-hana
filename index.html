@@ -11075,7 +11075,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: `mt-1 font-bold ${row.match ? 'text-emerald-700' : 'text-amber-700'}`
   }, row.match ? `Cocok: ${row.match.name}` : 'Belum cocok ke produk — nanti pilih manual')))))), currentTab === 'Cart' && React.createElement("div", {
     className: "animate-fade-in p-4 pb-24"
-  }, canVerifyCashierReward && React.createElement("div", {
+  }, currentUser?.role === 'cashier' && React.createElement("div", {
     className: `mb-4 rounded-3xl border p-3 shadow-sm transition-colors ${darkMode ? 'border-amber-300/15 bg-gradient-to-br from-[#1b1427] via-[#2b2016] to-[#24162f] shadow-[0_8px_24px_rgba(0,0,0,0.24)]' : 'border-amber-200 bg-gradient-to-br from-white via-amber-50 to-purple-50'}`
   }, React.createElement("div", {
     className: "flex items-start gap-2.5 mb-3"
@@ -11194,7 +11194,11 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     className: "font-extrabold text-[11px] text-[#703d92] uppercase tracking-wider"
   }, "Info Bagus untuk Juragan"), React.createElement("p", {
     className: "text-[9px] text-gray-400 font-semibold"
-  }, "Mungkin ada barang yang terlupa sebelum checkout."))), React.createElement("div", {
+  }, "Mungkin ada barang yang terlupa sebelum checkout.")), ['admin', 'cashier'].includes(currentUser?.role) && React.createElement("button", {
+    type: "button",
+    onClick: () => setCurrentTab('Notes'),
+    className: "bg-purple-50 border border-purple-100 text-[#703d92] rounded-full px-3 py-1.5 text-[8.5px] font-black active:scale-95 whitespace-nowrap"
+  }, "Catatan Kasir")), React.createElement("div", {
     className: "relative overflow-hidden pb-3"
   }, React.createElement("div", {
     className: "flex gap-2 px-5 hana-banner-marquee"
@@ -14922,5 +14926,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e1cbd3f96efd3c',t:'MTc4NDU0ODcyOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e1ed4a58b8fdf6',t:'MTc4NDU1MDA5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

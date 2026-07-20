@@ -11913,9 +11913,15 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement(GununganDivider, {
     title: lang === 'id' ? 'Masuk atau Daftar Juragan' : 'Login or Register'
   })), React.createElement("div", {
-    className: `rounded-3xl p-5 border shadow-[0_12px_26px_rgba(45,18,66,0.10)] space-y-4 ${darkMode ? 'bg-gradient-to-br from-[#160f22] via-[#1d1130] to-[#2d1242] border-[#C67DFF]/22 shadow-[0_16px_32px_rgba(0,0,0,0.28),0_0_18px_rgba(198,125,255,0.055)]' : 'bg-gradient-to-br from-white via-[#FFFDF6] to-purple-50/35 border-amber-100/80'}`
+    className: `rounded-3xl p-5 border shadow-[0_12px_26px_rgba(45,18,66,0.10)] space-y-4 ${darkMode ? 'bg-gradient-to-br from-[#160f22] via-[#1d1130] to-[#2d1242] shadow-[0_16px_32px_rgba(0,0,0,0.28),0_0_18px_rgba(255,215,0,0.045)]' : 'bg-gradient-to-br from-white via-[#FFFDF6] to-purple-50/35 border-amber-100/80'}`,
+    style: darkMode ? {
+      borderColor: 'rgba(255,215,0,0.22)'
+    } : undefined
   }, React.createElement("div", {
-    className: `flex border p-1.5 rounded-2xl shadow-inner ${darkMode ? 'bg-[#120c1c]/90 border-[#C67DFF]/18 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.045)]' : 'bg-white/80 border-amber-100/80'}`
+    className: `flex border p-1.5 rounded-2xl shadow-inner ${darkMode ? 'bg-[#120c1c]/90 shadow-[inset_0_0_0_1px_rgba(255,215,0,0.035)]' : 'bg-white/80 border-amber-100/80'}`,
+    style: darkMode ? {
+      borderColor: 'rgba(255,215,0,0.18)'
+    } : undefined
   }, React.createElement("button", {
     type: "button",
     onClick: () => setAuthActiveTab('login'),
@@ -11971,7 +11977,10 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     },
     className: "w-full mt-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-black py-3.5 rounded-2xl shadow-md active:scale-[0.99] text-xs"
   }, lang === 'id' ? 'Daftar Sekarang' : 'Register Now'), React.createElement("p", {
-    className: `rounded-2xl border px-3 py-2 text-[9px] font-semibold leading-relaxed text-center ${darkMode ? 'bg-[#2b2016]/72 border-[#FFD700]/18 text-amber-100/80 shadow-[0_0_10px_rgba(255,215,0,0.035)]' : 'bg-amber-50/65 border-amber-100 text-amber-700'}`
+    className: `rounded-2xl border px-3 py-2 text-[9px] font-semibold leading-relaxed text-center ${darkMode ? 'bg-[#2b2016]/72 text-amber-100/80 shadow-[0_0_10px_rgba(255,215,0,0.035)]' : 'bg-amber-50/65 border-amber-100 text-amber-700'}`,
+    style: darkMode ? {
+      borderColor: 'rgba(255,215,0,0.18)'
+    } : undefined
   }, lang === 'id' ? 'Gunakan email asli dan aktif. Link konfirmasi akun dikirim ke email itu — jangan pakai email palsu ya kawan ☕' : 'Use a real, active email. Account confirmation links will be sent there — do not use a fake email ☕')), authActiveTab === 'register' && React.createElement("form", {
     onSubmit: handleCustomerSignUp,
     className: "space-y-3.5"
@@ -15406,5 +15415,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e542ecfea17abd',t:'MTc4NDU4NTA2NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e55441fa25f8c6',t:'MTc4NDU4NTc3NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

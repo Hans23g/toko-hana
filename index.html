@@ -12144,18 +12144,18 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }, React.createElement("div", {
     className: `sticky top-0 z-50 text-white px-3.5 pb-2.5 pt-[calc(env(safe-area-inset-top,20px)+9px)] flex items-end justify-between flex-shrink-0 overflow-hidden border-b ${darkMode ? 'bg-[#08070A] border-[#FFD700]/20 shadow-[inset_0_-1px_0_rgba(255,215,0,0.28),0_8px_24px_rgba(0,0,0,0.38)]' : 'bg-[#703d92] border-[#FFD700]/20 shadow-[0_8px_22px_rgba(45,18,66,0.28)]'}`,
     style: {
-      backgroundImage: headerPatternUrl ? `url(${darkMode ? BRAND_BATIK_NIGHT_DATA_URI || headerPatternUrl : headerPatternUrl})` : 'none',
+      backgroundImage: headerPatternUrl ? darkMode ? `linear-gradient(105deg, rgba(0,0,0,0.18), rgba(13,9,16,0.25)), url(${BRAND_BATIK_NIGHT_DATA_URI || headerPatternUrl})` : `url(${headerPatternUrl})` : 'none',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundColor: darkMode ? '#08070A' : '#703d92'
     }
   }, React.createElement("div", {
-    className: "absolute inset-0",
+    className: "absolute inset-0 z-0",
     style: {
       background: darkMode ? 'linear-gradient(to right, rgba(0,0,0,0.06), rgba(10,7,13,0.12))' : 'linear-gradient(to right, rgba(112,61,146,0.55), rgba(85,60,154,0.50))'
     }
   }), React.createElement("div", {
-    className: "relative flex items-center space-x-2"
+    className: "relative z-10 flex items-center space-x-2"
   }, React.createElement("div", {
     className: "w-8 h-8 p-0 rounded-xl shadow-sm bg-transparent"
   }, React.createElement("img", {
@@ -14916,5 +14916,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1de52323d869c5f',t:'MTc4NDUxMjI4OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1de65a49cfc81e0',t:'MTc4NDUxMzA4Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

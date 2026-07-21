@@ -15024,7 +15024,7 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
   }), React.createElement("div", {
     className: "flex items-center justify-between border-b border-gray-100 pb-3 mb-4"
   }, React.createElement("div", null, React.createElement("h4", {
-    className: "font-extrabold text-sm text-[#703d92] flex items-center gap-1.5"
+    className: `font-extrabold text-sm flex items-center gap-1.5 ${darkMode ? 'text-[#FFD700]' : 'text-[#703d92]'}`
   }, React.createElement("span", {
     className: "text-base"
   }, "🏪"), React.createElement("span", null, "Etalase Warung Toko Hana")), React.createElement("p", {
@@ -15069,10 +15069,10 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
       className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in",
       onClick: () => setShowQrisModal(false)
     }, React.createElement("div", {
-      className: "w-full max-w-sm bg-white rounded-3xl p-5 flex flex-col items-center shadow-2xl animate-scale-up",
+      className: `w-full max-w-sm rounded-3xl p-5 flex flex-col items-center shadow-2xl animate-scale-up ${darkMode ? 'bg-gradient-to-br from-[#160f22] via-[#1d1130] to-[#2d1242] border border-[#FFD700]/18 text-white' : 'bg-white'}`,
       onClick: e => e.stopPropagation()
     }, React.createElement("div", {
-      className: "w-full flex items-center justify-between border-b pb-2 mb-3"
+      className: `w-full flex items-center justify-between border-b pb-2 mb-3 ${darkMode ? 'border-[#FFD700]/18' : 'border-gray-200'}`
     }, React.createElement("h4", {
       className: "font-extrabold text-sm text-[#703d92] flex items-center gap-1.5"
     }, React.createElement(LucideIcon, {
@@ -15080,20 +15080,20 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
       size: 16
     }), React.createElement("span", null, lang === 'id' ? 'Pintu Pembayaran Global' : 'Global Payment Gateway')), React.createElement("button", {
       onClick: () => setShowQrisModal(false),
-      className: "p-1 bg-gray-100 text-gray-500 rounded-full hover:bg-gray-200"
+      className: `p-1 rounded-full ${darkMode ? 'bg-white/[0.08] text-amber-100 hover:bg-white/[0.12]' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`
     }, React.createElement(LucideIcon, {
       name: "X",
       size: 15
     }))), React.createElement("div", {
-      className: "flex bg-[#F5F3F7] p-1 rounded-xl w-full mb-4"
+      className: `flex p-1 rounded-xl w-full mb-4 ${darkMode ? 'bg-[#120c1c]/90 border border-[#FFD700]/14' : 'bg-[#F5F3F7]'}`
     }, React.createElement("button", {
       type: "button",
       onClick: () => setPayTab('qris'),
-      className: `flex-1 py-1.5 rounded-lg text-center font-bold text-[10px] transition-all ${payTab === 'qris' ? 'bg-[#703d92] text-white shadow' : 'text-gray-500'}`
+      className: `flex-1 py-1.5 rounded-lg text-center font-bold text-[10px] transition-all ${payTab === 'qris' ? darkMode ? 'bg-[#FFD700] text-[#2d1242] shadow' : 'bg-[#703d92] text-white shadow' : darkMode ? 'text-purple-100/70' : 'text-gray-500'}`
     }, "Indonesian QRIS"), React.createElement("button", {
       type: "button",
       onClick: () => setPayTab('pi'),
-      className: `flex-1 py-1.5 rounded-lg text-center font-bold text-[10px] transition-all flex items-center justify-center gap-1 ${payTab === 'pi' ? 'bg-amber-500 text-white shadow' : 'text-gray-500'}`
+      className: `flex-1 py-1.5 rounded-lg text-center font-bold text-[10px] transition-all flex items-center justify-center gap-1 ${payTab === 'pi' ? 'bg-amber-500 text-[#2d1242] shadow' : darkMode ? 'text-purple-100/70' : 'text-gray-500'}`
     }, lang === 'id' ? '🪙 Tukar Koin Pi' : '🪙 Pi Coin Exchange')), payTab === 'qris' ? React.createElement("div", {
       className: "w-full flex flex-col items-center"
     }, React.createElement("div", {
@@ -15107,15 +15107,15 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
     }, lang === 'id' ? 'Pindai memakai m-Banking / e-Wallet Indonesia Anda.' : 'Scan using your Indonesian m-Banking or e-Wallet.')) : React.createElement("div", {
       className: "w-full flex flex-col items-center"
     }, React.createElement("div", {
-      className: "rounded-2xl bg-amber-50/80 border border-amber-100 px-3 py-2.5 text-center"
+      className: `rounded-2xl border px-3 py-2.5 text-center ${darkMode ? 'bg-[#2b2016]/78 border-[#FFD700]/18 shadow-[0_0_12px_rgba(255,215,0,0.04)]' : 'bg-amber-50/80 border-amber-100'}`
     }, React.createElement("h5", {
-      className: "font-extrabold text-amber-800 text-xs"
+      className: `font-extrabold text-xs ${darkMode ? 'text-[#FFD700]' : 'text-amber-800'}`
     }, lang === 'id' ? 'Ajukan Tukar Koin Pi di Kasir' : 'Request Pi Coin Exchange at Cashier'), React.createElement("p", {
-      className: "text-[9px] text-amber-700 font-bold leading-relaxed mt-1"
+      className: `text-[9px] font-bold leading-relaxed mt-1 ${darkMode ? 'text-amber-100/82' : 'text-amber-700'}`
     }, lang === 'id' ? 'Koin Pi bukan alat pembayaran resmi di Toko Hana. Gunakan QR ini hanya untuk pengajuan tukar koin/reward komunitas. Final bayar tetap Rupiah.' : 'Pi Coin is not an official payment method at Toko Hana. Use this QR only to request a community coin exchange/reward. Final payment remains in Rupiah.')), piWalletQrUrl && React.createElement("div", {
       className: "w-full mt-3 flex flex-col items-center"
     }, React.createElement("div", {
-      className: "w-full max-w-[250px] aspect-square bg-white rounded-3xl overflow-hidden flex items-center justify-center border-2 border-amber-300 shadow-md p-2"
+      className: `w-full max-w-[250px] aspect-square rounded-3xl overflow-hidden flex items-center justify-center border-2 shadow-md p-2 ${darkMode ? 'bg-white border-[#FFD700]/70 shadow-[0_0_16px_rgba(255,215,0,0.12)]' : 'bg-white border-amber-300'}`
     }, React.createElement("img", {
       src: piWalletQrUrl,
       alt: "Pi Wallet QR",
@@ -15124,28 +15124,28 @@ ${note ? `<div class="note">${note}<\/div>` : ''}
         e.currentTarget.parentElement.style.display = 'none';
       }
     })), React.createElement("p", {
-      className: "text-[9px] text-amber-600 font-bold mt-1.5"
+      className: `text-[9px] font-bold mt-1.5 ${darkMode ? 'text-[#FFD700]' : 'text-amber-600'}`
     }, lang === 'id' ? '📲 Pindai QR untuk pengajuan tukar koin Pi' : '📲 Scan QR to request Pi coin exchange')), React.createElement("div", {
       className: "w-full mt-3"
     }, React.createElement("label", {
-      className: "block text-[10px] text-gray-500 font-bold mb-1"
+      className: `block text-[10px] font-bold mb-1 ${darkMode ? 'text-amber-100/70' : 'text-gray-500'}`
     }, lang === 'id' ? 'Alamat Wallet Pi Toko Hana:' : 'Toko Hana Pi Wallet Address:'), React.createElement("div", {
       className: "flex gap-2"
     }, React.createElement("input", {
       type: "text",
       readOnly: true,
       value: walletAddress,
-      className: "flex-1 border bg-gray-50 rounded-lg p-2 text-[9px] font-mono text-gray-600 focus:outline-none select-all"
+      className: `flex-1 border rounded-lg p-2 text-[9px] font-mono focus:outline-none select-all ${darkMode ? 'bg-[#160f22] border-[#FFD700]/18 text-amber-100' : 'bg-gray-50 text-gray-600'}`
     }), React.createElement("button", {
       type: "button",
       onClick: copyWallet,
       className: "bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 rounded-lg text-[10px] flex items-center"
     }, "Copy"))), React.createElement("p", {
-      className: "text-[9px] text-gray-400 font-semibold text-center mt-3 max-w-[220px]"
+      className: `text-[9px] font-semibold text-center mt-3 max-w-[220px] ${darkMode ? 'text-purple-100/65' : 'text-gray-400'}`
     }, lang === 'id' ? 'Kasir tetap memutuskan nilai reward/potongan. Sistem hanya membantu mencatat pengajuan; pembayaran resmi tetap Rupiah.' : 'The cashier still decides the reward/discount value. The system only helps record the request; official payment remains in Rupiah.')), React.createElement("button", {
       type: "button",
       onClick: () => setShowQrisModal(false),
-      className: "w-full mt-4 bg-gradient-to-r from-[#703d92] to-[#553C9A] text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md active:scale-95"
+      className: `w-full mt-4 font-extrabold py-2.5 rounded-xl text-xs shadow-md active:scale-95 ${darkMode ? 'bg-gradient-to-r from-[#FFD700] to-[#D4AF37] text-[#2d1242]' : 'bg-gradient-to-r from-[#703d92] to-[#553C9A] text-white'}`
     }, lang === 'id' ? 'Tutup / Bayar Tetap Rupiah' : 'Close / Pay in Rupiah')));
   })(), currentTab === 'PriceCalc' && renderPriceCalcPage(), currentTab === 'WarungCalc' && React.createElement("div", {
     className: "fixed inset-0 z-[9999] bg-[#F5F3F7] animate-fade-in overflow-hidden flex flex-col",
@@ -15413,5 +15413,5 @@ try {
   container.innerHTML = '<div class="cq-error"><b>Render error:</b>\n' + (e && e.stack ? e.stack : e) + '</div>';
 }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e600233bc489bc',t:'MTc4NDU5MjgxNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1e62f6c8928fd2b',t:'MTc4NDU5NDc1MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

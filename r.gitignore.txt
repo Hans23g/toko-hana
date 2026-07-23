@@ -1,0 +1,39 @@
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.netrc
+.git-credentials
+
+# dependencies/cache
+node_modules/
+.cache/
+dist/
+build/
+coverage/
+.vite/
+.next/
+.nuxt/
+.turbo/
+
+# local/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# local backups / broken builds
+*.broken*.html
+*.before*.html
+*.before*.jsx
+*.backup*
+*.bak
+*.log
+
+# OS/temp
+*.tmp
+*.temp

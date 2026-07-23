@@ -1,33 +1,39 @@
-# 📦 Toko Hana
+# Toko Hana — Warungnya Rakyat
 
-![Status](https://img.shields.io/badge/Status-v1.1-brightgreen)
-![Tech](https://img.shields.io/badge/Tech-HTML%20%7C%20CSS%20%7C%20JS-blue)
+Aplikasi live Toko Hana berjalan dari file utama:
 
-Aplikasi Stok Digital super ringan buat warung/toko kelontong. 
-Buka langsung dari HP: **https://tokohana.vercel.app** 
+```txt
+index.html
+```
 
-Nggak perlu install, nggak perlu database ribet. Buka = langsung pake 😎
+File `index.html` adalah CQ single-file bundle: semua logic aplikasi, library frontend, scanner barcode/QR, dan asset penting sudah berada di dalam satu file.
 
----
+## Live
 
-### ✨ Fitur Utama v1.1
-| Fitur | Penjelasan |
-| --- | --- |
-| ➕ Tambah Barang | Input nama & stok awal dengan 1 form |
-| ➖➕ Update Stok | Tombol `-1` pas laku, `+1` pas restock |
-| 🛡️ Anti Minus | Sistem cegah stok jadi angka minus |
-| 💾 Auto Save | Data nyimpen di HP sendiri pake `localStorage` |
-| 📱 Mobile First | Tampilan udah enak banget di HP |
+```txt
+https://tokohana.vercel.app/
+```
 
-### 🚀 Cara Pakai 10 Detik
-1.  Buka link: https://tokohana.vercel.app 
-2.  Isi `Nama Barang` + `Stok Awal` → `Simpan Barang`
-3.  Udah. Tinggal pencet `-1` / `+1` tiap ada transaksi.
+## Catatan Deploy
 
-### 🛠️ Teknologi yang Dipake
-`HTML5` `CSS3` `Vanilla JavaScript` `Vercel` `GitHub`
+Repo ini dipakai sebagai repo deploy/static hosting.
 
----
+Untuk update aplikasi:
 
-**Dibuat sama:** @Hans23g  
-**Versi Saat Ini:** v1.1 | **Next:** Fitur Cari Barang 🔍
+1. Siapkan CQ terbaru yang sudah aman.
+2. Rename/copy menjadi `index.html`.
+3. Replace `index.html` di repo ini.
+4. Vercel akan redeploy otomatis.
+
+## Penting
+
+- Jangan upload `.env` atau secret key.
+- Jangan upload Supabase `service_role` key.
+- Supabase publishable/anon key boleh berada di frontend selama RLS/policy database aktif.
+- Jangan rebuild dari source lama jika belum disinkronkan.
+
+## Prinsip Toko Hana
+
+Sistem membaca data. Sistem memberi saran. Manusia tetap memutuskan.
+
+Yang rumit biar sistem yang menanggung, yang mudah biar pengguna yang merasakan.

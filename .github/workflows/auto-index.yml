@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "incoming/*.html"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -18,8 +19,14 @@ jobs:
 
       - name: Pick latest uploaded HTML and copy to index.html
         run: |
-          latest_file=$(ls -t incoming/*.html | head -n 1)
+          latest_file=$(find incoming -maxdepth 1 -type f -name "*.html" -printf "%T@ %p\n" | sort -nr | head -n 1 | cut -d' ' -f2-)
           echo "Latest CQ file: $latest_file"
+
+          if [ -z "$latest_file" ]; then
+            echo "No HTML file found in incoming/"
+            exit 1
+          fi
+
           cp "$latest_file" index.html
 
       - name: Commit updated index.html

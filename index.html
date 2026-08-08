@@ -20324,6 +20324,31 @@ ${TOKO_HANA_PUBLIC_URL}`;
     const receiptText = [`*STRUK TOKO HANA*`, receiptHeaderLine, `Order: ${order.id || '-'}`, `Status: ${receiptStatus}`, `Pelanggan: ${order.customer_name || 'Juragan'}`, `Metode: ${String(order.payment_method || '-').replace(/ \([^)]*\)/g, '')}`, '', receiptItemsText, '', `Total: Rp ${Number(order.total || 0).toLocaleString('id-ID')}`, receiptNoteText ? `Catatan:\n${receiptNoteText}` : '', '', 'Terima kasih sudah belanja di Toko Hana — Warungnya Rakyat ☕'].filter(Boolean).join('\n');
     const receiptTextAttr = escapeReceiptHtml(receiptText).replace(/\n/g, '&#10;');
     const receiptPhoneAttr = escapeReceiptHtml(receiptPhone);
+        const formatReceiptTime = ts => {
+      try {
+        return new Date(ts).toLocaleString('id-ID', {
+          day: '2-digit',
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit'
+        }).replace('.', ':');
+      } catch (e) {
+        return String(ts || '');
+      }
+    };
+    const receiptAddressHtml = order.address ? `<div class="row"><span>Alamat</span><span>${escapeReceiptHtml(order.address)}</span></div>` : '';
+    const receiptCourierName = order.courier_name || order.courier || order.kurir || '';
+    const receiverReceiptLine = (String(order.delivery_proof_note || '').match(/Diterima oleh:\s*([^|]+)/i) || [])[1] || '';
+    const receiptChainLines = [order.assigned_courier_at ? `Ditugaskan ${formatReceiptTime(order.assigned_courier_at)}` : '', order.picked_up_at ? `Dibawa ${formatReceiptTime(order.picked_up_at)}` : '', order.delivered_at ? `Sampai ${formatReceiptTime(order.delivered_at)}` : '', order.customer_confirmed_at ? `Diterima konfirmasi ${formatReceiptTime(order.customer_confirmed_at)}` : ''].filter(Boolean);
+    const receiptCourierHtml = receiptCourierName ? `<div class="line"></div><div class="center small" style="font-weight:700">— PENGIRIMAN —</div><div class="row"><span>Kurir</span><span>${escapeReceiptHtml(receiptCourierName)}</span></div>${order.courier_phone ? `<div class="row"><span>WA Kurir</span><span>${escapeReceiptHtml(order.courier_phone)}</span></div>` : ''}${receiptChainLines.map(line => `<div class="small">${escapeReceiptHtml(line)}</div>`).join('')}${receiverReceiptLine.trim() ? `<div class="note">Tercatat diterima oleh: ${escapeReceiptHtml(receiverReceiptLine.trim())} (catatan kurir)</div>` : ''}` : '';
+    const receiptProofCode = (() => {
+      const seed = `${order.id || ''}|${Number(order.total || 0)}|${order.created_at || order.date || ''}|${receiptCourierName}|${order.customer_confirmed_at || order.delivered_at || ''}`;
+      let h = 0;
+      for (let i = 0; i < seed.length; i++) h = (h * 33 + seed.charCodeAt(i)) >>> 0;
+      return 'TH-' + h.toString(36).toUpperCase().padStart(6, '0').slice(-6);
+    })();
+    const receiptPrintedBy = (currentCourierPartner && currentCourierPartner.name) || (currentUser && currentUser.name) || 'Toko Hana';
+    const receiptProofHtml = `<div class="center small" style="margin-top:6px;font-size:9px;line-height:1.5">🔐 Bukti: <strong>${receiptProofCode}</strong> • Dicetak ${new Date().toLocaleString('id-ID')} oleh ${escapeReceiptHtml(receiptPrintedBy)}.<br>Struk sah hanya jika kode & jejak kurir cocok dengan data di aplikasi Toko Hana ☕</div>`;
     const waFormHtml = `<form action="https://api.whatsapp.com/send" method="get" target="_blank" style="display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap;margin:0"><input name="phone" value="${receiptPhoneAttr}" placeholder="WA pelanggan: 628..." style="width:150px;max-width:100%;border:1px solid #bbf7d0;border-radius:12px;padding:10px 10px;font-weight:800;color:#166534;background:#f0fdf4"><input type="hidden" name="text" value="${receiptTextAttr}"><button type="submit" style="background:#25D366;color:white;border:0;border-radius:12px;padding:10px 14px;font-weight:800">Kirim WA Pelanggan<\/button><\/form>`;
             const html = `<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Struk ${order.id}<\/title>
@@ -20338,12 +20363,12 @@ ${TOKO_HANA_PUBLIC_URL}`;
 <div class="row"><span>Metode<\/span><span>${String(order.payment_method || '-').replace(/ \([^)]*\)/g, '')}<\/span><\/div>
 <div class="row"><span>Status<\/span><strong>${order.receipt_status || order.status || '-'}<\/strong><\/div>
 <div class="line"><\/div>
-${items.length ? items.map(it => `<div class="item"><div><strong>${it.product_name || 'Item'}<\/strong><\/div><div class="row"><span>${it.quantity || 1} x Rp ${Number(it.price || 0).toLocaleString('id-ID')}<\/span><span>Rp ${Number((it.quantity || 1) * (it.price || 0)).toLocaleString('id-ID')}<\/span><\/div><\/div>`).join('') : '<div class="small">Item tercatat di sistem Toko Hana.<\/div>'}
+${receiptAddressHtml}${receiptCourierHtml}${items.length ? items.map(it => `<div class="item"><div><strong>${it.product_name || 'Item'}<\/strong><\/div><div class="row"><span>${it.quantity || 1} x Rp ${Number(it.price || 0).toLocaleString('id-ID')}<\/span><span>Rp ${Number((it.quantity || 1) * (it.price || 0)).toLocaleString('id-ID')}<\/span><\/div><\/div>`).join('') : '<div class="small">Item tercatat di sistem Toko Hana.<\/div>'}
 <div class="line"><\/div>
 <div class="row total"><span>Total Bayar<\/span><span>Rp ${Number(order.total || 0).toLocaleString('id-ID')}<\/span><\/div>
 ${receiptNoteHtml}
 <div class="thanks">Terima kasih sudah mampir ke Toko Hana. Semoga belanjaan ini membawa manfaat dan sedikit hangat dari warung dekat rumah ☕<\/div>
-<div class="center small" style="margin-top:12px">Senyum penjaga warung adalah fitur pertama.<\/div>
+<div class="center small" style="margin-top:12px">Senyum penjaga warung adalah fitur pertama.<\/div>${receiptProofHtml}
 <div class="no-print center" style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button onclick="window.print()" style="background:#703d92;color:white;border:0;border-radius:12px;padding:10px 14px;font-weight:800">Cetak / Simpan PDF<\/button>${waFormHtml}<button onclick="try{window.close()}catch(e){};setTimeout(function(){if(!window.closed){history.back()}},120)" style="background:#f3e8ff;color:#703d92;border:1px solid #e9d5ff;border-radius:12px;padding:10px 14px;font-weight:800">Kembali<\/button><\/div>
 <\/div>`;
     try {
@@ -22046,7 +22071,11 @@ ${receiptNoteHtml}
         type: "button",
         onClick: () => openCustomerWa(o),
         className: "rounded-xl py-2 text-[8px] font-black bg-green-600 text-white"
-      }, "WA")));
+      }, "WA")), React.createElement("button", {
+        type: "button",
+        onClick: () => handlePrintReceipt(o, { promptNote: false }),
+        className: `w-full rounded-xl py-2 text-[8px] font-black ${darkMode ? 'bg-white/[0.06] text-emerald-100 border border-emerald-300/15' : 'bg-white text-emerald-700 border border-emerald-200'} shadow-sm active:scale-[0.99]`
+      }, "🧾 Lihat Pesanan & Struk Bukti"));
     })) : React.createElement("div", {
       className: `rounded-2xl border border-dashed p-4 text-center text-[9.5px] font-bold leading-relaxed ${darkMode ? 'border-emerald-300/16 bg-[#07140f] text-emerald-50/60' : 'border-emerald-100 bg-white/70 text-emerald-700'}`
     }, "Belum ada paket pickup untuk akun kurir ini. Kalau admin menugaskan paket ke Mitra Kurir Aktif, order akan muncul di sini ☕"), pickupPool.length ? React.createElement("div", {
@@ -30429,6 +30458,6 @@ try {
 }
   </script>
 <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a214516948465937',t:'MTc4NTA3ODQ4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a280050d9f4af838',t:'MTc4NjIwNzgyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a280f9844880a3e9',t:'MTc4NjIxNzgzNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a280050d9f4af838',t:'MTc4NjIwNzgyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a28120408f0efdc8',t:'MTc4NjIxOTQyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -14962,16 +14962,16 @@ function App() {
             pushNotification('✅', 'Potongan Dikonfirmasi!', `Pesanan ${row.id} siap dibayar. Sisa bayar Rp ${(row.total || 0).toLocaleString('id-ID')}.`);
             showToast(`✅ Potongan dikonfirmasi. Sisa bayar Rp ${(row.total || 0).toLocaleString('id-ID')}.`);
           } else if (row.status === 'Diproses') {
-            pushNotification('📦', 'Pesanan Diproses!', `Pesanan ${row.id} sedang dikemas oleh Toko Hana.`);
+            pushNotification('📦', 'Pesanan Diproses!', `Pesanan ${row.id} mulai kami siapkan — dicek pelan-pelan biar yang sampai bukan cuma cepat, tapi juga tepat ☕`);
             showToast(`📦 Pesanan ${row.id} sedang diproses!`);
           } else if (row.status === 'Dikirim' && row.resi) {
-            pushNotification('🚚', 'Paket Sedang Dikirim!', `${row.id} via ${row.courier || 'kurir/ekspedisi'} — Resi: ${row.resi}`);
+            pushNotification('🚚', 'Paket Sedang Dikirim!', `${row.id} via ${row.courier || 'kurir/ekspedisi'} — Resi: ${row.resi}. Kopi belum dingin, barang sudah mulai jalan ☕`);
             showToast(`🚚 Paket ${row.id} sedang dikirim!`);
           } else if (row.status === 'Kurir Tiba') {
             pushNotification('📦', 'Paket Sampai!', `Paket pesanan ${row.id} sudah sampai. Jika sudah diterima, konfirmasi di Riwayat Belanja ya ☕`);
-            showToast(`📦 Paket ${row.id} sudah sampai. Menunggu konfirmasi pelanggan.`);
+            showToast(`📦 Paket ${row.id} sudah sampai di depan. Cek pelan-pelan ya kawan, lalu konfirmasi diterima ☕`);
           } else if (row.status === 'Selesai') {
-            pushNotification('✅', 'Pesanan Selesai!', `Pesanan ${row.id} sudah selesai. Terima kasih sudah belanja di Toko Hana.`);
+            pushNotification('✅', 'Pesanan Selesai!', `Pesanan ${row.id} selesai. Terima kasih sudah percaya pada Toko Hana — semoga meninggalkan rasa manis seperti kopi yang pas gulanya ☕`);
           }
         }
         fetchOrders();
@@ -18816,7 +18816,7 @@ Not recognized as active cashier/admin in staff_roles.`);
     const orderItemsForCourier = Array.isArray(selectedOrderToShip.items) ? selectedOrderToShip.items : [];
     const itemText = orderItemsForCourier.length ? orderItemsForCourier.map(item => `- ${item.product_name || item.name || 'Item'} x${item.quantity || 1}`).join('\n') : String(selectedOrderToShip.items || '- Detail barang lihat di admin Toko Hana');
     const fee = parseRupiahInput(shipForm.courierFee);
-    return [`Halo ${selectedCourierPartner.name || 'Mitra Kurir'}, ada paket/order Toko Hana untuk diantar:`, '', `Order: ${selectedOrderToShip.id}`, `Pelanggan: ${selectedOrderToShip.customer_name || 'Pelanggan'}`, `WA Pelanggan: ${selectedOrderToShip.phone || '-'}`, `Alamat: ${selectedOrderToShip.address || '-'}`, '', 'Barang:', itemText, '', `Resi/catatan paket: ${shipForm.resi || '-'}`, fee ? `Fee kurir: Rp ${fee.toLocaleString('id-ID')}` : 'Fee kurir: konfirmasi admin', '', 'Mohon konfirmasi bisa ambil/antar paket ya. Terima kasih ☕'].join('\n');
+    return [`Halo ${selectedCourierPartner.name || 'Mitra Kurir'}, ada paket/order Toko Hana untuk diantar:`, '', `Order: ${selectedOrderToShip.id}`, `Pelanggan: ${selectedOrderToShip.customer_name || 'Pelanggan'}`, `WA Pelanggan: ${selectedOrderToShip.phone || '-'}`, `Alamat: ${selectedOrderToShip.address || '-'}`, '', 'Barang:', itemText, '', `Resi/catatan paket: ${shipForm.resi || '-'}`, fee ? `Fee kurir: Rp ${fee.toLocaleString('id-ID')}` : 'Fee kurir: konfirmasi admin', '', 'Mohon konfirmasi bisa ambil/antar paket ya. Bawa pelan-pelan, ini titipan warga ☕🛵'].join('\n');
   };
   const openCourierWhatsApp = () => {
     if (!selectedCourierPartner) return alert('Pilih mitra kurir dulu.');
@@ -18940,7 +18940,7 @@ Not recognized as active cashier/admin in staff_roles.`);
     }
     showToast(`📦 Paket order ${order.id} sudah sampai. Menunggu konfirmasi pelanggan.`);
   };
-  const handleCompleteDeliveredOrder = (order, confirmedBy = 'admin') => {
+    const handleCompleteDeliveredOrder = (order, confirmedBy = 'admin') => {
     if (!order) return;
     const confirmedAt = new Date().toISOString();
     const isCustomer = confirmedBy === 'customer';
@@ -18949,23 +18949,52 @@ Not recognized as active cashier/admin in staff_roles.`);
     const bonusNote = awardCourierHanaPointsForOrder(order);
     const nextNote = [order.payment_note || '', confirmNote, bonusNote].filter(Boolean).join(' | ');
     const proofNote = [order.delivery_proof_note || '', confirmNote, bonusNote].filter(Boolean).join(' | ');
-    setOrders(prevOrders => prevOrders.map(o => o.id === order.id ? {
-      ...o,
+    const dbPayload = {
       status: 'Selesai',
       courier_status: courierStatus,
       customer_confirmed_at: confirmedAt,
       delivery_proof_note: proofNote,
       payment_note: nextNote
+    };
+    setOrders(prevOrders => prevOrders.map(o => o.id === order.id ? {
+      ...o,
+      ...dbPayload
     } : o));
     const client = getSupabaseClient();
+    if (client && isCustomer) {
+      // 🗝️ Pintu kecil resmi: RPC SECURITY DEFINER (db/RPC_KONFIRMASI_PELANGGAN_DITERIMA_2026-08-08.sql).
+      // RLS orders tetap rapat; pelanggan hanya bisa menutup order 'Kurir Tiba' — kolom lain mustahil disentuh.
+      Promise.resolve(client.rpc ? client.rpc('customer_confirm_order_delivered', {
+        p_order_id: order.id
+      }) : Promise.reject(new Error('rpc tidak tersedia'))).then(rpcRes => {
+        const rpcErr = rpcRes && rpcRes.error;
+        const rpcOk = rpcRes && !rpcErr && rpcRes.data === true;
+        if (!rpcOk) {
+          console.warn('Rasa: pintu RPC konfirmasi belum terpasang/ditolak, coba jalur biasa:', rpcErr && rpcErr.message ? rpcErr.message : rpcRes && rpcRes.data);
+          client.from('orders').update(dbPayload).eq('id', order.id).then(({
+            error: dbErr
+          }) => {
+            if (dbErr) console.warn('Failed to complete delivered order:', dbErr.message);
+          });
+          showToast(`✅ Terima kasih kawan! Paket ${order.id} sudah dicatat diterima di HP ini. Kalau statusnya belum berubah, kasir akan bantu tutup rapi ya ☕`);
+          return;
+        }
+        showToast(`✅ Paket ${order.id} diterima, order ditutup rapi. Terima kasih sudah percaya pada Toko Hana ☕`);
+      }).catch(rpcFail => {
+        console.warn('Rasa: error RPC konfirmasi pelanggan:', rpcFail && rpcFail.message ? rpcFail.message : rpcFail);
+        client.from('orders').update(dbPayload).eq('id', order.id).then(({
+          error: dbErr
+        }) => {
+          if (dbErr) console.warn('Failed to complete delivered order:', dbErr.message);
+        });
+        showToast(`✅ Terima kasih kawan! Paket ${order.id} sudah dicatat diterima di HP ini. Kalau statusnya belum berubah, kasir akan bantu tutup rapi ya ☕`);
+      });
+      return;
+    }
     if (client) {
-      client.from('orders').update({
-        status: 'Selesai',
-        courier_status: courierStatus,
-        customer_confirmed_at: confirmedAt,
-        delivery_proof_note: proofNote,
-        payment_note: nextNote
-      }).eq('id', order.id).then(({ error: dbErr }) => {
+      client.from('orders').update(dbPayload).eq('id', order.id).then(({
+        error: dbErr
+      }) => {
         if (dbErr) console.warn('Failed to complete delivered order:', dbErr.message);
       });
     }
@@ -21672,7 +21701,7 @@ ${receiptNoteHtml}
         showToast('WA pelanggan belum ada di order ini ☕');
         return;
       }
-      const msg = `Halo ${order.customer_name || 'kawan'}, saya ${currentCourierPartner.name || 'Mitra Kurir Toko Hana'} dari Toko Hana. Paket order ${order.id} sedang saya antar. Terima kasih ☕`;
+      const msg = `Halo ${order.customer_name || 'kawan'}, saya ${currentCourierPartner.name || 'Mitra Kurir Toko Hana'} dari Toko Hana. Paket order ${order.id} sedang saya antar dengan hati-hati seperti kopi hangat. Sampai ketemu di depan rumah ya ☕`;
       window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     };
     return React.createElement("div", {
@@ -21687,7 +21716,7 @@ ${receiptNoteHtml}
       className: `font-black text-[12.5px] mt-0.5 ${darkMode ? 'text-[#FFD700]' : 'text-[#703d92]'}`
     }, "Meja Pickup Paket"), React.createElement("p", {
       className: `text-[9px] font-semibold leading-snug mt-0.5 ${darkMode ? 'text-emerald-50/68' : 'text-gray-500'}`
-    }, "Order belanja pribadi tetap ada di bawah. Bagian ini khusus paket yang ditugaskan ke akun Mitra Kurir aktif.")), React.createElement("span", {
+    }, "Order belanja pribadi tetap ada di bawah. Bagian ini khusus paket titipan warga yang ditugaskan ke akun Mitra Kurir aktif. Bawa pelan-pelan ya kawan, jangan sampai kopinya tumpah 🛵☕")), React.createElement("span", {
       className: `${darkMode ? 'bg-emerald-300/10 text-emerald-100 border-emerald-200/20' : 'bg-emerald-100 text-emerald-700 border-emerald-200'} rounded-full px-2 py-1 text-[8px] font-black border flex-shrink-0`
     }, assignedOrders.length, " pickup")), React.createElement("div", {
       className: `rounded-2xl p-3 border relative overflow-hidden ${darkMode ? 'bg-gradient-to-br from-[#0c2a1f] via-[#145b3f] to-[#2d1242] border-emerald-300/25' : 'bg-gradient-to-br from-emerald-700 via-emerald-600 to-[#2d1242] border-emerald-200'} text-white shadow-sm`
@@ -21790,7 +21819,7 @@ ${receiptNoteHtml}
         className: "rounded-xl py-2 text-[8px] font-black bg-orange-500 text-white"
       }, "Paket Sampai"), o.status === 'Kurir Tiba' && React.createElement("div", {
         className: "col-span-2 rounded-xl py-2 text-center text-[8px] font-black bg-orange-50 text-orange-700 border border-orange-100"
-      }, "Menunggu diterima"), React.createElement("button", {
+      }, "Sabar menunggu pelanggan buka pintu ☕"), React.createElement("button", {
         type: "button",
         onClick: () => openCustomerWa(o),
         className: "rounded-xl py-2 text-[8px] font-black bg-green-600 text-white"
@@ -21835,7 +21864,7 @@ ${receiptNoteHtml}
     }, "☕ ", list.length)), React.createElement("div", {
       className: "space-y-2 max-h-[calc(100dvh-365px)] min-h-[230px] overflow-y-auto no-scrollbar pr-0.5"
     }, list.map(o => {
-      const statusNote = o.status === 'Baru' ? '🛎️ Order diterima. Toko Hana sudah mencatat pesananmu, kawan. Kasir akan cek pelan-pelan ☕' : o.status === 'Belum Bayar' ? o.delivery_zone === 'pickup_later' ? '🧺 Pesanan ambil nanti sudah masuk. Kasir akan siapkan, kawan tinggal datang dan bayar dengan tenang ☕' : '🧾 Pesanan sudah masuk. Kasir bantu cek belanjaan dan potongan sebelum pembayaran.' : o.status === 'Siap Bayar' ? `✅ Potongan sudah dikonfirmasi. Sisa bayar Rp ${Number(o.total || 0).toLocaleString('id-ID')} lewat ${String(o.payment_method || 'QRIS/Tunai').replace(/ \([^)]*\)/g, '')}.` : o.status === 'Siap Diambil' ? '✅ Belanjaan sudah siap diambil. Silakan mampir ke Toko Hana, bayar di kasir, lalu bawa pulang dengan tenang ☕' : o.status === 'Diproses' ? '☕ Pesanan sedang diproses. Kami jaga kabarnya pelan-pelan sampai siap.' : o.status === 'Dikirim' ? `🚚 Paket sedang dikirim oleh ${o.courier || o.kurir || 'kurir/ekspedisi Toko Hana'}.${o.resi ? ` Catatan: ${o.resi}` : ''} Semoga sampai dengan hangat.` : o.status === 'Kurir Tiba' ? '📦 Paket sudah sampai di alamat. Jika paket sudah diterima, tekan Paket Diterima agar pesanan ditutup rapi ☕' : o.status === 'Selesai' ? '✅ Paket diterima, kawan. Pesanan selesai. Terima kasih sudah belanja di Toko Hana — semoga yang dibawa pulang bukan cuma barang, tapi juga sedikit rasa hangat dari warung dekat rumah ☕' : '';
+      const statusNote = o.status === 'Baru' ? '🛎️ Order diterima. Toko Hana sudah mencatat pesananmu, kawan. Kasir akan cek pelan-pelan ☕' : o.status === 'Belum Bayar' ? o.delivery_zone === 'pickup_later' ? '🧺 Pesanan ambil nanti sudah masuk. Kasir akan siapkan, kawan tinggal datang dan bayar dengan tenang ☕' : '🧾 Pesanan sudah masuk. Kasir bantu cek belanjaan dan potongan sebelum pembayaran.' : o.status === 'Siap Bayar' ? `✅ Potongan sudah dikonfirmasi. Sisa bayar Rp ${Number(o.total || 0).toLocaleString('id-ID')} lewat ${String(o.payment_method || 'QRIS/Tunai').replace(/ \([^)]*\)/g, '')}.` : o.status === 'Siap Diambil' ? '✅ Belanjaan sudah siap diambil. Silakan mampir ke Toko Hana, bayar di kasir, lalu bawa pulang dengan tenang ☕' : o.status === 'Diproses' ? '☕ Pesanan mulai kami siapkan. Barang dicek pelan-pelan, biar yang sampai bukan cuma cepat, tapi juga tepat.' : o.status === 'Dikirim' ? `🚚 Paket sedang menuju rumah kawan bareng ${o.courier || o.kurir || 'kurir/ekspedisi Toko Hana'}. Kopi belum dingin, barang sudah mulai jalan${o.resi ? ` — Catatan: ${o.resi}` : ''} ☕` : o.status === 'Kurir Tiba' ? '📍 Kurir sudah sampai di alamat. Cek barangnya pelan-pelan dulu ya kawan, kalau sudah pas baru tekan Paket Diterima ☕' : o.status === 'Selesai' ? '✅ Paket diterima. Terima kasih sudah percaya pada Toko Hana — semoga belanja hari ini meninggalkan rasa manis seperti kopi yang pas gulanya ☕' : '';
       const canConfirmPayment = ['Belum Bayar', 'Siap Bayar'].includes(o.status || '') && !/offline|toko|ambil/i.test(`${o.payment_method || ''} ${o.delivery_zone || ''}`);
       const paymentConfirmCopy = /qris/i.test(String(o.payment_method || '')) ? 'Kirim bukti pembayaran QRIS ke kasir/admin.' : 'Konfirmasi pembayaran/COD ke kasir/admin.';
       return React.createElement("div", {
@@ -29074,7 +29103,7 @@ ${receiptNoteHtml}
     className: `font-extrabold text-xs uppercase tracking-wider ${darkMode ? 'text-[#FFD700]' : 'text-[#703d92]'}`
   }, "Antar Pesanan ", selectedOrderToShip.id), React.createElement("p", {
     className: `text-[9px] font-semibold leading-snug mt-0.5 ${darkMode ? 'text-purple-100/65' : 'text-gray-500'}`
-  }, "Pilih kurir/ekspedisi, isi resi/catatan paket, lalu paket masuk status Sedang Dikirim.")), React.createElement("span", {
+  }, "Pilih kurir/ekspedisi dan isi resi/catatan paket. Setelah dicatat, paket berangkat pelan-pelan — status otomatis jadi Sedang Dikirim ☕")), React.createElement("span", {
     className: "text-[8px] font-black text-amber-700 bg-amber-50 border border-amber-100 rounded-full px-2 py-1 flex-shrink-0"
   }, "Siap Kirim")), React.createElement("form", {
     onSubmit: handleShipOrder,
@@ -29203,7 +29232,7 @@ ${receiptNoteHtml}
     className: `font-extrabold text-xs uppercase tracking-wider ${darkMode ? 'text-[#FFD700]' : 'text-[#703d92]'}`
   }, "Sedang Dikirim"), React.createElement("p", {
     className: `text-[9px] font-semibold leading-snug ${darkMode ? 'text-purple-100/65' : 'text-gray-500'}`
-  }, "Paket yang sudah diberi kurir/resi dan sedang dalam perjalanan ke pelanggan.")), React.createElement("span", {
+  }, "Kopi belum dingin, paket-paket ini sedang menuju rumah para kawan pelanggan ☕")), React.createElement("span", {
     className: "text-[8px] font-black text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2 py-1 flex-shrink-0"
   }, (orders || []).filter(o => o && ['Dikirim', 'Kurir Tiba'].includes(o.status)).length, " berjalan")), React.createElement("div", {
     className: "space-y-2 max-h-96 overflow-y-auto no-scrollbar pr-1"
@@ -29242,7 +29271,7 @@ ${receiptNoteHtml}
     className: `font-extrabold text-xs uppercase tracking-wider ${darkMode ? 'text-[#FFD700]' : 'text-[#703d92]'}`
   }, "Catatan Pesanan Selesai"), React.createElement("p", {
     className: `text-[9px] font-semibold leading-snug ${darkMode ? 'text-purple-100/65' : 'text-gray-500'}`
-  }, "Arsip akhir order yang sudah ditutup rapi.")), React.createElement("span", {
+  }, "Arsip order yang sudah ditutup rapi — setiap paket di sini pernah berangkat dengan hangat dan sampai dengan selamat ☕")), React.createElement("span", {
     className: "text-[8px] font-black text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2 py-1 flex-shrink-0"
   }, (orders || []).filter(o => o && o.status === 'Selesai').length, " selesai")), React.createElement("div", {
     className: "space-y-2 max-h-64 overflow-y-auto no-scrollbar pr-1"
@@ -30132,5 +30161,6 @@ try {
 }
   </script>
 <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a214516948465937',t:'MTc4NTA3ODQ4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a27f43423ed4fd6b',t:'MTc4NjE5OTg4NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a280050d9f4af838',t:'MTc4NjIwNzgyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a28065964efe7e20',t:'MTc4NjIxMTc3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
+</body>
 </html>

@@ -18890,16 +18890,34 @@ Not recognized as active cashier/admin in staff_roles.`);
     } : o));
     const client = getSupabaseClient();
     if (client) {
-      client.from('orders').update({
-        courier_status: 'pickup',
-        picked_up_at: pickedAt,
-        delivery_proof_note: proofNote,
-        payment_note: nextNote
-      }).eq('id', order.id).then(({ error: dbErr }) => {
-        if (dbErr) {
-          console.warn('Failed to mark courier pickup:', dbErr.message);
-          showToast('☕ Pickup tercatat di HP kurir. Database belum mengizinkan update kurir, jadi admin tetap bisa sinkronkan.');
+      // 🗝️ Pintu kecil kurir: RPC dulu; gagal baru jalur biasa. (db/RPC_KURIR_PICKUP_TIBA_2026-08-09.sql)
+      Promise.resolve(client.rpc ? client.rpc('courier_confirm_pickup', {
+        p_order_id: order.id,
+        p_note: pickupLine
+      }) : Promise.reject(new Error('rpc tidak tersedia'))).then(rpcRes => {
+        const rpcErr = rpcRes && rpcRes.error;
+        const rpcOk = rpcRes && !rpcErr && rpcRes.data === true;
+        if (!rpcOk) {
+          console.warn('Rasa: pintu RPC pickup belum terpasang/ditolak, coba jalur biasa:', rpcErr && rpcErr.message ? rpcErr.message : rpcRes && rpcRes.data);
+          client.from('orders').update({
+            courier_status: 'pickup',
+            picked_up_at: pickedAt,
+            delivery_proof_note: proofNote,
+            payment_note: nextNote
+          }).eq('id', order.id).then(({
+            error: dbErr
+          }) => {
+            if (dbErr) {
+              console.warn('Failed to mark courier pickup:', dbErr.message);
+              showToast('☕ Pickup tercatat di HP kurir. Database belum mengizinkan update kurir, jadi admin tetap bisa sinkronkan.');
+            }
+          });
+          return;
         }
+        showToast(`🛵 Pickup ${order.id} resmi masuk buku besar warung. Bawa pelan-pelan ya kawan ☕`);
+      }).catch(rpcFail => {
+        console.warn('Rasa: error RPC pickup kurir:', rpcFail && rpcFail.message ? rpcFail.message : rpcFail);
+        showToast('☕ Pickup tercatat di HP kurir. Kasir/admin tetap bisa sinkronkan dari sisi warung.');
       });
     }
     setCourierPickupNote('');
@@ -18924,21 +18942,56 @@ Not recognized as active cashier/admin in staff_roles.`);
       _localCourierPatch: currentCourierPartner ? true : o._localCourierPatch
     } : o));
     const client = getSupabaseClient();
-    if (client) {
+    if (client && currentCourierPartner) {
+      // 🗝️ Pintu kecil kurir: RPC dulu; gagal baru jalur biasa. (db/RPC_KURIR_PICKUP_TIBA_2026-08-09.sql)
+      Promise.resolve(client.rpc ? client.rpc('courier_confirm_arrived', {
+        p_order_id: order.id,
+        p_note: 'Paket telah sampai di alamat pelanggan. Menunggu konfirmasi paket diterima.'
+      }) : Promise.reject(new Error('rpc tidak tersedia'))).then(rpcRes => {
+        const rpcErr = rpcRes && rpcRes.error;
+        const rpcOk = rpcRes && !rpcErr && rpcRes.data === true;
+        if (!rpcOk) {
+          console.warn('Rasa: pintu RPC tiba belum terpasang/ditolak, coba jalur biasa:', rpcErr && rpcErr.message ? rpcErr.message : rpcRes && rpcRes.data);
+          client.from('orders').update({
+            status: 'Kurir Tiba',
+            courier_status: 'tiba',
+            delivered_at: arrivedAt,
+            delivery_proof_note: proofNote,
+            payment_note: nextNote
+          }).eq('id', order.id).then(({
+            error: dbErr
+          }) => {
+            if (dbErr) {
+              console.warn('Failed to mark courier arrived:', dbErr.message);
+              showToast('☕ Paket sampai tercatat di HP kurir. Database belum mengizinkan update kurir, admin tetap bisa sinkronkan.');
+            }
+          });
+          showToast(`📦 Paket order ${order.id} sudah sampai. Menunggu konfirmasi pelanggan.`);
+          return;
+        }
+        showToast(`📦 Paket ${order.id} resmi tercatat sampai! Pelanggan sudah bisa konfirmasi diterima ☕`);
+      }).catch(rpcFail => {
+        console.warn('Rasa: error RPC tiba kurir:', rpcFail && rpcFail.message ? rpcFail.message : rpcFail);
+        showToast('☕ Paket sampai tercatat di HP kurir. Kasir/admin tetap bisa menandai sampai dari sisi warung.');
+      });
+    } else if (client) {
       client.from('orders').update({
         status: 'Kurir Tiba',
         courier_status: 'tiba',
         delivered_at: arrivedAt,
         delivery_proof_note: proofNote,
         payment_note: nextNote
-      }).eq('id', order.id).then(({ error: dbErr }) => {
+      }).eq('id', order.id).then(({
+        error: dbErr
+      }) => {
         if (dbErr) {
           console.warn('Failed to mark courier arrived:', dbErr.message);
-          if (currentCourierPartner) showToast('☕ Paket sampai tercatat di HP kurir. Database belum mengizinkan update kurir, admin tetap bisa sinkronkan.');
         }
       });
     }
-    showToast(`📦 Paket order ${order.id} sudah sampai. Menunggu konfirmasi pelanggan.`);
+    if (!currentCourierPartner || !client) {
+      showToast(`📦 Paket order ${order.id} sudah sampai. Menunggu konfirmasi pelanggan.`);
+    }
   };
     const handleCompleteDeliveredOrder = (order, confirmedBy = 'admin') => {
     if (!order) return;
@@ -30161,6 +30214,6 @@ try {
 }
   </script>
 <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a214516948465937',t:'MTc4NTA3ODQ4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a280050d9f4af838',t:'MTc4NjIwNzgyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a28065964efe7e20',t:'MTc4NjIxMTc3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a280050d9f4af838',t:'MTc4NjIwNzgyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a28089dc48730cd4',t:'MTc4NjIxMzI2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

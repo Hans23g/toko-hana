@@ -19067,6 +19067,59 @@ Not recognized as active cashier/admin in staff_roles.`);
       });
     }
   };
+    const handleCourierClaimJob = order => {
+    if (!order || !currentCourierPartner) return;
+    const partnerName = currentCourierPartner.name || (currentUser && currentUser.name) || 'Mitra Kurir Toko Hana';
+    const okClaim = window.confirm(`🙋 Ambil job pickup ${order.id}?\nTujuan: ${order.address || '-'}\nSetelah diambil, paket ini jadi tugasmu — jemput di warung dan antar pelan-pelan ya ☕`);
+    if (!okClaim) return;
+    const claimAt = new Date().toISOString();
+    const claimLine = `Job pickup diambil mandiri oleh Mitra Kurir ${partnerName} dari Pickup List ☕`;
+    const claimFee = Number(order.courier_fee || 0) || 0;
+    const claimPatch = {
+      status: 'Dikirim',
+      courier: partnerName,
+      kurir: partnerName,
+      courier_name: partnerName,
+      courier_phone: currentCourierPartner.phone || '',
+      courier_partner_id: currentCourierPartner.id,
+      courier_fee: claimFee || null,
+      courier_status: 'ditugaskan',
+      assigned_courier_at: claimAt,
+      delivery_proof_note: [order.delivery_proof_note || '', claimLine].filter(Boolean).join(' | '),
+      payment_note: [order.payment_note || '', claimLine].filter(Boolean).join(' | ')
+    };
+    saveCourierLocalOrderPatch(order.id, claimPatch);
+    setOrders(prevOrders => prevOrders.map(o => o.id === order.id ? {
+      ...o,
+      ...claimPatch,
+      _localCourierPatch: true
+    } : o));
+    const client = getSupabaseClient();
+    if (client) {
+      // 🗝️ Pintu kecil: RPC atomik anti-rebutan. (db/RPC_KURIR_AMBIL_JOB_PICKUP_2026-08-09.sql)
+      Promise.resolve(client.rpc ? client.rpc('courier_claim_pickup_job', {
+        p_order_id: order.id,
+        p_courier_name: partnerName,
+        p_courier_phone: currentCourierPartner.phone || '',
+        p_courier_partner_id: currentCourierPartner.id || null,
+        p_courier_fee: claimFee,
+        p_note: claimLine
+      }) : Promise.reject(new Error('rpc tidak tersedia'))).then(rpcRes => {
+        const rpcErr = rpcRes && rpcRes.error;
+        const rpcOk = rpcRes && !rpcErr && rpcRes.data === true;
+        if (!rpcOk) {
+          console.warn('Rasa: klaim job gagal/terlambat:', rpcErr && rpcErr.message ? rpcErr.message : rpcRes && rpcRes.data);
+          showToast(`☕ Yah, job ${order.id} sudah diambil kurir lain atau belum siap. Daftar Pickup List kita segarkan ya.`);
+          fetchOrders();
+          return;
+        }
+        showToast(`🛵 Job ${order.id} resmi milikmu! Berangkat jemput kapan kamu siap ☕`);
+      }).catch(rpcFail => {
+        console.warn('Rasa: error klaim job:', rpcFail && rpcFail.message ? rpcFail.message : rpcFail);
+        showToast('☕ Klaim job tercatat di HP ini dulu. Kalau belum muncul di daftarmu, kasir/admin bisa sinkronkan.');
+      });
+    }
+  };
   const handleCourierHandoverOrder = order => {
     if (!order) return;
     const handoverLine = 'Paket diserahkan ke kurir di warung. Siap berangkat pelan-pelan ☕';
@@ -21849,6 +21902,15 @@ ${receiptNoteHtml}
       const byName = partnerName && orderCourierName === partnerName;
       return (byPartnerId || byPhone || byName) && ['Dikirim', 'Kurir Tiba'].includes(o.status || '');
     }).sort((a, b) => new Date(b.assigned_courier_at || b.picked_up_at || b.created_at || b.date || 0).getTime() - new Date(a.assigned_courier_at || a.picked_up_at || a.created_at || a.date || 0).getTime());
+    // 🙋 Pickup List: orderan siap jalan yang belum punya kurir — Mitra Kurir aktif boleh ambil sendiri.
+    const pickupPool = (orders || []).filter(o => {
+      if (!o || o.status !== 'Diproses') return false;
+      if (o.courier_partner_id) return false;
+      if (String(o.courier || '').trim() || String(o.kurir || '').trim()) return false;
+      if (!String(o.address || '').trim()) return false;
+      if (/(ambil di toko|pickup_later|ambil_diri)/i.test(String(o.delivery_zone || '') + ' ' + String(o.delivery_note || ''))) return false;
+      return true;
+    }).sort((a, b) => new Date(a.created_at || a.date || 0).getTime() - new Date(b.created_at || b.date || 0).getTime());
     const openCustomerWa = order => {
       const phone = cleanPhone(order.phone);
       if (!phone) {
@@ -21987,7 +22049,47 @@ ${receiptNoteHtml}
       }, "WA")));
     })) : React.createElement("div", {
       className: `rounded-2xl border border-dashed p-4 text-center text-[9.5px] font-bold leading-relaxed ${darkMode ? 'border-emerald-300/16 bg-[#07140f] text-emerald-50/60' : 'border-emerald-100 bg-white/70 text-emerald-700'}`
-    }, "Belum ada paket pickup untuk akun kurir ini. Kalau admin menugaskan paket ke Mitra Kurir Aktif, order akan muncul di sini ☕"));
+    }, "Belum ada paket pickup untuk akun kurir ini. Kalau admin menugaskan paket ke Mitra Kurir Aktif, order akan muncul di sini ☕"), pickupPool.length ? React.createElement("div", {
+      className: `rounded-2xl border p-3 space-y-2 ${darkMode ? 'bg-[#0c1712] border-emerald-300/16' : 'bg-white/85 border-emerald-100'}`
+    }, React.createElement("div", {
+      className: "flex items-center justify-between gap-2"
+    }, React.createElement("div", null, React.createElement("div", {
+      className: `text-[8px] font-black uppercase tracking-[0.20em] ${darkMode ? 'text-emerald-200' : 'text-emerald-700'}`
+    }, "Pickup List • Ambil Job Sendiri"), React.createElement("p", {
+      className: `text-[8.5px] font-semibold leading-snug ${darkMode ? 'text-emerald-50/60' : 'text-gray-500'}`
+    }, "Orderan siap jalan dan belum ada kurirnya. Yang duluan ambil, dia yang antar — jemput di warung, antar pelan-pelan ☕")), React.createElement("span", {
+      className: "rounded-full px-2 py-1 text-[8px] font-black bg-amber-50 text-amber-700 border border-amber-100 flex-shrink-0"
+    }, pickupPool.length, " job lepas")), pickupPool.map(o => {
+      const zonePoolLabel = String(o.delivery_zone || '').trim();
+      const poolFee = Number(o.courier_fee || 0);
+      const poolItems = Array.isArray(o.items) && o.items.length ? o.items.slice(0, 3).map(it => `${it.product_name || it.name || 'Item'} x${it.quantity || 1}`).join(', ') : 'Detail barang lihat catatan order';
+      return React.createElement("div", {
+        key: `pickup-pool-${o.id}`,
+        className: `rounded-2xl border p-2.5 space-y-1 ${darkMode ? 'bg-[#07140f] border-emerald-300/12' : 'bg-emerald-50/70 border-emerald-100'}`
+      }, React.createElement("div", {
+        className: "flex items-center justify-between gap-2"
+      }, React.createElement("b", {
+        className: `text-[11px] truncate ${darkMode ? 'text-emerald-50' : 'text-[#2d1242]'}`
+      }, o.id), React.createElement("span", {
+        className: "rounded-full px-2 py-0.5 text-[8px] font-black bg-amber-100 text-amber-700"
+      }, "Siap Jalan")), React.createElement("div", {
+        className: `text-[9px] font-semibold ${darkMode ? 'text-emerald-50/65' : 'text-gray-500'}`
+      }, o.customer_name || 'Pelanggan', " • ", String(o.payment_method || '-').replace(/ \([^)]*\)/g, ''), " • Rp ", Number(o.total || 0).toLocaleString('id-ID')), React.createElement("div", {
+        className: `rounded-xl px-2 py-1 text-[8.5px] font-semibold leading-snug ${darkMode ? 'bg-emerald-300/8 text-emerald-50/72 border border-emerald-300/10' : 'bg-white text-emerald-700 border border-emerald-100'}`
+      }, "📍 ", o.address || 'Alamat belum ada'), React.createElement("div", {
+        className: `text-[8.5px] font-semibold ${darkMode ? 'text-emerald-50/55' : 'text-gray-500'}`
+      }, poolItems), React.createElement("div", {
+        className: "flex items-center gap-1.5 flex-wrap"
+      }, zonePoolLabel ? React.createElement("span", {
+        className: `rounded-full px-2 py-0.5 text-[7.5px] font-black ${darkMode ? 'bg-emerald-300/10 text-emerald-100' : 'bg-emerald-100 text-emerald-700'}`
+      }, "Zona: ", zonePoolLabel) : null, React.createElement("span", {
+        className: "rounded-full px-2 py-0.5 text-[7.5px] font-black bg-amber-50 text-amber-700 border border-amber-100"
+      }, poolFee ? `Fee Rp ${poolFee.toLocaleString('id-ID')}` : 'Fee sesuai zona / konfirmasi kasir')), React.createElement("button", {
+        type: "button",
+        onClick: () => handleCourierClaimJob(o),
+        className: "w-full rounded-xl py-2 text-[9px] font-black bg-[#B8860B] text-white shadow-sm active:scale-[0.99]"
+      }, "🙋 Ambil Job Pickup Ini"));
+    })) : null);
   };
   const renderCustomerOrdersPage = () => {
     if (currentUser?.role === 'cashier') return null;
@@ -30327,6 +30429,6 @@ try {
 }
   </script>
 <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a214516948465937',t:'MTc4NTA3ODQ4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a280050d9f4af838',t:'MTc4NjIwNzgyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a280cf2eecc061aa',t:'MTc4NjIxNjEwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a280050d9f4af838',t:'MTc4NjIwNzgyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a280f9844880a3e9',t:'MTc4NjIxNzgzNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
 </body>
 </html>

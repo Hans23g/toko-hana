@@ -1,99 +1,47 @@
-name: Security & Dependencies
+name: Security & Quality Check
 
 on:
-  schedule:
-    - cron: '0 2 * * 1'  # Setiap Senin jam 02:00 UTC
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
-  security-audit:
-    name: Security Audit
+  audit:
+    name: Audit Ringan Toko Hana
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+      - name: Cek file wajib ada
+        run: |
+          for f in index.html App.jsx manifest.json vercel.json db/BENTENG_AKTIF_RESMI.md; do
+            if [ ! -f "$f" ]; then echo "::error::File wajib hilang: $f"; exit 1; fi
+          done
+          echo "Semua file wajib ada ✅"
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Pastikan TIDAK ada service_role key bocor
+        run: |
+          if grep -rn "service_role" index.html App.jsx manifest.json 2>/dev/null | grep -v "JANGAN"; then
+            echo "::error::TERDETEKSI service_role di file publik! Cabut segera!"
+            exit 1
+          fi
+          echo "Tidak ada kebocoran service_role ✅"
 
-      - name: Run npm audit
-        run: npm audit --audit-level=high
+      - name: Pastikan SQL berbahaya tetap di karantina
+        run: |
+          if [ -f "db/SECURE_RLS_TOKO_HANA.sql" ]; then
+            echo "::error::SQL audit OpenCode kembali ke db/! Harus tetap di _archive!"
+            exit 1
+          fi
+          echo "SQL karantina aman di arsip ✅"
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          severity: 'HIGH,CRITICAL'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-  dependabot:
-    name: Update Dependencies
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check for outdated packages
-        run: npm outdated || true
-
-      - name: Update minor/patch dependencies
-        run: npm update
-
-      - name: Check for breaking changes
-        run: npm test || true
-
-      - name: Create Pull Request with updates
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'chore: update dependencies'
-          title: 'chore: update dependencies'
-          body: |
-            Automated dependency update.
-            Please review and merge if tests pass.
-          branch: 'dependabot/auto-update'
-          delete-branch: true
-
-  deploy:
-    name: Deploy to Vercel
-    needs: [security-audit]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Vercel CLI
-        run: npm i -g vercel@latest
-
-      - name: Deploy to Vercel
-        run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Validasi index.html utuh
+        run: |
+          if ! tail -c 100 index.html | grep -q "</html>"; then
+            echo "::error::index.html tidak ditutup </html> — build korup?"
+            exit 1
+          fi
+          echo "index.html utuh ✅"

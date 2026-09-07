@@ -46,7 +46,7 @@ incoming/       → jalur upload build baru (auto-deploy via Actions)
 ## 📖 Untuk CTO / Meja Baru
 1. Baca `docs/NAWA_CITA_TOKO_HANA.md` — ruh proyek, wajib!
 2. Baca `db/BENTENG_AKTIF_RESMI.md` — sebelum sentuh database
-3. Baca `README_CTO_WORKSPACE.md` — riwayat teknis lengkap
+3. Baca `docs/README_CTO_WORKSPACE.md` — riwayat teknis lengkap
 4. Jaga rasa warung: hangat, membumi, tidak generik ☕
 
 ---

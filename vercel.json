@@ -21,11 +21,5 @@
         }
       ]
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/api/supabase-proxy.js"
-    }
   ]
 }

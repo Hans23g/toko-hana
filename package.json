@@ -1,0 +1,29 @@
+{
+  "name": "toko-hana",
+  "version": "1.0.0",
+  "description": "Warung Digital Rakyat - Grocery & Kulakan App",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static build - no compilation needed'",
+    "lint": "eslint . --ext .js,.jsx",
+    "security:check": "node tools/security-check.js",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "vercel": "^33.0.0",
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "CTO Toko Hana",
+  "license": "MIT"
+}

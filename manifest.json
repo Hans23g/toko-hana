@@ -1,0 +1,25 @@
+{
+  "name": "Toko Hana — Warungnya Rakyat",
+  "short_name": "Toko Hana",
+  "description": "Warung digital rakyat: belanja, Jelajah, undangan, ucapan, dan info warga.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#703d92",
+  "background_color": "#F5F3F7",
+  "icons": [
+    {
+      "src": "assets/pwa/icon_install_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon_install_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

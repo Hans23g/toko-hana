@@ -1,0 +1,38 @@
+name: Auto Update index.html from CQ
+
+on:
+  push:
+    paths:
+      - "incoming/*.html"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Pick latest uploaded HTML and copy to index.html
+        run: |
+          latest_file=$(find incoming -maxdepth 1 -type f -name "*.html" -printf "%T@ %p\n" | sort -nr | head -n 1 | cut -d' ' -f2-)
+          echo "Latest CQ file: $latest_file"
+
+          if [ -z "$latest_file" ]; then
+            echo "No HTML file found in incoming/"
+            exit 1
+          fi
+
+          cp "$latest_file" index.html
+
+      - name: Commit updated index.html
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add index.html
+          git commit -m "Auto update index.html from CQ upload" || echo "No changes to commit"
+          git push
